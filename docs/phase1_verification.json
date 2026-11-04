@@ -1,0 +1,267 @@
+{
+  "phase": "Phase 1",
+  "verified_at_utc": "2026-11-04T09:45:35.500285+00:00",
+  "base_git_commit": "80e4f1287d1b2659bb70c4ecfae2c81e0a7abd53",
+  "branch": "feature/forrester-framework",
+  "initial_uncommitted_work": "output/ from prior read-only repo/video audits; preserved",
+  "git_commit_created": false,
+  "github_push_or_merge": false,
+  "pytest": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 116,
+    "failed": 0,
+    "seconds": 12.13,
+    "stdout": "........................................................................ [ 62%]\n............................................                             [100%]\n116 passed in 12.13s"
+  },
+  "commands_successfully_executed": [
+    "/home/sv/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m venv .venv",
+    ".venv/bin/python -m pip install -r requirements.txt",
+    ".venv/bin/python -m pip install -r requirements-wandb.txt",
+    ".venv/bin/python -m pytest -q",
+    ".venv/bin/python -m experiments.run_forrester --config configs/forrester_smoke.yaml --model random --mode smoke --wandb-mode disabled",
+    ".venv/bin/python -m experiments.run_forrester --config configs/forrester_smoke.yaml --model random --mode smoke --wandb-mode disabled --output-dir results/phase1_repeat",
+    "env -u WANDB_API_KEY .venv/bin/python -m experiments.run_forrester --config configs/forrester_smoke.yaml --model random --mode smoke --seed 0 --budget 4 --wandb-mode offline --output-dir results/phase1_offline",
+    ".venv/bin/python -m compileall -q benchmarks models experiments tests",
+    ".venv/bin/python -m pip check",
+    "git diff --check",
+    ".venv/bin/python -m experiments.run_forrester --config configs/forrester_smoke.yaml --model random --mode smoke --wandb-mode disabled --resume"
+  ],
+  "smoke_a": {
+    "output_directory": "/home/sv/Code/MetaGameBO_review/results/forrester/1f93faced437333e",
+    "summary": {
+      "schema_version": 1,
+      "status": "completed",
+      "protocol_label": "smoke_test",
+      "algorithm": "random",
+      "table1_reproduction": false,
+      "config_hash": "1f93faced437333e189ee40732e16e3c3905f38c4992efb202aec5ebe3bd05d6",
+      "manifest_sha256": "eed003f8a6d4afd583ed2cb7339e051086f5c6b0b242f66e6967818bf0ec9c7c",
+      "n_target_tasks": 3,
+      "n_seeds": 3,
+      "n_runs": 9,
+      "budget_per_run": 8,
+      "n_init_included": 2,
+      "total_objective_evaluations": 72,
+      "sampling_unit": "target_task_seed_pair",
+      "metrics": {
+        "final_best_raw_objective": {
+          "n": 9,
+          "mean": -5.900870885839317,
+          "sample_std": 2.0545610087026547,
+          "standard_error": 0.6848536695675516
+        },
+        "final_simple_regret": {
+          "n": 9,
+          "mean": 1.8138918506454718,
+          "sample_std": 1.8874670818306598,
+          "standard_error": 0.6291556939435533
+        },
+        "final_normalized_regret": {
+          "n": 9,
+          "mean": 0.07160378458118642,
+          "sample_std": 0.06051533248179027,
+          "standard_error": 0.02017177749393009
+        }
+      },
+      "runtime_seconds": {
+        "n": 9,
+        "mean": 0.0012824708888956593,
+        "sample_std": 8.515163811922413e-05,
+        "standard_error": 2.838387937307471e-05
+      },
+      "metric_notes": {
+        "normalization": "fixed_task_dense_grid_refined_min_max",
+        "oracle": "numerical_estimate_not_exact_guarantee",
+        "standard_error": "sample_std_ddof1/sqrt(n); null at n=1",
+        "dependence": "Task-seed pairs reuse tasks; pooled SE is descriptive, not an independent-task confidence interval",
+        "table1_average_loss": "UNVERIFIED; not equated with raw objective, BCE or regret"
+      },
+      "exploratory_cvar": {
+        "alpha": 0.8,
+        "metric": "final_normalized_regret",
+        "sampling_unit": "target_task_seed_pair",
+        "convention": "exact_equal_mass_fractional_upper_tail",
+        "table1_equivalence": "UNVERIFIED",
+        "value": 0.14167575574853902,
+        "per_seed_across_tasks": [
+          {
+            "seed": 0,
+            "n_tasks": 3,
+            "value": 0.13923366106290444
+          },
+          {
+            "seed": 1,
+            "n_tasks": 3,
+            "value": 0.11011173750134735
+          },
+          {
+            "seed": 2,
+            "n_tasks": 3,
+            "value": 0.14362943149704666
+          }
+        ]
+      }
+    },
+    "artifacts": {
+      "best_so_far_curve.png": {
+        "bytes": 58083,
+        "sha256": "15e101f310a37796d0c0cc44cc83cc55b02374bd3149d4b268789e355063ff2e"
+      },
+      "completion.json": {
+        "bytes": 128,
+        "sha256": "ef3513793ea64e958152ef2b4127edddb8227cb3159806b5d95207bb18aa9c20"
+      },
+      "config_resolved.yaml": {
+        "bytes": 682,
+        "sha256": "a527b01c97138d829e93f3c4b11e9f1ebdc5d58bca6da16c06c63b66f9b95eb2"
+      },
+      "environment.json": {
+        "bytes": 1838,
+        "sha256": "20e182fc197326af1eb5140a4922bf2a59b8d99649966baf57b84ba5dc65b86c"
+      },
+      "experiment_identity.json": {
+        "bytes": 177,
+        "sha256": "7ea20f06203165338b69c923d0518c62fbcb720606f5b8569e163be1aef2dc20"
+      },
+      "observations.csv": {
+        "bytes": 12980,
+        "sha256": "c29bfa3192f70f95f2055f474ca8b6210e9975f4351c9a8036bb67942ed23c34"
+      },
+      "regret_curve.png": {
+        "bytes": 64670,
+        "sha256": "e6f267e0b8360124ca28d44c473d1950c4674fa94d59dd08a3bc1e06bdac9cab"
+      },
+      "runs.csv": {
+        "bytes": 1532,
+        "sha256": "3a3b9f6020729ebbf5a16f879b39f07baef9ce4a3bb2d68aee213517f72dfa97"
+      },
+      "summary.json": {
+        "bytes": 2192,
+        "sha256": "16d996c6f23f35f6c5e9da8931e0f7ff29b8b2889cce68febdd2ce27311dd55b"
+      },
+      "task_manifest.json": {
+        "bytes": 2284,
+        "sha256": "8392f63baf3a467517d135e2a7a1dee3325563888dfc5df36004ba0859e0d16c"
+      }
+    }
+  },
+  "smoke_b": {
+    "output_directory": "/home/sv/Code/MetaGameBO_review/results/phase1_repeat/1f93faced437333e",
+    "config_hash": "1f93faced437333e189ee40732e16e3c3905f38c4992efb202aec5ebe3bd05d6"
+  },
+  "reproducibility_checks": {
+    "identical_manifests": true,
+    "identical_numeric_histories": true,
+    "identical_metrics": true,
+    "identical_exploratory_cvar": true,
+    "exact_query_count": true,
+    "source_target_ids_disjoint": true,
+    "source_target_parameters_disjoint": true,
+    "finite_numerical_history": true,
+    "within_bounds": true,
+    "nonnegative_regret": true,
+    "all_runs_exact_budget": true,
+    "all_runs_best_nonincreasing": true,
+    "two_initial_queries_per_run": true,
+    "per_run_timestamp_and_git": true,
+    "offline_runs_real_no_public_url": true,
+    "offline_sdk_files_exist": true
+  },
+  "offline": {
+    "output_directory": "/home/sv/Code/MetaGameBO_review/results/phase1_offline/c58827f36d20bf05",
+    "n_runs": 3,
+    "total_objective_evaluations": 12,
+    "sdk_runs": [
+      {
+        "id": "ccc5da2d0b7e8bf60db1",
+        "mode": "offline",
+        "uploaded": false,
+        "url": null
+      },
+      {
+        "id": "12b27b2060b5603e6a63",
+        "mode": "offline",
+        "uploaded": false,
+        "url": null
+      },
+      {
+        "id": "59a4d3ac92e81c0d2962",
+        "mode": "offline",
+        "uploaded": false,
+        "url": null
+      }
+    ],
+    "uploaded": false
+  },
+  "online": {
+    "status": "pending authorization/project configuration",
+    "url": null,
+    "attempted": false
+  },
+  "full_100_repeat_candidate_executed": false,
+  "lfbo_or_pfn_executed": false,
+  "reported_metrics_are_table1_reproduction": false,
+  "paper_protocol_uncertainties": [
+    "Average Loss mapping",
+    "target distribution/repeat unit",
+    "n_init",
+    "evaluation CVaR alpha/unit/convention",
+    "normalization reference"
+  ],
+  "resume": {
+    "command": ".venv/bin/python -m experiments.run_forrester --config configs/forrester_smoke.yaml --model random --mode smoke --wandb-mode disabled --resume",
+    "skipped_completed_runs": 9,
+    "new_objective_evaluations": 0
+  },
+  "static_checks": {
+    "compileall": "passed",
+    "pip_check": "No broken requirements found.",
+    "git_diff_check": "passed",
+    "readme_local_links": "all exist",
+    "main_and_idea_diff": "empty",
+    "source_fingerprint_matches_smoke": true,
+    "artifact_hashes_match_evidence": true,
+    "plot_visual_review": "Both exported aggregate PNGs inspected: axes/legend/SE readable, no clipping"
+  },
+  "files_changed": {
+    "modified": [
+      "README.md",
+      "models/base_model.py"
+    ],
+    "created": [
+      ".gitignore",
+      "benchmarks/__init__.py",
+      "benchmarks/forrester.py",
+      "configs/forrester.yaml",
+      "configs/forrester_paper_candidate.yaml",
+      "configs/forrester_smoke.yaml",
+      "docs/phase1_environment.txt",
+      "docs/phase1_handoff.md",
+      "docs/phase1_verification.json",
+      "docs/protocol_audit.md",
+      "experiments/__init__.py",
+      "experiments/evaluate.py",
+      "experiments/metrics.py",
+      "experiments/run_forrester.py",
+      "experiments/tracking.py",
+      "models/__init__.py",
+      "models/random_search.py",
+      "pytest.ini",
+      "requirements-wandb.txt",
+      "requirements.txt",
+      "results/.gitkeep",
+      "tests/conftest.py",
+      "tests/test_base_model.py",
+      "tests/test_evaluation.py",
+      "tests/test_forrester.py",
+      "tests/test_metrics.py",
+      "tests/test_reproducibility.py",
+      "tests/test_tracking.py"
+    ],
+    "preserved": [
+      "main.py",
+      ".idea/",
+      "output/ (prior audits)"
+    ]
+  }
+}

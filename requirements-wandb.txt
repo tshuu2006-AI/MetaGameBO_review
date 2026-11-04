@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional; disabled tracking never imports this SDK.
+wandb==0.19.11

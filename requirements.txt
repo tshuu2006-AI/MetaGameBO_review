@@ -1,0 +1,7 @@
+# CPU-only Phase 1 environment verified on Python 3.12.
+numpy==2.2.6
+scipy==1.15.3
+matplotlib==3.10.1
+pyparsing==3.2.3
+PyYAML==6.0.2
+pytest==8.3.5
