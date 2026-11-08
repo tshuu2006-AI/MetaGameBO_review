@@ -1,4 +1,4 @@
-"""CPU-only CLI for Phase 1. Run from the repository root with python -m."""
+"""CPU-first Forrester CLI for Random Search / LFBO / pretrained PFN. Run with python -m."""
 from __future__ import annotations
 
 import argparse
@@ -8,6 +8,11 @@ from pathlib import Path
 import yaml
 
 from experiments.evaluate import ROOT, run_experiment, validate_config
+from models.lfbo import LFBO
+from models.random_search import RandomSearch
+from models.pfn import PFNOptimizer
+
+OPTIMIZERS = {"random": RandomSearch, "lfbo": LFBO, "pfn": PFNOptimizer}
 
 
 def load_config(path) -> dict:
@@ -32,7 +37,7 @@ def main(argv=None) -> int:
     """Apply explicit CLI overrides and run only the requested protocol; return an exit code."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/forrester.yaml")
-    parser.add_argument("--model", choices=["random"])
+    parser.add_argument("--model", choices=sorted(OPTIMIZERS))
     seeds = parser.add_mutually_exclusive_group()
     seeds.add_argument("--seed", type=int)
     seeds.add_argument("--seeds", type=int, nargs="+")
@@ -65,19 +70,19 @@ def main(argv=None) -> int:
                 config["tracking"][key] = value
         if args.public_project_confirmed:
             config["tracking"]["public_project_confirmed"] = True
-        config = validate_config(config)
+        config = validate_config(config, allowed_models=tuple(OPTIMIZERS))
         b, e = config["benchmark"], config["evaluation"]
         if args.mode == "smoke" and (b["num_target_tasks"] > 3 or b["num_meta_tasks"] > 10
                                       or e["budget"] > 16 or len(e["seeds"]) > 3):
-            raise ValueError("Smoke mode refuses heavy configurations; use configs/forrester_smoke.yaml")
+            raise ValueError("Smoke mode refuses heavy configurations; use a *_smoke.yaml config")
         if config["protocol_label"] == "paper_candidate_UNVERIFIED" and args.mode != "full":
             raise ValueError("The unverified paper candidate requires explicit --mode full")
         if args.mode == "full" and config["protocol_label"] != "paper_candidate_UNVERIFIED":
-            raise ValueError("Full mode requires configs/forrester_paper_candidate.yaml; no silent preset expansion")
+            raise ValueError("Full mode requires an explicitly UNVERIFIED paper-candidate config; no silent preset expansion")
         print(f"Protocol={config['protocol_label']}; algorithm={config['model']}; total budget/run={e['budget']} including n_init={e['n_init']}")
         if args.resume:
             print("Resume requested: existing completed runs will be verified before skipping.")
-        outcome = run_experiment(config, resume=args.resume)
+        outcome = run_experiment(config, resume=args.resume, optimizer_factory=OPTIMIZERS[config["model"]])
         print(json.dumps(outcome, indent=2, allow_nan=False))
         return 0
     except (ValueError, KeyError, OSError, RuntimeError) as exc:

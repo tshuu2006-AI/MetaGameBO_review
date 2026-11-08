@@ -1,6 +1,7 @@
-# CPU-only Phase 1 environment verified on Python 3.12.
+# CPU-only experiment environment; Python 3.11/3.12.
 numpy==2.2.6
 scipy==1.15.3
+scikit-learn==1.7.2
 matplotlib==3.10.1
 pyparsing==3.2.3
 PyYAML==6.0.2

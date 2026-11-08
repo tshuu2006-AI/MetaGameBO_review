@@ -1,0 +1,52 @@
+# E1: exploratory CPU smoke; not the Table 1 protocol. Source data is retained only for manifest pairing.
+schema_version: 1
+protocol_label: smoke_test
+model: lfbo
+output_dir: results/lfbo_smoke
+benchmark:
+  bounds:
+  - - 0.0
+    - 1.0
+  parameter_ranges:
+    a:
+    - 0.2
+    - 3.0
+    b:
+    - -5.0
+    - 15.0
+    c:
+    - -5.0
+    - 5.0
+  num_meta_tasks: 3
+  samples_per_task: 4
+  num_target_tasks: 3
+  task_seed: 44
+  observation_seed: 45
+  manifest_path: null
+evaluation:
+  budget: 8
+  budget_mode: total
+  n_init: 2
+  seeds:
+  - 0
+  - 1
+  - 2
+  meta_train: false
+  cvar_alpha: 0.8
+  oracle_grid_size: 4097
+  oracle_xatol: 1.0e-12
+  regret_tolerance: 1.0e-08
+tracking:
+  mode: disabled
+  project: null
+  entity: null
+  public_project_confirmed: false
+model_options:
+  gamma: 0.3333333333333333
+  weight_type: ei
+  classifier: rf
+  n_estimators: 128
+  n_candidates: 1024
+  duplicate_atol: 1.0e-08
+  n_jobs: 1
+  min_samples_split: 2

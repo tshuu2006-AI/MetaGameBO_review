@@ -1,0 +1,59 @@
+# E2: prespecified exploratory paired development; run only after reviewing E1 runtime.
+benchmark:
+  bounds:
+  - - 0.0
+    - 1.0
+  manifest_path: null
+  num_meta_tasks: 3
+  num_target_tasks: 3
+  observation_seed: 45
+  parameter_ranges:
+    a:
+    - 0.2
+    - 3.0
+    b:
+    - -5.0
+    - 15.0
+    c:
+    - -5.0
+    - 5.0
+  samples_per_task: 4
+  task_seed: 44
+evaluation:
+  budget: 16
+  budget_mode: total
+  cvar_alpha: 0.8
+  meta_train: false
+  n_init: 2
+  oracle_grid_size: 4097
+  oracle_xatol: 1.0e-12
+  regret_tolerance: 1.0e-08
+  seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+model: lfbo
+model_options:
+  classifier: rf
+  duplicate_atol: 1.0e-08
+  gamma: 0.3333333333333333
+  min_samples_split: 2
+  n_candidates: 5000
+  n_estimators: 300
+  n_jobs: 1
+  weight_type: ei
+output_dir: results/lfbo_development
+protocol_label: development
+schema_version: 1
+tracking:
+  entity: null
+  mode: disabled
+  project: null
+  public_project_confirmed: false

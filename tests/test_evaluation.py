@@ -154,7 +154,7 @@ def test_manifest_rejects_config_mismatch(small_config, tmp_path):
 
 @pytest.mark.parametrize("path,value", [(('evaluation','budget_mode'), 'additional'),
     (('evaluation','seeds'), []), (('evaluation','seeds'), [0,0]), (('evaluation','seeds'), [-1]),
-    (('evaluation','meta_train'), 1), (('benchmark','num_target_tasks'), 0), (('model',), 'pfn')])
+    (('evaluation','meta_train'), 1), (('benchmark','num_target_tasks'), 0), (('model',), 'unknown_model')])
 def test_invalid_config(small_config, path, value):
     target = small_config
     for key in path[:-1]:

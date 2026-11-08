@@ -1,4 +1,5 @@
 .venv/
+.venv-pfn/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -10,3 +11,10 @@ wandb/
 .env
 *.egg-info/
 output/
+# Local experiment handoff artifacts; keep source/config/tests in Git.
+/docs/lfbo_*
+/docs/pfn_*
+/reports/
+/PHASE*_SUMMARY.md
+/*_HANDOFF.zip
+/*_HANDOFF.zip*.sha256

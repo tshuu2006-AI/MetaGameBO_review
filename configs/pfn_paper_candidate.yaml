@@ -1,0 +1,151 @@
+# E4 DO NOT AUTO-RUN. Checkpoint, task distribution, repeats, budget, init, normalization and CVaR are UNVERIFIED.
+schema_version: 1
+protocol_label: paper_candidate_UNVERIFIED
+model: pfn
+output_dir: results/pfn_paper_candidate
+benchmark:
+  bounds:
+  - - 0.0
+    - 1.0
+  parameter_ranges:
+    a:
+    - 0.2
+    - 3.0
+    b:
+    - -5.0
+    - 15.0
+    c:
+    - -5.0
+    - 5.0
+  num_meta_tasks: 0
+  samples_per_task: 4
+  num_target_tasks: 1
+  task_seed: 44
+  observation_seed: 45
+  manifest_path: null
+evaluation:
+  budget: 16
+  budget_mode: total
+  n_init: 2
+  seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 35
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+  - 50
+  - 51
+  - 52
+  - 53
+  - 54
+  - 55
+  - 56
+  - 57
+  - 58
+  - 59
+  - 60
+  - 61
+  - 62
+  - 63
+  - 64
+  - 65
+  - 66
+  - 67
+  - 68
+  - 69
+  - 70
+  - 71
+  - 72
+  - 73
+  - 74
+  - 75
+  - 76
+  - 77
+  - 78
+  - 79
+  - 80
+  - 81
+  - 82
+  - 83
+  - 84
+  - 85
+  - 86
+  - 87
+  - 88
+  - 89
+  - 90
+  - 91
+  - 92
+  - 93
+  - 94
+  - 95
+  - 96
+  - 97
+  - 98
+  - 99
+  meta_train: false
+  cvar_alpha: 0.8
+  oracle_grid_size: 4097
+  oracle_xatol: 1.0e-12
+  regret_tolerance: 1.0e-08
+tracking:
+  mode: disabled
+  project: null
+  entity: null
+  public_project_confirmed: false
+model_options:
+  model_name: hebo_plus
+  checkpoint: null
+  device: cpu
+  acquisition: ei
+  n_candidates: 128
+  candidate_batch_size: 64
+  candidate_strategy: uniform
+  duplicate_atol: 1.0e-08
+  cpu_threads: 2
+  context_transform: observed_standardize

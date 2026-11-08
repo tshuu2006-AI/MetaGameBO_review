@@ -58,7 +58,8 @@ def _git(*args):
 def environment_metadata() -> dict:
     """Capture versions, platform, UTC time, git state and a fingerprint of actual code."""
     packages = {}
-    for package in ("numpy", "scipy", "matplotlib", "PyYAML", "pytest", "wandb"):
+    for package in ("numpy", "scipy", "scikit-learn", "joblib", "threadpoolctl", "matplotlib", "PyYAML", "pytest", "wandb",
+                    "torch", "pfns4bo", "ConfigSpace", "botorch", "gpytorch"):
         try:
             packages[package] = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
@@ -71,15 +72,19 @@ def environment_metadata() -> dict:
             "source_sha256": hashes, "source_fingerprint": content_hash(hashes)}
 
 
-def validate_config(config: dict, allowed_models=("random",)) -> dict:
+def validate_config(config: dict, allowed_models=("random", "lfbo", "pfn")) -> dict:
     """Validate a complete config, failing on unsupported budgets and unresolved protocols."""
+    if not isinstance(config, dict):
+        raise ValueError("Config must be a mapping")
     result = copy.deepcopy(config)
     if result.get("schema_version") != 1 or result.get("model") not in allowed_models:
-        raise ValueError("Unsupported model or schema; Phase 1 CLI supports model=random only")
-    b, e, tracking = result["benchmark"], result["evaluation"], result["tracking"]
+        raise ValueError(f"Unsupported model or schema; allowed models: {', '.join(allowed_models)}")
     required_sections = {"schema_version", "protocol_label", "model", "output_dir", "benchmark", "evaluation", "tracking"}
     if not required_sections <= set(result) or set(result) - required_sections - {"model_options"}:
         raise ValueError("Unsupported or missing top-level config keys")
+    if any(not isinstance(result[key], dict) for key in ("benchmark", "evaluation", "tracking")):
+        raise ValueError("benchmark, evaluation and tracking must be mappings")
+    b, e, tracking = result["benchmark"], result["evaluation"], result["tracking"]
     if not isinstance(result.get("model_options", {}), dict):
         raise ValueError("model_options must be a mapping")
     if {"bounds", "seed"} & set(result.get("model_options", {})):
@@ -105,6 +110,16 @@ def validate_config(config: dict, allowed_models=("random",)) -> dict:
     empirical_cvar([1.0], e["cvar_alpha"])
     if not isinstance(e.get("meta_train"), bool):
         raise ValueError("evaluation.meta_train must be a boolean")
+    if result["model"] == "lfbo":
+        from models.lfbo import validate_lfbo_options
+        validate_lfbo_options(result.get("model_options", {}))
+        if e["meta_train"]:
+            raise ValueError("LFBO is non-meta; evaluation.meta_train must be false")
+    if result["model"] == "pfn":
+        from models.pfn import validate_pfn_options
+        result["model_options"] = validate_pfn_options(result.get("model_options", {}))
+        if e["meta_train"]:
+            raise ValueError("PFN uses frozen pretrained weights; evaluation.meta_train must be false")
     if not np.isfinite(e["regret_tolerance"]) or e["regret_tolerance"] < 0:
         raise ValueError("regret_tolerance must be finite and nonnegative")
     if isinstance(e["oracle_grid_size"], bool) or not isinstance(e["oracle_grid_size"], int) or e["oracle_grid_size"] < 257:
@@ -136,6 +151,7 @@ class RunResult:
     wandb: dict
     started_at_utc: str
     completed_at_utc: str
+    optimizer_diagnostics: Optional[dict] = None
 
 
 def _check_history(optimizer, expected_X, expected_y):
@@ -202,7 +218,8 @@ def run_single_task(optimizer, task, budget: int, n_init: int, seed: int, run_me
                "final_normalized_regret": rows[-1]["normalized_regret"], "budget": budget, "n_init": n_init}
     return RunResult(run_id, task.task_id, seed, optimizer_seed, init_seed, algorithm, rows, metrics, ref,
                      perf_counter()-start, {"mode": "disabled", "id": None, "url": None, "uploaded": False},
-                     started_at_utc, datetime.now(timezone.utc).isoformat())
+                     started_at_utc, datetime.now(timezone.utc).isoformat(),
+                     copy.deepcopy(getattr(optimizer, "diagnostics", None)))
 
 
 def _write_csv(path, rows, fields):
@@ -231,7 +248,7 @@ def plot_curves(results, directory: Path):
             se = values.std(axis=0, ddof=1) / np.sqrt(len(results))
             axes.fill_between(steps, mean-se, mean+se, alpha=0.2, label="±1 descriptive SE")
         axes.set(xlabel="Total objective evaluations (initialization included)", ylabel=label,
-                 title="Phase 1 sanity check — exploratory protocol")
+                 title=f"{results[0].algorithm} — exploratory Forrester evaluation")
         axes.legend(fontsize=8)
         axes.grid(alpha=0.2)
         figure.tight_layout()
@@ -257,6 +274,10 @@ def _read_completed(path, expected, task, evaluation):
     for filename in ("observations.csv", "measured_result.json", "regret_curve.png", "best_so_far_curve.png"):
         if not (artifacts / filename).is_file():
             raise ValueError(f"Completed run is missing an artifact: {artifacts / filename}")
+    if result.optimizer_diagnostics is not None:
+        diagnostic_file = artifacts / "optimizer_diagnostics.json"
+        if not diagnostic_file.is_file() or json.loads(diagnostic_file.read_text()) != result.optimizer_diagnostics:
+            raise ValueError("Completed run has missing or modified optimizer diagnostics")
     values = validate_values([r["y"] for r in rows], len(rows))
     validate_points([[r["x"]] for r in rows], np.asarray(payload["bounds"]), len(rows))
     if not np.array_equal(best_so_far(values), [r["best_so_far"] for r in rows]):
@@ -267,12 +288,15 @@ def _read_completed(path, expected, task, evaluation):
 def run_experiment(config: dict, *, resume=False, optimizer_factory=None) -> dict:
     """Generate/load a paired manifest, run or verify caches, and export real artifacts.
 
-    optimizer_factory(bounds, seed) is the Stage 2 extension point. It receives no
+    optimizer_factory(bounds, seed, **model_options) is the extension point. It receives no
     target task metadata; the same runner, initialization and metrics are reused.
     """
-    config = validate_config(config, allowed_models=(config["model"],) if optimizer_factory is not None else ("random",))
+    config = validate_config(config, allowed_models=(config["model"],) if optimizer_factory is not None else ("random", "lfbo", "pfn"))
     b, e = config["benchmark"], config["evaluation"]
     env = environment_metadata()
+    if config["model"] == "pfn":
+        from models.pfn_backend import checkpoint_metadata
+        env["pfn_checkpoint"] = checkpoint_metadata(config["model_options"]["checkpoint"], config["model_options"]["model_name"])
     supplied_manifest = b.get("manifest_path")
     if supplied_manifest:
         manifest = json.loads(Path(supplied_manifest).read_text(encoding="utf-8"))
@@ -287,8 +311,11 @@ def run_experiment(config: dict, *, resume=False, optimizer_factory=None) -> dic
     manifest_hash = content_hash(manifest)
     identity = copy.deepcopy({key: value for key, value in config.items() if key != "output_dir"})
     identity["benchmark"].pop("manifest_path", None)
-    config_hash = content_hash({"config": identity, "manifest_sha256": manifest_hash,
-                                "source_fingerprint": env["source_fingerprint"], "packages": env["packages"]})
+    hash_payload = {"config": identity, "manifest_sha256": manifest_hash,
+                    "source_fingerprint": env["source_fingerprint"], "packages": env["packages"]}
+    if config["model"] == "pfn":
+        hash_payload["checkpoint_sha256"] = env["pfn_checkpoint"]["sha256"]
+    config_hash = content_hash(hash_payload)
     directory = Path(config["output_dir"]).resolve() / config_hash[:16]
     if directory.exists():
         if not resume:
@@ -306,7 +333,14 @@ def run_experiment(config: dict, *, resume=False, optimizer_factory=None) -> dic
         (directory / "config_resolved.yaml").write_text(yaml.safe_dump(config, sort_keys=False))
     run_directory = directory / "runs"
     run_directory.mkdir(exist_ok=True)
-    factory = RandomSearch if optimizer_factory is None else optimizer_factory
+    if optimizer_factory is None and config["model"] == "pfn":
+        from models.pfn import PFNOptimizer
+        factory = PFNOptimizer
+    elif optimizer_factory is None and config["model"] == "lfbo":
+        from models.lfbo import LFBO
+        factory = LFBO
+    else:
+        factory = RandomSearch if optimizer_factory is None else optimizer_factory
     results, skipped = [], 0
     references = {}
     for spec in manifest["target_tasks"]:
@@ -332,6 +366,7 @@ def run_experiment(config: dict, *, resume=False, optimizer_factory=None) -> dic
                                              "config_hash": config_hash, "manifest_sha256": manifest_hash,
                                              "git_commit": env["git_commit"], "source_fingerprint": env["source_fingerprint"],
                                              "versions": env["packages"],
+                                             "model_options": config.get("model_options", {}),
                                              "evaluation": e})
                 if task.task_id not in references:
                     references[task.task_id] = estimate_reference_range(task, b["bounds"][0], e["oracle_grid_size"], e["oracle_xatol"])
@@ -345,9 +380,14 @@ def run_experiment(config: dict, *, resume=False, optimizer_factory=None) -> dic
                 run_plots = plot_curves([result], one_dir)
                 # Stage the measured result as an artifact; completion is saved only after tracking finishes.
                 write_json(one_dir / "measured_result.json", asdict(result))
+                diagnostic_artifacts = []
+                if result.optimizer_diagnostics is not None:
+                    diagnostic_file = one_dir / "optimizer_diagnostics.json"
+                    write_json(diagnostic_file, result.optimizer_diagnostics)
+                    diagnostic_artifacts.append(diagnostic_file)
                 tracker.finish(result.final_metrics, [one_dir / "measured_result.json", one_dir / "observations.csv",
                                                       directory / "config_resolved.yaml", directory / "task_manifest.json",
-                                                      directory / "environment.json", *run_plots])
+                                                      directory / "environment.json", *run_plots, *diagnostic_artifacts])
                 if info["mode"] == "online":
                     result.wandb["uploaded"] = True
                 payload = {**expected, "status": "completed", "bounds": b["bounds"], "result": asdict(result),
