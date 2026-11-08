@@ -8,6 +8,12 @@ Phần thực nghiệm của **Phước** trong đồ án tổng quan MetaGameBO
 
 [Xem poster kích thước đầy đủ](assets/lfbo-pfn-forrester-poster.png).
 
+### Đối chiếu với kết quả trong paper
+
+![Đối chiếu mô tả kết quả trong paper MetaGameBO và thực nghiệm Forrester của nhóm](assets/metagamebo-paper-group-comparison.png)
+
+[Xem ảnh so sánh kích thước đầy đủ](assets/metagamebo-paper-group-comparison.png). Thiết lập và định nghĩa metrics của hai bên chưa được xác minh tương đương; đây là đối chiếu mô tả.
+
 ## Dữ liệu và cấu hình
 
 Dùng 100 hàm Forrester 1D khác nhau, sinh bằng generator tác giả đã pin với seeds `10000..10099`. Mỗi thuật toán chạy một trial trên mỗi target, ngân sách **16 lần đánh giá** gồm **2 điểm khởi tạo chung + 14 bước tuần tự**. Tổng thực nghiệm chính: **300 runs / 4.800 objective calls**.
