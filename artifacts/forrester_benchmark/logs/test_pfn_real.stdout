@@ -1,0 +1,8 @@
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+tests/test_forrester_benchmark.py::test_pfn_real_replay_matches_original_measurement
+  <unknown>:23: DeprecationWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/sv/Code/MetaGameBO_review/output/phase4_4_full/publication_clean_pfn.xml -
+7 passed, 243 deselected, 1 warning in 8.44s

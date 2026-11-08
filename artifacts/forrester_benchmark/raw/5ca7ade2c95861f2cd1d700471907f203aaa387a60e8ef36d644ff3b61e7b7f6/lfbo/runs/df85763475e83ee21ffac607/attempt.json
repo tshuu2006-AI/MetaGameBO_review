@@ -1,0 +1,38 @@
+{
+  "identity": {
+    "algorithm": "lfbo",
+    "audit_replay": false,
+    "checkpoint_sha256": null,
+    "cohort_id": "c2_full100_group_benchmark",
+    "environment": {
+      "packages": {
+        "ConfigSpace": null,
+        "PyYAML": "6.0.2",
+        "botorch": null,
+        "gpytorch": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.10.1",
+        "numpy": "2.2.6",
+        "pfns4bo": null,
+        "pytest": "8.3.5",
+        "scikit-learn": "1.7.2",
+        "scipy": "1.15.3",
+        "threadpoolctl": "3.8.0",
+        "torch": null,
+        "wandb": "0.19.11"
+      },
+      "python": "3.12.14"
+    },
+    "initial_design_sha256": "4226742e829da57933b6a614945b9fe7f26d845b8855201eb5db47efa61ad972",
+    "manifest_sha256": "6b616a283cf186adf812e17c121eb7ea02e07b81b1bd7d26c2636a2bd876a674",
+    "mode": "full",
+    "protocol_id": "5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6",
+    "references_sha256": "c51e2017a113780192ab37704104d2dc7e5bb0ac7586787d08bf6ce657599da5",
+    "source_fingerprint": "00cbd5aad8c2ee40330fdf4a21d401193605a6d1caed7a28ae4ca0040f9faf99"
+  },
+  "initializations_are_online": true,
+  "run_id": "df85763475e83ee21ffac607",
+  "started_at_utc": "2026-11-08T12:54:19.613957+00:00",
+  "task_id": "C2-full-authorseed-10028-target0",
+  "trial_seed": 0
+}

@@ -1,0 +1,70 @@
+{
+  "actual_main_online_calls": 4800,
+  "actual_main_runs": 300,
+  "actual_unique_targets": 100,
+  "budget_per_run": 16,
+  "distribution_source": {
+    "source_fingerprint": "8cf1eace33a5d4cd37734d028a45b72cbfbe503edeb6daedac58d4fe41022d77",
+    "source_sha256": {
+      "benchmarks/__init__.py": "7725b827f84637c78d99d824cb8b9cec9a2c245a68523b46eab3b17700b56956",
+      "benchmarks/forrester.py": "c661da67a246ad1e47ba54aacfc9ad8e17c3c4594b4d9a83026daa853553209e",
+      "configs/forrester_benchmark/author_snapshot/forrester.py": "d9c01f7582534f85026df82f1bd6106300e758a03b99f95d565d3b16fc20194d",
+      "experiments/__init__.py": "d412784ec2cdfc282526ced1496229df5dbc3130d97a6864108489a285dc7830",
+      "experiments/evaluate.py": "4c18264089a58bdcff914677074dff3cc1f15568ff96369a9c0dfd4a7fe7fb62",
+      "experiments/forrester_benchmark/__init__.py": "ee73d97a689b08c1234b6c75a2fdaf540bee1d2d8d4e8e40cf2f20f878a3d31f",
+      "experiments/forrester_benchmark/analyze.py": "a6dc6186b4e69ad88141f82a35c18092aac834a0c9e57bf03f5e38edef9b3ca5",
+      "experiments/forrester_benchmark/objective.py": "91512758c4102ac2189d42448895a82ec9f68bfc0272335f5940a6aaa659e4b0",
+      "experiments/forrester_benchmark/protocol.py": "ee0a16b6720a92269249d6fd927d26c6429a15bc6b8144e9c025a424bd3fb3b3",
+      "experiments/forrester_benchmark/records.py": "66ffc9e1e6e17a69fc435b2291e03a884b3fc83be2aa10ff115d728aa6ad985f",
+      "experiments/forrester_benchmark/run.py": "c606cadbde38d46d5764cf5a910a2f2bd52c5dd80c1e841c00a42fa5a5c0abf3",
+      "experiments/forrester_benchmark/verify.py": "daa3984e20ae45373bd27e1469984aa52d4e033b1bc80924fb3527a5a65f579c",
+      "experiments/metrics.py": "3485e76d3046a7c370604f2a3e5c9a66956a20c939c44e444a47767742275e95",
+      "experiments/tracking.py": "66990193bd781a3411047ed35291e9f800b241b5b25f5c838663193276b7d77e",
+      "models/__init__.py": "e227a0280ca8638a87f56c0afb75b7048a62a41a18988bb6958cbcca49ba7735",
+      "models/base_model.py": "79745d7e3858f1d137856868bea2cb3aa5e2430c9aee9b496e192cb5b132057b",
+      "models/lfbo.py": "011792d24810a2544eee892355f3e4dc2aba4e509c821e98f5425e07970eefd0",
+      "models/pfn.py": "7e1b02c96d532dd27efe726af10a31047ab78f574612a8235f37176e91f7c4c4",
+      "models/pfn_backend.py": "70f7c2b12565f9e439b23d4f1a9cdd8a83153b5055be0bf7ac8c09713a21184a",
+      "models/random_search.py": "876375034d7386f23271885156f4027cf6f35626392b1cbb740a82354a333377"
+    }
+  },
+  "distribution_validation": {
+    "all_three_first_target_replays": "exact_numeric_match",
+    "clean_checkout_real_PFN_passed": 7,
+    "clean_checkout_standard_passed": 243,
+    "failed": 0,
+    "historical_raw_files_byte_identical": 1836,
+    "new_cases_included": 20,
+    "regenerated_analysis_CSV_JSON": "exact_match",
+    "skipped": 0
+  },
+  "experiment": "Paired Forrester benchmark of Random/LFBO/PFN",
+  "historical_validation": {
+    "exact_separate_replays": 6,
+    "failed": 0,
+    "main_resume_new_calls": 0,
+    "new_phase_tests_included_in_standard": 26,
+    "real_PFN_tests_passed": 6,
+    "skipped": 0,
+    "standard_tests_passed": 329,
+    "warning": "One upstream docstring SyntaxWarning on Python 3.12; pinned source retained."
+  },
+  "main_runtime_seconds": {
+    "lfbo": 391.826709261004,
+    "pfn": 405.09054719300184,
+    "random": 14.256400031998055
+  },
+  "measured_source_commit": "e757d3bf5c3baaa017f0e9de1c4bb7161edbe1e4",
+  "measured_source_note": "Measured with additional uncommitted runtime modules; exact historical hashes retained in protocol.json and raw records.",
+  "n_init": 2,
+  "optimizer_trials_per_target": 1,
+  "paper_equivalence_status": "UNVERIFIED",
+  "protocol_id": "5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6",
+  "publication_note": "Final experiment only. Historical numerical records are copied byte-for-byte; the distributable runner has a separate source identity.",
+  "schema_version": 1,
+  "source_author_seeds": [
+    10000,
+    10099
+  ],
+  "table1_reproduction": false
+}

@@ -1,0 +1,25 @@
+protocol_path: configs/forrester_benchmark/protocol.json
+protocol_id: 5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6
+algorithm: lfbo
+model_options:
+  classifier: rf
+  duplicate_atol: 1.0e-08
+  gamma: 0.3333333333333333
+  min_samples_split: 2
+  n_candidates: 5000
+  n_estimators: 300
+  n_jobs: 1
+  weight_type: ei
+evaluation:
+  budget: 16
+  budget_mode: total
+  cvar_alpha: 0.8
+  meta_train: false
+  n_init: 2
+  oracle_grid_size: 4097
+  oracle_xatol: 1.0e-12
+  regret_tolerance: 1.0e-08
+  seeds:
+  - 0
+table1_reproduction: false
+output_root: results/forrester_benchmark

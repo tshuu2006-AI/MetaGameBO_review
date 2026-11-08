@@ -1,0 +1,56 @@
+{
+  "algorithm": "random",
+  "audit_replay": false,
+  "budget": 16,
+  "claim_scope": "exploratory_fullscale",
+  "cohort_id": "c2_full100_group_benchmark",
+  "completed_runs": 100,
+  "expected_runs": 100,
+  "exploratory_CVaR": {
+    "alpha": 0.8,
+    "estimator": "fractional_empirical_upper_tail",
+    "input": "final_normalized_regret",
+    "paper_equivalence": false,
+    "sampling_unit": "unique_target",
+    "value": 0.09487059981546636
+  },
+  "initial_design_sha256": "4226742e829da57933b6a614945b9fe7f26d845b8855201eb5db47efa61ad972",
+  "manifest_sha256": "6b616a283cf186adf812e17c121eb7ea02e07b81b1bd7d26c2636a2bd876a674",
+  "metrics": {
+    "final_best_raw_objective": {
+      "mean": -7.7036984440257505,
+      "n": 100,
+      "sample_std": 4.520967683433057,
+      "standard_error": 0.45209676834330575
+    },
+    "final_normalized_regret": {
+      "mean": 0.02545648413888595,
+      "n": 100,
+      "sample_std": 0.044813761884014286,
+      "standard_error": 0.004481376188401429
+    },
+    "final_simple_regret": {
+      "mean": 0.850271088106038,
+      "n": 100,
+      "sample_std": 1.3251066327865895,
+      "standard_error": 0.13251066327865896
+    }
+  },
+  "mode": "full",
+  "n_init": 2,
+  "online_objective_calls": 1600,
+  "paper_equivalence_status": "UNVERIFIED",
+  "protocol_id": "5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6",
+  "protocol_label": "group_fullscale_benchmark",
+  "references_sha256": "c51e2017a113780192ab37704104d2dc7e5bb0ac7586787d08bf6ce657599da5",
+  "runtime": {
+    "mean": 0.09292520548013272,
+    "n": 100,
+    "sample_std": 0.004061496737764519,
+    "standard_error": 0.0004061496737764519
+  },
+  "sampling_unit": "unique_target_task_one_trial",
+  "status": "completed",
+  "table1_reproduction": false,
+  "unique_targets": 100
+}

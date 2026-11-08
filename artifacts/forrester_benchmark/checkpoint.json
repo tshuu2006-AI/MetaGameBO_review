@@ -1,0 +1,10 @@
+{
+  "compressed_git_blob_sha1": "f4f25d121742f88e72f478f40f0a6d5d184c8be5",
+  "compressed_sha256": "ad7af1d807db9eaffb152dc89eaae9262c10e2bb99b81bb12ae5cf8f80aba432",
+  "model_name": "hebo_plus",
+  "released_filename": "model_hebo_morebudget_9_unused_features_3.pt.gz",
+  "repo_commit": "4c0d901e4e0f1d5afd4b12e33974525cf3493dd3",
+  "sha256": "cc7f6f4b9b06e59987e42845b7b0d31ffa5b414b9eddfe14d88b25120e3cd4f8",
+  "size_bytes": 107262245,
+  "source_uri": "https://raw.githubusercontent.com/automl/PFNs4BO/4c0d901e4e0f1d5afd4b12e33974525cf3493dd3/pfns4bo/final_models/model_hebo_morebudget_9_unused_features_3.pt.gz"
+}

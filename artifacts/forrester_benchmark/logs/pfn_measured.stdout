@@ -1,0 +1,161 @@
+{"status": "completed", "run_id": "6b1ca61ead0c7418331f0f34", "algorithm": "pfn", "completed_runs": 1, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10000-target0", "completed_at_utc": "2026-11-08T12:59:10.127975+00:00"}
+{"status": "completed", "run_id": "dd4dbbf31355dcd1c159a19a", "algorithm": "pfn", "completed_runs": 2, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10001-target0", "completed_at_utc": "2026-11-08T12:59:14.317912+00:00"}
+{"status": "completed", "run_id": "549b8e37fd4a8db6ee7abbce", "algorithm": "pfn", "completed_runs": 3, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10002-target0", "completed_at_utc": "2026-11-08T12:59:18.336493+00:00"}
+{"status": "completed", "run_id": "665794c2b69181f946b4de8b", "algorithm": "pfn", "completed_runs": 4, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10003-target0", "completed_at_utc": "2026-11-08T12:59:22.356554+00:00"}
+{"status": "completed", "run_id": "d085bbd083a4c31742a5f680", "algorithm": "pfn", "completed_runs": 5, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10004-target0", "completed_at_utc": "2026-11-08T12:59:26.394244+00:00"}
+{"status": "completed", "run_id": "2013ad7e0e3cd070c91e280b", "algorithm": "pfn", "completed_runs": 6, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10005-target0", "completed_at_utc": "2026-11-08T12:59:30.425228+00:00"}
+{"status": "completed", "run_id": "e14c645fcb146302ee88300c", "algorithm": "pfn", "completed_runs": 7, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10006-target0", "completed_at_utc": "2026-11-08T12:59:34.409183+00:00"}
+{"status": "completed", "run_id": "a296710d9a6e5d5e82d1ab4d", "algorithm": "pfn", "completed_runs": 8, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10007-target0", "completed_at_utc": "2026-11-08T12:59:38.410300+00:00"}
+{"status": "completed", "run_id": "58c7d60d0f95eda3fb55a531", "algorithm": "pfn", "completed_runs": 9, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10008-target0", "completed_at_utc": "2026-11-08T12:59:42.454231+00:00"}
+{"status": "completed", "run_id": "eb1562f49000fd0d3d22da76", "algorithm": "pfn", "completed_runs": 10, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10009-target0", "completed_at_utc": "2026-11-08T12:59:46.479452+00:00"}
+{"status": "completed", "run_id": "a206e53cac404ce64f563031", "algorithm": "pfn", "completed_runs": 11, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10010-target0", "completed_at_utc": "2026-11-08T12:59:50.684651+00:00"}
+{"status": "completed", "run_id": "f82a46d0715046c62cb67b4d", "algorithm": "pfn", "completed_runs": 12, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10011-target0", "completed_at_utc": "2026-11-08T12:59:54.709406+00:00"}
+{"status": "completed", "run_id": "b002ed9b59f8e22e460c5805", "algorithm": "pfn", "completed_runs": 13, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10012-target0", "completed_at_utc": "2026-11-08T12:59:58.707405+00:00"}
+{"status": "completed", "run_id": "60a22717a57c098abb8b231b", "algorithm": "pfn", "completed_runs": 14, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10013-target0", "completed_at_utc": "2026-11-08T13:00:02.720301+00:00"}
+{"status": "completed", "run_id": "66d8ca9bfb88b5ddc8469ff3", "algorithm": "pfn", "completed_runs": 15, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10014-target0", "completed_at_utc": "2026-11-08T13:00:06.746299+00:00"}
+{"status": "completed", "run_id": "6057828ed070f0a21fcff425", "algorithm": "pfn", "completed_runs": 16, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10015-target0", "completed_at_utc": "2026-11-08T13:00:10.998048+00:00"}
+{"status": "completed", "run_id": "da7a34a9ca607fbf5e9597c2", "algorithm": "pfn", "completed_runs": 17, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10016-target0", "completed_at_utc": "2026-11-08T13:00:15.063227+00:00"}
+{"status": "completed", "run_id": "e4e6a008bb389314cea410f6", "algorithm": "pfn", "completed_runs": 18, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10017-target0", "completed_at_utc": "2026-11-08T13:00:19.082258+00:00"}
+{"status": "completed", "run_id": "5dcb84436f9a04fd28395e78", "algorithm": "pfn", "completed_runs": 19, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10018-target0", "completed_at_utc": "2026-11-08T13:00:23.058518+00:00"}
+{"status": "completed", "run_id": "3c9fa7fd6238b2c3257baf26", "algorithm": "pfn", "completed_runs": 20, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10019-target0", "completed_at_utc": "2026-11-08T13:00:27.108462+00:00"}
+{"status": "completed", "run_id": "4f3ce1828b979b7c751569b4", "algorithm": "pfn", "completed_runs": 21, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10020-target0", "completed_at_utc": "2026-11-08T13:00:31.357173+00:00"}
+{"status": "completed", "run_id": "55c70153340817fbdbf302d1", "algorithm": "pfn", "completed_runs": 22, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10021-target0", "completed_at_utc": "2026-11-08T13:00:35.352285+00:00"}
+{"status": "completed", "run_id": "0115e9f23c05be247655ae2a", "algorithm": "pfn", "completed_runs": 23, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10022-target0", "completed_at_utc": "2026-11-08T13:00:39.360424+00:00"}
+{"status": "completed", "run_id": "0b8fe32226fb5911b3a1fa8e", "algorithm": "pfn", "completed_runs": 24, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10023-target0", "completed_at_utc": "2026-11-08T13:00:43.364216+00:00"}
+{"status": "completed", "run_id": "860f675b6dfd35effb96ba38", "algorithm": "pfn", "completed_runs": 25, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10024-target0", "completed_at_utc": "2026-11-08T13:00:47.331471+00:00"}
+{"status": "completed", "run_id": "1e8a3585c806183b0eae7c54", "algorithm": "pfn", "completed_runs": 26, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10025-target0", "completed_at_utc": "2026-11-08T13:00:51.496050+00:00"}
+{"status": "completed", "run_id": "2aa15efbfbdad0a6324ce44f", "algorithm": "pfn", "completed_runs": 27, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10026-target0", "completed_at_utc": "2026-11-08T13:00:55.488977+00:00"}
+{"status": "completed", "run_id": "31908b8b6e560bef1871a658", "algorithm": "pfn", "completed_runs": 28, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10027-target0", "completed_at_utc": "2026-11-08T13:00:59.472316+00:00"}
+{"status": "completed", "run_id": "9230f94d2aa1a2a30f866caf", "algorithm": "pfn", "completed_runs": 29, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10028-target0", "completed_at_utc": "2026-11-08T13:01:03.559697+00:00"}
+{"status": "completed", "run_id": "23a12c16e7ef7d822f691f64", "algorithm": "pfn", "completed_runs": 30, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10029-target0", "completed_at_utc": "2026-11-08T13:01:07.549324+00:00"}
+{"status": "completed", "run_id": "92332836ba1f94007765af0a", "algorithm": "pfn", "completed_runs": 31, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10030-target0", "completed_at_utc": "2026-11-08T13:01:11.600739+00:00"}
+{"status": "completed", "run_id": "4fdb9a13788426f28bdaa1ab", "algorithm": "pfn", "completed_runs": 32, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10031-target0", "completed_at_utc": "2026-11-08T13:01:15.598788+00:00"}
+{"status": "completed", "run_id": "ac76ab161f7a927af8557818", "algorithm": "pfn", "completed_runs": 33, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10032-target0", "completed_at_utc": "2026-11-08T13:01:19.615426+00:00"}
+{"status": "completed", "run_id": "f92e360ef5872de63b5779fb", "algorithm": "pfn", "completed_runs": 34, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10033-target0", "completed_at_utc": "2026-11-08T13:01:23.592987+00:00"}
+{"status": "completed", "run_id": "f2b22a4e5ab6af1a44b6290e", "algorithm": "pfn", "completed_runs": 35, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10034-target0", "completed_at_utc": "2026-11-08T13:01:27.553181+00:00"}
+{"status": "completed", "run_id": "c3b92ad6feedbefbda670f9d", "algorithm": "pfn", "completed_runs": 36, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10035-target0", "completed_at_utc": "2026-11-08T13:01:31.524121+00:00"}
+{"status": "completed", "run_id": "612bec7de868a630081da253", "algorithm": "pfn", "completed_runs": 37, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10036-target0", "completed_at_utc": "2026-11-08T13:01:35.498606+00:00"}
+{"status": "completed", "run_id": "19ffc63396eb66b49f0d1e81", "algorithm": "pfn", "completed_runs": 38, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10037-target0", "completed_at_utc": "2026-11-08T13:01:39.460704+00:00"}
+{"status": "completed", "run_id": "daea8c541b4c1ba197b84c73", "algorithm": "pfn", "completed_runs": 39, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10038-target0", "completed_at_utc": "2026-11-08T13:01:43.432903+00:00"}
+{"status": "completed", "run_id": "f58602484e74d7ab18cb26c7", "algorithm": "pfn", "completed_runs": 40, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10039-target0", "completed_at_utc": "2026-11-08T13:01:47.478371+00:00"}
+{"status": "completed", "run_id": "3f38cef57b8f3ad7ab7be7bd", "algorithm": "pfn", "completed_runs": 41, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10040-target0", "completed_at_utc": "2026-11-08T13:01:51.541620+00:00"}
+{"status": "completed", "run_id": "8e47a035b913077f90be0263", "algorithm": "pfn", "completed_runs": 42, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10041-target0", "completed_at_utc": "2026-11-08T13:01:55.519433+00:00"}
+{"status": "completed", "run_id": "aa3f419809cf061b630fd776", "algorithm": "pfn", "completed_runs": 43, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10042-target0", "completed_at_utc": "2026-11-08T13:01:59.554650+00:00"}
+{"status": "completed", "run_id": "c3b17118179f073aac12701f", "algorithm": "pfn", "completed_runs": 44, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10043-target0", "completed_at_utc": "2026-11-08T13:02:03.531496+00:00"}
+{"status": "completed", "run_id": "5824dc35412f519d91b8ed6b", "algorithm": "pfn", "completed_runs": 45, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10044-target0", "completed_at_utc": "2026-11-08T13:02:07.670628+00:00"}
+{"status": "completed", "run_id": "32271e910a132a0166450222", "algorithm": "pfn", "completed_runs": 46, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10045-target0", "completed_at_utc": "2026-11-08T13:02:11.725440+00:00"}
+{"status": "completed", "run_id": "2f1376e5e00071a3c6f46325", "algorithm": "pfn", "completed_runs": 47, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10046-target0", "completed_at_utc": "2026-11-08T13:02:15.724031+00:00"}
+{"status": "completed", "run_id": "4f009102b4be5999d2d0631d", "algorithm": "pfn", "completed_runs": 48, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10047-target0", "completed_at_utc": "2026-11-08T13:02:19.806114+00:00"}
+{"status": "completed", "run_id": "c5fac2c38e70dc0eb800ee6f", "algorithm": "pfn", "completed_runs": 49, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10048-target0", "completed_at_utc": "2026-11-08T13:02:23.781639+00:00"}
+{"status": "completed", "run_id": "b3de942de009b23278cb9c05", "algorithm": "pfn", "completed_runs": 50, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10049-target0", "completed_at_utc": "2026-11-08T13:02:27.773258+00:00"}
+{"status": "completed", "run_id": "8981ed8da3af7c479fd772fb", "algorithm": "pfn", "completed_runs": 51, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10050-target0", "completed_at_utc": "2026-11-08T13:02:31.725100+00:00"}
+{"status": "completed", "run_id": "8a8ad73a171baaa15379e1be", "algorithm": "pfn", "completed_runs": 52, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10051-target0", "completed_at_utc": "2026-11-08T13:02:35.750400+00:00"}
+{"status": "completed", "run_id": "ada7b8a012f85afbb0ffa164", "algorithm": "pfn", "completed_runs": 53, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10052-target0", "completed_at_utc": "2026-11-08T13:02:39.845877+00:00"}
+{"status": "completed", "run_id": "ead67168e08e2c9d54673929", "algorithm": "pfn", "completed_runs": 54, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10053-target0", "completed_at_utc": "2026-11-08T13:02:43.905290+00:00"}
+{"status": "completed", "run_id": "97dfac5e7cb0c2a2d1709452", "algorithm": "pfn", "completed_runs": 55, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10054-target0", "completed_at_utc": "2026-11-08T13:02:47.900491+00:00"}
+{"status": "completed", "run_id": "bee2080bb84f9a6855a40f75", "algorithm": "pfn", "completed_runs": 56, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10055-target0", "completed_at_utc": "2026-11-08T13:02:51.973420+00:00"}
+{"status": "completed", "run_id": "87f474b3b0157412c46d861b", "algorithm": "pfn", "completed_runs": 57, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10056-target0", "completed_at_utc": "2026-11-08T13:02:55.942661+00:00"}
+{"status": "completed", "run_id": "ca6c3fe7965cdf91a83672b7", "algorithm": "pfn", "completed_runs": 58, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10057-target0", "completed_at_utc": "2026-11-08T13:03:00.000385+00:00"}
+{"status": "completed", "run_id": "61c37f56d26cd226cd581c69", "algorithm": "pfn", "completed_runs": 59, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10058-target0", "completed_at_utc": "2026-11-08T13:03:03.976321+00:00"}
+{"status": "completed", "run_id": "ecab1aa91ca4cb1b553d06e5", "algorithm": "pfn", "completed_runs": 60, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10059-target0", "completed_at_utc": "2026-11-08T13:03:08.111392+00:00"}
+{"status": "completed", "run_id": "0f1bbdd8af059e9fd3369767", "algorithm": "pfn", "completed_runs": 61, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10060-target0", "completed_at_utc": "2026-11-08T13:03:12.097353+00:00"}
+{"status": "completed", "run_id": "8e6aca92eed220bbeee5816b", "algorithm": "pfn", "completed_runs": 62, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10061-target0", "completed_at_utc": "2026-11-08T13:03:16.051872+00:00"}
+{"status": "completed", "run_id": "d19ed24ead3660f0efb13bbd", "algorithm": "pfn", "completed_runs": 63, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10062-target0", "completed_at_utc": "2026-11-08T13:03:20.158649+00:00"}
+{"status": "completed", "run_id": "64595cad45cd8a58e0cace26", "algorithm": "pfn", "completed_runs": 64, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10063-target0", "completed_at_utc": "2026-11-08T13:03:24.476037+00:00"}
+{"status": "completed", "run_id": "2a51e40f9865eab30e30bc0d", "algorithm": "pfn", "completed_runs": 65, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10064-target0", "completed_at_utc": "2026-11-08T13:03:28.454002+00:00"}
+{"status": "completed", "run_id": "904f7ae3318606f5ec5a3918", "algorithm": "pfn", "completed_runs": 66, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10065-target0", "completed_at_utc": "2026-11-08T13:03:32.419692+00:00"}
+{"status": "completed", "run_id": "04697b0f2c2f090929d7d0f0", "algorithm": "pfn", "completed_runs": 67, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10066-target0", "completed_at_utc": "2026-11-08T13:03:36.482092+00:00"}
+{"status": "completed", "run_id": "e4a724f8fc4516aee41b5353", "algorithm": "pfn", "completed_runs": 68, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10067-target0", "completed_at_utc": "2026-11-08T13:03:40.451275+00:00"}
+{"status": "completed", "run_id": "94f4d12b2dc56246d993df23", "algorithm": "pfn", "completed_runs": 69, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10068-target0", "completed_at_utc": "2026-11-08T13:03:44.428457+00:00"}
+{"status": "completed", "run_id": "d25d4c117def20dacb17268d", "algorithm": "pfn", "completed_runs": 70, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10069-target0", "completed_at_utc": "2026-11-08T13:03:48.411980+00:00"}
+{"status": "completed", "run_id": "9982ac6299384aaf3abfdfce", "algorithm": "pfn", "completed_runs": 71, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10070-target0", "completed_at_utc": "2026-11-08T13:03:52.521880+00:00"}
+{"status": "completed", "run_id": "9a214cf0ef8be27980c55974", "algorithm": "pfn", "completed_runs": 72, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10071-target0", "completed_at_utc": "2026-11-08T13:03:56.559694+00:00"}
+{"status": "completed", "run_id": "2196f909794316f59ce89723", "algorithm": "pfn", "completed_runs": 73, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10072-target0", "completed_at_utc": "2026-11-08T13:04:00.623186+00:00"}
+{"status": "completed", "run_id": "0b970e23cc0d5851031eb969", "algorithm": "pfn", "completed_runs": 74, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10073-target0", "completed_at_utc": "2026-11-08T13:04:04.629135+00:00"}
+{"status": "completed", "run_id": "285dd0c4dc0eb8fffa9463f5", "algorithm": "pfn", "completed_runs": 75, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10074-target0", "completed_at_utc": "2026-11-08T13:04:08.675595+00:00"}
+{"status": "completed", "run_id": "50d31aa1580cd794d3cbbf2b", "algorithm": "pfn", "completed_runs": 76, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10075-target0", "completed_at_utc": "2026-11-08T13:04:12.820727+00:00"}
+{"status": "completed", "run_id": "2586059f7c1dcd9d0455cf94", "algorithm": "pfn", "completed_runs": 77, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10076-target0", "completed_at_utc": "2026-11-08T13:04:16.886099+00:00"}
+{"status": "completed", "run_id": "e80e1a1309d243e6d46f5c77", "algorithm": "pfn", "completed_runs": 78, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10077-target0", "completed_at_utc": "2026-11-08T13:04:20.851963+00:00"}
+{"status": "completed", "run_id": "79d613893ad57a63112d0e88", "algorithm": "pfn", "completed_runs": 79, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10078-target0", "completed_at_utc": "2026-11-08T13:04:24.890274+00:00"}
+{"status": "completed", "run_id": "d64cb90e28418cad84af16f6", "algorithm": "pfn", "completed_runs": 80, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10079-target0", "completed_at_utc": "2026-11-08T13:04:28.903710+00:00"}
+{"status": "completed", "run_id": "c3458a07955b7adf8cffe0d4", "algorithm": "pfn", "completed_runs": 81, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10080-target0", "completed_at_utc": "2026-11-08T13:04:32.955432+00:00"}
+{"status": "completed", "run_id": "f36e613cbea10d46c648b4c7", "algorithm": "pfn", "completed_runs": 82, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10081-target0", "completed_at_utc": "2026-11-08T13:04:36.968011+00:00"}
+{"status": "completed", "run_id": "06142cbedf8b03a0a97648cc", "algorithm": "pfn", "completed_runs": 83, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10082-target0", "completed_at_utc": "2026-11-08T13:04:40.986570+00:00"}
+{"status": "completed", "run_id": "1a51e0871b0732e3e1e021df", "algorithm": "pfn", "completed_runs": 84, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10083-target0", "completed_at_utc": "2026-11-08T13:04:44.931193+00:00"}
+{"status": "completed", "run_id": "ea745da82512fd64f44e8b06", "algorithm": "pfn", "completed_runs": 85, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10084-target0", "completed_at_utc": "2026-11-08T13:04:48.896136+00:00"}
+{"status": "completed", "run_id": "f9dc670f7df5d71a96cc3e6c", "algorithm": "pfn", "completed_runs": 86, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10085-target0", "completed_at_utc": "2026-11-08T13:04:52.945222+00:00"}
+{"status": "completed", "run_id": "e649df34f9764a5f4e40bcb1", "algorithm": "pfn", "completed_runs": 87, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10086-target0", "completed_at_utc": "2026-11-08T13:04:56.924247+00:00"}
+{"status": "completed", "run_id": "22071f169f200a537ff8323b", "algorithm": "pfn", "completed_runs": 88, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10087-target0", "completed_at_utc": "2026-11-08T13:05:00.917965+00:00"}
+{"status": "completed", "run_id": "d16a1743538e579ce1a292ce", "algorithm": "pfn", "completed_runs": 89, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10088-target0", "completed_at_utc": "2026-11-08T13:05:04.942824+00:00"}
+{"status": "completed", "run_id": "d3f89746ba7a90958e3e3784", "algorithm": "pfn", "completed_runs": 90, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10089-target0", "completed_at_utc": "2026-11-08T13:05:08.969464+00:00"}
+{"status": "completed", "run_id": "28f256ffb526ca2263eb1be0", "algorithm": "pfn", "completed_runs": 91, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10090-target0", "completed_at_utc": "2026-11-08T13:05:12.930749+00:00"}
+{"status": "completed", "run_id": "87fcefd534205ae1fd278572", "algorithm": "pfn", "completed_runs": 92, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10091-target0", "completed_at_utc": "2026-11-08T13:05:16.914840+00:00"}
+{"status": "completed", "run_id": "85fc69af6836216234a714cd", "algorithm": "pfn", "completed_runs": 93, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10092-target0", "completed_at_utc": "2026-11-08T13:05:20.926064+00:00"}
+{"status": "completed", "run_id": "de7f40bae238c59acc29136f", "algorithm": "pfn", "completed_runs": 94, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10093-target0", "completed_at_utc": "2026-11-08T13:05:24.947251+00:00"}
+{"status": "completed", "run_id": "382ce87d7e60f700434b74fd", "algorithm": "pfn", "completed_runs": 95, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10094-target0", "completed_at_utc": "2026-11-08T13:05:28.971667+00:00"}
+{"status": "completed", "run_id": "31a44e6af2e6a14baba37c73", "algorithm": "pfn", "completed_runs": 96, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10095-target0", "completed_at_utc": "2026-11-08T13:05:32.938431+00:00"}
+{"status": "completed", "run_id": "c41051efe7a9ef4627b5cc0e", "algorithm": "pfn", "completed_runs": 97, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10096-target0", "completed_at_utc": "2026-11-08T13:05:36.981528+00:00"}
+{"status": "completed", "run_id": "4eda688594cec10737cf5a82", "algorithm": "pfn", "completed_runs": 98, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10097-target0", "completed_at_utc": "2026-11-08T13:05:40.980897+00:00"}
+{"status": "completed", "run_id": "fb93bd8ecfe88068973b7afd", "algorithm": "pfn", "completed_runs": 99, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10098-target0", "completed_at_utc": "2026-11-08T13:05:44.934298+00:00"}
+{"status": "completed", "run_id": "93450a521b15ef3266db0ee6", "algorithm": "pfn", "completed_runs": 100, "expected_runs": 100, "online_calls_in_this_run": 16, "task_id": "C2-full-authorseed-10099-target0", "completed_at_utc": "2026-11-08T13:05:48.933472+00:00"}
+{
+  "new_online_objective_calls": 1600,
+  "output_directory": "/home/sv/Code/MetaGameBO_review/results/phase4_4_full/c2_full100/5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6/pfn",
+  "skipped_completed_runs": 0,
+  "summary": {
+    "algorithm": "pfn",
+    "audit_replay": false,
+    "budget": 16,
+    "claim_scope": "exploratory_fullscale",
+    "cohort_id": "c2_full100_group_benchmark",
+    "completed_runs": 100,
+    "expected_runs": 100,
+    "exploratory_CVaR": {
+      "alpha": 0.8,
+      "estimator": "fractional_empirical_upper_tail",
+      "input": "final_normalized_regret",
+      "paper_equivalence": false,
+      "sampling_unit": "unique_target",
+      "value": 0.2646094712065138
+    },
+    "initial_design_sha256": "4226742e829da57933b6a614945b9fe7f26d845b8855201eb5db47efa61ad972",
+    "manifest_sha256": "6b616a283cf186adf812e17c121eb7ea02e07b81b1bd7d26c2636a2bd876a674",
+    "metrics": {
+      "final_best_raw_objective": {
+        "mean": -6.049660494984448,
+        "n": 100,
+        "sample_std": 4.642886368354638,
+        "standard_error": 0.46428863683546384
+      },
+      "final_normalized_regret": {
+        "mean": 0.07355262892796383,
+        "n": 100,
+        "sample_std": 0.11152024547466505,
+        "standard_error": 0.011152024547466504
+      },
+      "final_simple_regret": {
+        "mean": 2.5043090371473427,
+        "n": 100,
+        "sample_std": 3.8787761473579767,
+        "standard_error": 0.3878776147357977
+      }
+    },
+    "mode": "full",
+    "n_init": 2,
+    "online_objective_calls": 1600,
+    "paper_equivalence_status": "UNVERIFIED",
+    "protocol_id": "5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6",
+    "protocol_label": "group_fullscale_benchmark",
+    "references_sha256": "c51e2017a113780192ab37704104d2dc7e5bb0ac7586787d08bf6ce657599da5",
+    "runtime": {
+      "mean": 3.8200613994398736,
+      "n": 100,
+      "sample_std": 0.06446448622813773,
+      "standard_error": 0.006446448622813773
+    },
+    "sampling_unit": "unique_target_task_one_trial",
+    "status": "completed",
+    "table1_reproduction": false,
+    "unique_targets": 100
+  }
+}

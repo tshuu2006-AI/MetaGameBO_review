@@ -1,0 +1,207 @@
+{
+  "acquisition_events": [
+    {
+      "n_observed": 2,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.5642222222222218
+    },
+    {
+      "n_observed": 3,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.5774761904761904
+    },
+    {
+      "n_observed": 4,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.5712775590422651
+    },
+    {
+      "n_observed": 5,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6335064804021655
+    },
+    {
+      "n_observed": 6,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6589978745615254
+    },
+    {
+      "n_observed": 7,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6641212008460486
+    },
+    {
+      "n_observed": 8,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6263912337454396
+    },
+    {
+      "n_observed": 9,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6550138178688565
+    },
+    {
+      "n_observed": 10,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6868395061109226
+    },
+    {
+      "n_observed": 11,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6900542282500466
+    },
+    {
+      "n_observed": 12,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6703500159081766
+    },
+    {
+      "n_observed": 13,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6640133094328559
+    },
+    {
+      "n_observed": 14,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6373810856257468
+    },
+    {
+      "n_observed": 15,
+      "n_sampled": 5000,
+      "n_usable": 5000,
+      "selected_score": 0.6311846529207763
+    }
+  ],
+  "acquisition_seconds": 0.2520209159993101,
+  "classifier_seed": 3647661534,
+  "fallback_counts": {},
+  "fallback_events": [],
+  "fallback_reason": null,
+  "fit_count": 15,
+  "fit_events": [
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 2,
+      "n_positive": 1,
+      "n_training_rows": 3
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 3,
+      "n_positive": 1,
+      "n_training_rows": 4
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 4,
+      "n_positive": 1,
+      "n_training_rows": 5
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 5,
+      "n_positive": 2,
+      "n_training_rows": 7
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 6,
+      "n_positive": 2,
+      "n_training_rows": 8
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 7,
+      "n_positive": 2,
+      "n_training_rows": 9
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 8,
+      "n_positive": 3,
+      "n_training_rows": 11
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 9,
+      "n_positive": 3,
+      "n_training_rows": 12
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 10,
+      "n_positive": 3,
+      "n_training_rows": 13
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 11,
+      "n_positive": 4,
+      "n_training_rows": 15
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 12,
+      "n_positive": 4,
+      "n_training_rows": 16
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 13,
+      "n_positive": 4,
+      "n_training_rows": 17
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 14,
+      "n_positive": 5,
+      "n_training_rows": 19
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 15,
+      "n_positive": 5,
+      "n_training_rows": 20
+    },
+    {
+      "classifier_seed": 3647661534,
+      "n_observed": 16,
+      "n_positive": 5,
+      "n_training_rows": 21
+    }
+  ],
+  "fit_seconds": 3.4426544299785746,
+  "fit_skips": [
+    {
+      "n_observed": 1,
+      "reason": "insufficient_observations"
+    }
+  ],
+  "last_training_set_size": 21,
+  "method": "lfbo_ei_rf",
+  "model_options": {
+    "classifier": "rf",
+    "duplicate_atol": 1e-08,
+    "gamma": 0.3333333333333333,
+    "min_samples_split": 2,
+    "n_candidates": 5000,
+    "n_estimators": 300,
+    "n_jobs": 1,
+    "weight_type": "ei"
+  },
+  "optimizer_seed": 2272876132,
+  "trained": true
+}

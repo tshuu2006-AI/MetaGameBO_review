@@ -1,0 +1,32 @@
+{
+  "algorithm": "pfn",
+  "evaluation": {
+    "budget": 16,
+    "budget_mode": "total",
+    "cvar_alpha": 0.8,
+    "meta_train": false,
+    "n_init": 2,
+    "oracle_grid_size": 4097,
+    "oracle_xatol": 1e-12,
+    "regret_tolerance": 1e-08,
+    "seeds": [
+      0
+    ]
+  },
+  "mode": "full",
+  "model_options": {
+    "acquisition": "ei",
+    "candidate_batch_size": 64,
+    "candidate_strategy": "uniform",
+    "checkpoint": null,
+    "context_transform": "observed_standardize",
+    "cpu_threads": 2,
+    "device": "cpu",
+    "duplicate_atol": 1e-08,
+    "model_name": "hebo_plus",
+    "n_candidates": 256
+  },
+  "paper_equivalence_status": "UNVERIFIED",
+  "protocol_label": "group_fullscale_benchmark",
+  "table1_reproduction": false
+}

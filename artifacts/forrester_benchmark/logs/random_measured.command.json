@@ -1,0 +1,18 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "experiments.phase4_4_full_run",
+    "--full",
+    "--protocol",
+    "metadata/phase4_4_full/c2/FULL_PROTOCOL_LOCK.json",
+    "--algorithm",
+    "random"
+  ],
+  "completed_at_utc": "2026-11-08T12:52:27.278452+00:00",
+  "cwd": "/home/sv/Code/MetaGameBO_review",
+  "exit_code": 0,
+  "peak_rss_kib": 128212,
+  "started_at_utc": "2026-11-08T12:52:13.022068+00:00",
+  "wall_seconds": 14.256400031998055
+}

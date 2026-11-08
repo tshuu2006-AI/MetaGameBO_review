@@ -1,0 +1,62 @@
+{
+  "clean_checkout_without_private_phase_files": true,
+  "distinct_passed_tests": 250,
+  "historical_raw_files_copied_byte_identical": 1836,
+  "new_test_cases_included": 20,
+  "raw_audit": {
+    "actual_completed_runs": 300,
+    "actual_online_calls": 4800,
+    "actual_unique_targets": 100,
+    "checks": [
+      {
+        "completed_runs": 100,
+        "name": "random_raw_counts_formula_metrics_cache",
+        "online_calls": 1600,
+        "status": "PASS"
+      },
+      {
+        "completed_runs": 100,
+        "name": "lfbo_raw_counts_formula_metrics_cache",
+        "online_calls": 1600,
+        "status": "PASS"
+      },
+      {
+        "completed_runs": 100,
+        "name": "pfn_raw_counts_formula_metrics_cache",
+        "online_calls": 1600,
+        "status": "PASS"
+      },
+      {
+        "name": "exact_shared_tasks_initial_xy_references",
+        "status": "PASS",
+        "unique_targets": 100
+      }
+    ],
+    "mode": "full",
+    "protocol_id": "5ca7ade2c95861f2cd1d700471907f203aaa387a60e8ef36d644ff3b61e7b7f6",
+    "published_analysis": "PASS",
+    "separate_replay_online_calls": 0,
+    "status": "PASS",
+    "table1_reproduction": false
+  },
+  "replay_numeric_trajectories": {
+    "lfbo": "EXACT",
+    "pfn": "EXACT",
+    "random": "EXACT"
+  },
+  "status": "PASS",
+  "tests": {
+    "pfn_real": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 7
+    },
+    "standard": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 243
+    }
+  }
+}

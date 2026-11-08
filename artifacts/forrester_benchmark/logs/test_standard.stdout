@@ -1,0 +1,11 @@
+........................................................................ [ 29%]
+........................................................................ [ 59%]
+........................................................................ [ 88%]
+...........................                                              [100%]
+=============================== warnings summary ===============================
+tests/test_forrester_benchmark.py::test_fixed_author_dataset_and_shared_initialization
+  <unknown>:34: SyntaxWarning: invalid escape sequence '\s'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/sv/Code/MetaGameBO_review/output/phase4_4_full/publication_clean_standard.xml -
+243 passed, 7 deselected, 1 warning in 36.07s
