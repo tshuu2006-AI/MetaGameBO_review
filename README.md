@@ -2,6 +2,12 @@
 
 Phần thực nghiệm của **Phước** trong đồ án tổng quan MetaGameBO, môn Nhập môn Học máy: so sánh **Random Search, LFBO-EI và PFNs4BO pretrained** trên benchmark Forrester.
 
+## Poster báo cáo
+
+![Poster báo cáo thực nghiệm LFBO và PFN trên benchmark Forrester](assets/lfbo-pfn-forrester-poster.png)
+
+[Xem poster kích thước đầy đủ](assets/lfbo-pfn-forrester-poster.png).
+
 ## Dữ liệu và cấu hình
 
 Dùng 100 hàm Forrester 1D khác nhau, sinh bằng generator tác giả đã pin với seeds `10000..10099`. Mỗi thuật toán chạy một trial trên mỗi target, ngân sách **16 lần đánh giá** gồm **2 điểm khởi tạo chung + 14 bước tuần tự**. Tổng thực nghiệm chính: **300 runs / 4.800 objective calls**.
