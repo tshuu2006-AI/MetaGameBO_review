@@ -1,0 +1,15 @@
+{
+  "runs": 100,
+  "tasks": 12,
+  "folds": 12,
+  "samples_per_task": 512,
+  "steps": 50,
+  "initial_points": 5,
+  "candidates": 512,
+  "epochs": 80,
+  "cvar_alpha": 0.95,
+  "seed": 0,
+  "device": "cpu",
+  "output": "results/forrester",
+  "quick": false
+}
