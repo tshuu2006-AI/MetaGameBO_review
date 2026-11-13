@@ -1,0 +1,42 @@
+{
+  "repository": "https://github.com/Allen0497/MetaGameBO",
+  "commit": "489213ddcfbfe275a8b443c0d8b136ef6c36ad2c",
+  "files": {
+    "MetaGameBO.py": {
+      "original_sha256": "46bcebc77c79cab28b776e1eeb397bbb35d0b4014453054458e2dcb2d6e61725",
+      "vendored_sha256": "bd5bb58908e8aed907988294a6f07b42b97808ec2b147cd561c937ff0dd29131"
+    },
+    "utils.py": {
+      "original_sha256": "a4ee4b46e7942e65430a5d073fb4da2c6865dbf465f659afa9ed9722862c3b05",
+      "vendored_sha256": "a4ee4b46e7942e65430a5d073fb4da2c6865dbf465f659afa9ed9722862c3b05"
+    },
+    "meta_learning/meta_classifier.py": {
+      "original_sha256": "3542b54435d8ff5eeea80dfceddd14735bd49f3b70970a5667f2690dc2f13151",
+      "vendored_sha256": "b2ac9b27007bc927d3a77cedfd3c3c3126ab14c2e6e6382a0310823a08e5c762"
+    },
+    "meta_learning/meta_model.py": {
+      "original_sha256": "eb82b90998700699ab3acbcc7413bf100e86064aacbb49dbffdde526d2fb2bd0",
+      "vendored_sha256": "eb82b90998700699ab3acbcc7413bf100e86064aacbb49dbffdde526d2fb2bd0"
+    },
+    "meta_learning/loss.py": {
+      "original_sha256": "5e8e88ebfd3ff710562270a86e4954002d9692a0ccee45cb0cb6ac5c3b7f2e42",
+      "vendored_sha256": "5e8e88ebfd3ff710562270a86e4954002d9692a0ccee45cb0cb6ac5c3b7f2e42"
+    },
+    "meta_learning/trainer.py": {
+      "original_sha256": "66dea2185af7464cacea173d07ad41d7ceada9aab154a28987418cee46333b6d",
+      "vendored_sha256": "e2eba5e6caa2fe0ac7f47a1080c9c3219808168d10980fee1d73ece19f913c67"
+    },
+    "inference/laplace_approximation.py": {
+      "original_sha256": "f16d8d33d657429cbf4c72dc8c7dc6e1c6d39a189dfa16957783f8ef707ed901",
+      "vendored_sha256": "f16d8d33d657429cbf4c72dc8c7dc6e1c6d39a189dfa16957783f8ef707ed901"
+    },
+    "LICENSE": {
+      "original_sha256": "6f1e622c82a380075843bb084a7ec3b1f1d12a4a02526d75e78b0924a860aa75",
+      "vendored_sha256": "6f1e622c82a380075843bb084a7ec3b1f1d12a4a02526d75e78b0924a860aa75"
+    },
+    "3rd-party-licenses.txt": {
+      "original_sha256": "1465714dbd2c158d4243fd894b4de7d1bf460fcad0680f335dc3332769648869",
+      "vendored_sha256": "1465714dbd2c158d4243fd894b4de7d1bf460fcad0680f335dc3332769648869"
+    }
+  }
+}

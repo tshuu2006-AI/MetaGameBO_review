@@ -1,0 +1,3 @@
+method,split,regularization,objective_with_regularization
+MALIBO,train,0.018303978966077192,0.3498266294199229
+MALIBO,validation,0.018303978966077192,0.5910192696876977

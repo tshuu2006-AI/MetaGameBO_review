@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "checks": [
+    "MALIBO checkpoint independently reproduces train/validation macro/micro/CVaR BCE",
+    "PFN uses every task per epoch, variable contexts and separate finite NLL diagnostics",
+    "Every stored objective value and regret curve matches the target function and total budget",
+    "Saved MALIBO/PFN checkpoints replay exactly the stored BO proposals and regret curves",
+    "Vendored source hashes match the pinned provenance manifest"
+  ],
+  "python": "3.11.9",
+  "numpy": "2.4.6",
+  "torch": "2.15.0+cpu",
+  "sklearn": "1.9.1",
+  "author_commit": "489213ddcfbfe275a8b443c0d8b136ef6c36ad2c",
+  "configuration": {
+    "runs": 1,
+    "tasks": 200,
+    "samples_per_task": 32,
+    "epochs": 100,
+    "task_batch_size": 10,
+    "steps": 16,
+    "initial_points": 2,
+    "candidates": 512,
+    "task_alpha": 0.8,
+    "cvar_alpha": 0.8,
+    "seed": 44,
+    "threads": 1,
+    "device": "cpu",
+    "methods": [
+      "MALIBO",
+      "PFN"
+    ],
+    "output": "results/author_reply",
+    "quick": false
+  },
+  "code_sha256": {
+    "experiment.py": "a66e0fdbd371a67a352e835301612a5851da00d8c0b6b269d70163708eea7217",
+    "metrics.py": "3e82c64c4f97ea9d5eeab928058bf3f89930ad7311ced68585b0048b1aed2a0a",
+    "models/malibo.py": "53717928a3f5ff9be57ec204b3eb6342a0df4ba64dc7511cab8624fa50ae9e58",
+    "models/pfn.py": "6fa599a5ce3ec0efb8239a2ae25ee3ffca64362ee64b7718b020d22925e351c4",
+    "models/author_metrics.py": "6da5b5612e49a6b811c8e7036dcd6380a1099eae1ec26904bf9b9a01e2ddf41b",
+    "scripts/verify_results.py": "691b61f69ace98bacd740ddbdda61718a7e873273bb151303e5bfab98e680674"
+  },
+  "artifact_sha256": {
+    "MALIBO_checkpoint.pt": "3eecd1470cf62be7915dfdafb449a843881561819904ac98b9dbdb74c8b470af",
+    "PFN_checkpoint.pt": "9aca43b8b9459bd33eb5a7d6e205fba01a287360662d3bcc9b4b3cec827c041a",
+    "meta_dataset.npz": "56320aafe351ebfb81b45327e88dfaf08691e728f875b70a48f098393a2e526a",
+    "classifier_predictions.npz": "ed8597f4c5e8b06cfcb2e3a2d26b712bf277e0941b094199256364c407f2a929",
+    "curves.npz": "1d28a8b4d9c3078fd8a672ca611b89a68deb907c33014c754cba45d657e9aff7"
+  }
+}

@@ -2,3 +2,8 @@ numpy>=1.24
 torch>=2.1
 matplotlib>=3.7
 pytest>=7.4
+scipy>=1.14
+scikit-learn>=1.5
+tqdm>=4.66
+blackboxopt==5.0.4
+parameterspace==0.10.0

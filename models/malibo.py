@@ -1,76 +1,52 @@
-"""Executable MALIBO-style likelihood-free meta-BO agent."""
-from __future__ import annotations
-
+"""Adapter to the author's public MALIBO path (both game switches disabled)."""
 import numpy as np
+import parameterspace as ps
 import torch
-from torch.nn import functional as F
+from blackboxopt import Evaluation
 
-from benchmarks.base import BenchmarkTask
-from .components import (
-    MetaClassifier, ResidualStumpBoost, binary_good_labels, laplace_embedding,
-)
+from vendor.metagamebo_author.MetaGameBO import MetaGameBO
+from .numerics import seed_everything, require_finite
 
 
 class MALIBOAgent:
-    """Variational task embeddings plus Laplace/TS target adaptation."""
-
-    def __init__(self, bounds: np.ndarray, seed: int = 0, embedding_dim: int = 6,
-                 hidden_dim: int = 64, gamma: float = 0.25, beta: float = 1e-3,
-                 meta_epochs: int = 80, adaptation_steps: int = 60,
-                 device: str = "cpu"):
-        torch.manual_seed(seed)
+    def __init__(self, bounds, seed=44, meta_epochs=100, task_batch_size=10,
+                 device='cpu'):
+        seed_everything(seed)
         self.bounds, self.seed = np.asarray(bounds), seed
-        self.rng = np.random.default_rng(seed)
-        self.embedding_dim, self.gamma, self.beta = embedding_dim, gamma, beta
-        self.meta_epochs = meta_epochs
-        self.adaptation_steps, self.device = adaptation_steps, device
-        self.model = MetaClassifier(len(bounds), embedding_dim, hidden_dim).to(device)
+        self.meta_epochs, self.task_batch_size = meta_epochs, task_batch_size
+        space = ps.ParameterSpace()
+        for i, bound in enumerate(bounds):
+            space.add(ps.ContinuousParameter(name=f'x{i}', bounds=list(bound)))
+        self.optimizer = MetaGameBO(space, seed=seed, use_kdpp=False,
+                                   num_layers=5, num_features=50, num_hidden_units=64,
+                                   device=device)
+        self.training_diagnostics = []
         self._trained = False
 
-    def _task_loss(self, task: BenchmarkTask, mu: torch.Tensor,
-                   logvar: torch.Tensor) -> torch.Tensor:
-        X = torch.as_tensor(task.X, dtype=torch.float32, device=self.device)
-        labels = torch.as_tensor(binary_good_labels(task.y, self.gamma), device=self.device)
-        z = mu + torch.exp(0.5 * logvar) * torch.randn_like(mu)
-        bce = F.binary_cross_entropy_with_logits(self.model(X, z), labels)
-        # KL[q(z_tau)||N(0,I)] = .5 sum(mu^2+sigma^2-1-log sigma^2).
-        kl = 0.5 * torch.sum(mu.square() + logvar.exp() - 1.0 - logvar)
-        return bce + self.beta * kl / len(task.y)
+    @property
+    def model(self):
+        return self.optimizer.classifier.meta_model
 
-    def meta_train(self, tasks: list[BenchmarkTask]) -> None:
-        means = torch.nn.Parameter(torch.zeros(len(tasks), self.embedding_dim, device=self.device))
-        logvars = torch.nn.Parameter(torch.full_like(means, -2.0))
-        optimizer = torch.optim.Adam([*self.model.parameters(), means, logvars], lr=2e-3)
-        for _ in range(self.meta_epochs):
-            optimizer.zero_grad()
-            loss = torch.stack([
-                self._task_loss(task, means[i], logvars[i])
-                for i, task in enumerate(tasks)
-            ]).mean()
-            loss.backward()
-            optimizer.step()
+    def meta_train(self, tasks):
+        if not tasks:
+            raise ValueError('at least one source task required')
+        seed_everything(self.seed)
+        # Author task ids are 1-based; embedding 0 is reserved for target inference.
+        metadata = {i+1: [Evaluation(configuration={f'x{j}': float(x[j]) for j in range(len(x))},
+                                     objectives={'loss': float(y)})
+                          for x, y in zip(task.X, task.y)] for i, task in enumerate(tasks)}
+        self.optimizer.meta_fit(metadata, num_epochs=self.meta_epochs,
+                                batch_size=self.task_batch_size, use_dro=False,
+                                use_kdpp=False, seed=self.seed)
+        self.training_diagnostics = self.model.training_diagnostics
+        self.classifier_metrics = self.training_diagnostics[-1]
         self._trained = True
 
-    def suggest(self, X: np.ndarray, y: np.ndarray,
-                candidates: np.ndarray) -> np.ndarray:
+    def suggest(self, X, y, candidates):
         if not self._trained:
-            raise RuntimeError("Call meta_train before suggest")
-        z_map, covariance = laplace_embedding(
-            self.model, X, y, self.embedding_dim, self.gamma,
-            self.adaptation_steps, 0.04, 1e-3,
-        )
-        # Thompson sampling: z_tilde ~ N(z_MAP, Sigma_N).
-        distribution = torch.distributions.MultivariateNormal(
-            z_map, covariance_matrix=covariance
-        )
-        z_sample = distribution.sample()
-        xt = torch.as_tensor(X, dtype=torch.float32, device=self.device)
-        ct = torch.as_tensor(candidates, dtype=torch.float32, device=self.device)
-        with torch.no_grad():
-            train_logits = self.model(xt, z_sample).cpu().numpy()
-            candidate_logits = self.model(ct, z_sample).cpu().numpy()
-        labels = binary_good_labels(y, self.gamma)
-        probabilities = 1.0 / (1.0 + np.exp(-train_logits))
-        booster = ResidualStumpBoost().fit(X, labels - probabilities)
-        acquisition = candidate_logits + booster.predict(candidates)
-        return candidates[int(np.argmax(acquisition))]
+            raise RuntimeError('Call meta_train before suggest')
+        index = self.optimizer.observe_and_suggest(
+            np.asarray(X), np.asarray(y), X_pen=np.asarray(candidates),
+            seed=int(torch.randint(32767, ()).item()))
+        require_finite(candidates[index], 'MALIBO proposal')
+        return candidates[index]

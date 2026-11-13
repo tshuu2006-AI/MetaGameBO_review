@@ -1,0 +1,96 @@
+--- upstream/MetaGameBO.py
++++ vendor/MetaGameBO.py
+@@ -8,8 +8,8 @@
+ from sklearn.ensemble import GradientBoostingClassifier
+ from scipy.optimize import fsolve
+ 
+-from meta_learning.meta_classifier import MetaBLOR
+-from utils import manual_seed
++from .meta_learning.meta_classifier import MetaBLOR
++from .utils import manual_seed
+ 
+ class DiagonalKDPP:
+     """
+--- upstream/meta_learning/meta_classifier.py
++++ vendor/meta_learning/meta_classifier.py
+@@ -8,15 +8,15 @@
+ 
+ import numpy as np
+ import torch
+-from sklearn.base import BaseEstimator
+-
+-from inference.laplace_approximation import BLRLayer
+-from meta_learning.meta_model import TaskAgnosticModel
+-from meta_learning.trainer import train
+-from utils import configure_logger, metadata_to_training
+-
+-
+-class MetaBLOR(BaseEstimator):
++from sklearn.base import BaseEstimator, ClassifierMixin
++
++from ..inference.laplace_approximation import BLRLayer
++from .meta_model import TaskAgnosticModel
++from .trainer import train
++from ..utils import configure_logger, metadata_to_training
++
++
++class MetaBLOR(ClassifierMixin, BaseEstimator):
+     """
+     Meta-learning Bayesian Logistic Regression
+ 
+@@ -38,8 +38,9 @@
+         **model_config
+     ):
+         super().__init__()
+-        self.input_dim = input_dim,
++        self.input_dim = input_dim
+         self.output_dim = output_dim
++        self.classes_ = np.array([0., 1.])
+         self.model_config = model_config
+         self._init_kwargs = {
+             "input_dim": input_dim,
+--- upstream/meta_learning/trainer.py
++++ vendor/meta_learning/trainer.py
+@@ -6,7 +6,7 @@
+ from scipy.stats import gaussian_kde
+ import os
+ 
+-from meta_learning.loss import MetaLoss
++from .loss import MetaLoss
+ 
+ # Add KDE function for estimating VaRα
+ def estimate_var_alpha(losses, alpha=0.8):
+@@ -142,7 +142,8 @@
+         batch_size=len(validation_dataset),
+     )
+   
+-    model.initialize(task_ids[-1], device=device, dtype=dtype)
++    model.evaluation_data = {"train": train_dataset, "validation": validation_dataset}
++    model.initialize(task_ids.max(), device=device, dtype=dtype)
+     training_loop(
+         model,
+         train_dataloader,
+@@ -221,6 +222,9 @@
+         latent_dim=model.task_embedding_size
+     )
+     
++    model.metric_loss_fn = loss_fn
++    model.training_diagnostics = []
++
+     # Get batch_size for filename
+     batch_size = train_dataloader.batch_size
+     
+@@ -431,6 +435,13 @@
+             num_val_tasks = max(1, int(len(validation_losses) * (1 - alpha)))
+             val_cvar = np.mean(sorted(validation_losses, reverse=True)[:num_val_tasks])
+             
++            # Audit complete tasks in eval mode: no embedding noise or batch fragments.
++            from models.author_metrics import evaluate_classifier
++            audited = {split: evaluate_classifier(model, dataset, loss_fn, alpha)
++                       for split, dataset in model.evaluation_data.items()}
++            train_cvar = audited['train']['cvar_bce']
++            val_cvar = audited['validation']['cvar_bce']
++            model.training_diagnostics.append({'epoch': epoch + 1, **audited})
+             scheduler.step()
+ 
+             # Record results every 5 epochs

@@ -1,6 +1,0 @@
-__pycache__/
-.pytest_cache/
-*.py[cod]
-results/forrester/
-third_party/*
-!third_party/.gitkeep
