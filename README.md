@@ -1,57 +1,65 @@
 # MetaGameBO_review
 
+Reproduction of *MetaGameBO* (hierarchical game-theoretic meta-learning for BO):
+the authors' code and a re-implementation, compared with the paper's baselines on
+Forrester (Table 1) and HPOBench / NAS-Bench-201 / HPO-B (Figure 3).
+
 ## Project layout
 
 ```
-models/        Optimizers compared in the experiments (one per file)
-  random_search.py, gp_ei.py, lfbo.py
-  meta_classifier_bo.py   MALIBO / MetaGameBO re-implementation (chosen by MetaTrainConfig)
-  metagamebo_upstream.py  upstream MetaGameBO code (needs MetaGameBO/ on sys.path)
-components/    Building blocks used by the models
-  base.py        BaseOptimizer, History, Task
-  weighting.py   Eq. (3) labels / utility weights
-  risk.py        cvar, kde_quantile
-  kdpp.py        exact k-DPP + upstream approximate DiagonalKDPP
-  meta_net.py    MetaNet and embedding regulariser
-  meta_training.py  MetaTrainConfig, meta_train (Algorithm 1, optional snapshot callback)
-  adapters.py    BLRAdapter (Laplace posterior), ThompsonInit
-  acquisition.py, upstream.py
-visualizer/    Plots: data, training process, model distributions, BO results
-dashboard/     Web UI (stdlib only) + RunTracker for live training progress
-benchmarks/    Forrester task family
-experiments/   Run / analyse / visualise scripts
+models/                     one sub-package per optimizer, with its own components
+  base.py                   BaseOptimizer (box or discrete pool), History, Task, cvar
+  random_search/            Random search
+  gp/                       GP + Expected Improvement
+  lfbo/                     LFBO + weighting.py (Eq. 3 labels/weights, shared by MALIBO/MetaGameBO)
+  pfn/                      PFNs4BO wrapper; PFNs4BO/ = authors' code + pre-trained weights
+  ablr/                     ABLR (meta-learned features + Bayesian linear regression)
+  rgpe/                     RGPE (ranking-weighted GP ensemble)
+  malibo/                   meta_net.py, training.py (meta-training loop), adapters.py, model.py
+  metagamebo_remake/        game.py (CVaR leader, k-DPP follower), kdpp.py, model.py
+  metagamebo_original/      model.py (wrapper); author/ = github.com/Allen0497/MetaGameBO, unchanged
+benchmarks/                 forrester.py, hpobench.py (FCNet), nasbench201.py, hpob.py, common.py
+  data/                     downloaded data (not in git, see below)
+experiments/                analyze_<dataset>.py + common.py (parallel runner, tables, plots)
+visualizer/                 plotting style and extra figures (data, training, distributions)
+results/                    <dataset>_benchmark.md, <dataset>_plot.png, raw/ (per-job JSON cache)
 ```
 
-### Metrics (as clarified by the paper's authors)
+`models.build(name, bounds, seed)` creates any method by its display name
+(`models.METHODS`). MetaBO is not included.
 
-Paper Table 1 reports a **classifier loss**, not BO regret. Per meta task,
-`task_loss = sum_i w_i * BCE(p_i, z_i) / n_task` (Eq. 3 weights), measured on a
-random 20% of the pooled meta-training samples held out from training (split by
-sample, so the tasks are the same as in training). `CVaR = mean of the
-k = max(1, int(n_tasks * (1 - alpha)))` largest task losses, alpha = 0.8
-(upstream `meta_learning/trainer.py`, lines 412-432). It can exceed 1. Here it is
-`paper_val_cvar` in the results JSON (`MetaTrainConfig.val_frac = 0.2`). BO
-quality is reported separately as normalised regret on new target tasks. Upstream
-defaults: 200 tasks x 32 samples, 100 epochs, batch 10, seed 44, 16 BO steps on
-one target task. The original experiment records are not available.
-
-Figures: `python -m experiments.visualize_forrester --iters 300 --out results_remake/figures`
-
-### Dashboard
+## Running
 
 ```
-python -m dashboard.server            # open http://127.0.0.1:8765
+python -m experiments.analyze_forrester        # Table 1   -> results/forrester_*
+python -m experiments.analyze_hpobench         # Figure 3  -> results/hpobench_*
+python -m experiments.analyze_nasbench201      #           -> results/nasbench201_*
+python -m experiments.analyze_hpob             #           -> results/hpob_*
 ```
 
-Tabs: project overview (packages, modules, classes), results tables and regret
-curves, figure gallery, and live training. Runs started from the "Huấn luyện
-trực tiếp" tab, or from the terminal with `--track`, stream their progress
-(per-task loss, CVaR, selected tasks, embeddings, k-DPP weights, BO regret):
+Every job is cached in `results/raw/<dataset>/`; an interrupted run resumes, and
+`--report-only` rebuilds the table and figure. Useful options: `--seeds`,
+`--methods`, `--groups` (subset of targets / search spaces), `--budget`, `--workers`.
 
-```
-python -m experiments.run_forrester_remake --methods MALIBO MetaGameBO --seeds 0 \
-    --iters 300 --track --out runs/my_results.json
-```
+## Metrics
 
-In your own code: `tracker = RunTracker("name")`, then
-`meta_train(tasks, cfg, callback=tracker)`, `tracker.bo(...)`, `tracker.finish()`.
+**Forrester (Table 1)** reports a classifier loss, as the authors confirmed: per
+meta task `task_loss = sum_i w_i BCE(p_i, z_i) / n` on a random 20% of the pooled
+reweighted meta-training samples (split by sample), `Average = mean over tasks`,
+`CVaR = mean of the max(1, int(M (1 - 0.8)))` largest task losses (author
+`meta_learning/trainer.py`, lines 412-432). It is not a regret and can exceed 1.
+Methods without meta-training (Random, GP, LFBO, PFN) are fitted per task on the
+task's training points and evaluated with their probability `P(f(x) < tau)`.
+Setting: 200 tasks x 32 points, 100 epochs, batch 10 (author `run_forrester.py`).
+
+**AutoML benchmarks (Figure 3)** report normalised simple regret over 500 steps
+(mean ± s.e. over target tasks x seeds), plus CVaR0.8 of the final regret.
+
+## Data
+
+`benchmarks/data/` (≈ 4.3 GB):
+- `fcnet/`, `nasbench201/`: Syne Tune blackbox repository
+  (huggingface.co/datasets/synetune/blackbox-repository); the original HPOBench /
+  NAS-Bench-201 download links are dead.
+- `hpob-data/`, `saved-surrogates/`: github.com/sebastianpinedaar/hpo-data
+  (HPO-B v3); `hpob_cache/` is built by `benchmarks.hpob.prepare()`.

@@ -1,188 +1,112 @@
-# Copyright (c) 2024 Robert Bosch GmbH
-# SPDX-License-Identifier: AGPL-3.0
-"""Forrester benchmark from the upstream MetaGameBO / MALIBO code (scalar version)."""
+"""Vectorised Forrester task family, identical to the upstream benchmark.
 
-import math
-import copy
+    f(x) = a (6x-2)^2 sin(12x-4) + b (x-0.5) - c,  x in [0, 1]
+
+with a ~ U[0.2, 3], b ~ U[-5, 15], c ~ U[-5, 5] (upstream `Forrester` descriptors).
+
+Attributes:
+    BOUNDS: Search box, shape (1, 2).
+    IN_DIST: Parameter ranges of the upstream task distribution.
+    SHIFTED: Shifted ranges (larger b) for out-of-distribution targets;
+        added in this remake, not part of the paper.
+"""
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional, Dict, Union, Any, List
 
 import numpy as np
-import parameterspace as ps
-from blackboxopt import Evaluation, EvaluationSpecification
+
+from models.base import Task
+
+BOUNDS = np.array([[0.0, 1.0]])
+IN_DIST = {"a": (0.2, 3.0), "b": (-5.0, 15.0), "c": (-5.0, 5.0)}
+# Distribution shift: much stronger linear trend -> global optimum often moves
+# to the left basin (x ~ 0.14), which meta-training tasks rarely show.
+SHIFTED = {"a": (0.2, 3.0), "b": (15.0, 30.0), "c": (-5.0, 5.0)} # Nhóm thêm vào để đánh giá khi task đích lệch phân phối
+_GRID = np.linspace(0.0, 1.0, 2001)
 
 
-@dataclass(frozen=True)
-class Task:
-    """A Forrester task identified by its parameters.
-
-    Attributes:
-        uid: Unique task identifier (0 is the target task).
-        descriptors: Function parameters ``{"a": ..., "b": ..., "c": ...}``.
-    """
-    uid: Union[str, int]
-    descriptors: Dict[str, Any]
-
-
-def forrester_function(x: float, a: float, b: float, c: float) -> float:
-    """One-dimensional Forrester function.
-
-    ``f(x) = a (6x - 2)^2 sin(12x - 4) + b (x - 0.5) - c``; multimodal, with one
-    global minimum, one local minimum and a zero-gradient inflection point.
+def forrester(x: np.ndarray, a: float, b: float, c: float) -> np.ndarray:
+    """Evaluate the Forrester function.
 
     Args:
-        x: Input in [0, 1].
+        x: Inputs in [0, 1], any shape (flattened).
         a: Amplitude of the high-fidelity term.
         b: Slope of the linear term.
         c: Constant offset.
 
     Returns:
-        Function value at ``x``.
+        Values, shape (n,).
     """
-    y_high = math.pow(6 * x - 2, 2) * math.sin(12 * x - 4)
-    y = a * y_high + b * (x - 0.5) - c
-    return y
+    x = np.asarray(x, dtype=float).reshape(-1)
+    return a * (6 * x - 2) ** 2 * np.sin(12 * x - 4) + b * (x - 0.5) - c
 
 
-class Forrester:
-    """Forrester benchmark: one target task plus meta tasks with random parameters.
+@dataclass
+class ForresterTask:
+    """One Forrester task with fixed parameters; callable as the objective.
 
-    Parameters are drawn uniformly from a in [0.2, 3], b in [-5, 15], c in [-5, 5].
+    Attributes:
+        a: Amplitude of the high-fidelity term.
+        b: Slope of the linear term.
+        c: Constant offset.
+    """
+    a: float
+    b: float
+    c: float
+
+    def __call__(self, X: np.ndarray) -> np.ndarray:
+        """Evaluate the task at ``X`` (shape (n, 1)); returns shape (n,)."""
+        return forrester(X, self.a, self.b, self.c)
+
+    @property
+    def f_range(self) -> tuple[float, float]:
+        """Return ``(f_min, f_max)`` on a 2001-point grid over [0, 1]."""
+        f = self(_GRID)
+        return float(f.min()), float(f.max())
+
+    def normalized_regret(self, y_seen: np.ndarray) -> np.ndarray:
+        """Normalised regret curve (MALIBO protocol).
+
+        Args:
+            y_seen: Observed values in evaluation order, shape (n,).
+
+        Returns:
+            Running min of ``(y - f_min) / (f_max - f_min)``, shape (n,), in [0, 1].
+        """
+        lo, hi = self.f_range
+        return (np.minimum.accumulate(np.asarray(y_seen)) - lo) / (hi - lo)
+
+
+def sample_tasks(n: int, seed: int, ranges: dict = IN_DIST) -> list[ForresterTask]:
+    """Sample tasks with parameters drawn uniformly from ``ranges``.
 
     Args:
-        n_data_per_task: Number of meta-data points per meta task; its length
-            sets the number of meta tasks.
-        seed: Seed for task parameters and meta-data sampling.
+        n: Number of tasks.
+        seed: Random seed.
+        ranges: Dict mapping ``"a"``, ``"b"``, ``"c"`` to ``(low, high)``.
+
+    Returns:
+        List of ``n`` tasks.
     """
-
-    def __init__(
-        self, n_data_per_task=[4] * 128, seed: Optional[int] = None
-    ):
-        self.seed = seed
-        self._n_data_per_task = n_data_per_task
-
-        descriptors = ps.ParameterSpace()
-        descriptors.add(ps.ContinuousParameter(name="a", bounds=[0.2, 3]))
-        descriptors.add(ps.ContinuousParameter(name="b", bounds=[-5, 15]))
-        descriptors.add(ps.ContinuousParameter(name="c", bounds=[-5, 5]))
-
-        self._search_space = ps.ParameterSpace()
-        self._search_space.add(ps.ContinuousParameter(name="x", bounds=[0, 1]))
-
-        self._target_task, self._meta_tasks = self.create_tasks(
-            descriptors, len(n_data_per_task), seed
-        )
-
-    @property
-    def target_task(self) -> Task:
-        """The target task (uid 0)."""
-        return self._target_task
-
-    @property
-    def meta_tasks(self) -> Dict[int, Task]:
-        """Meta tasks keyed by uid 1..N."""
-        return self._meta_tasks
-
-    @property
-    def n_data_per_task(self) -> List:
-        """Number of meta-data points per meta task."""
-        return self._n_data_per_task
-
-    @property
-    def search_space(self) -> ps.ParameterSpace:
-        """Search space with a single parameter ``x`` in [0, 1]."""
-        return self._search_space
-
-    @staticmethod
-    def create_random_task(
-        uid,
-        descriptors: ps.ParameterSpace,
-        seed: Optional[int] = None,
-    ):
-        """Create a task with random parameters.
-
-        Args:
-            uid: Task identifier.
-            descriptors: Parameter space of ``a``, ``b``, ``c``.
-            seed: Seed or generator for sampling.
-
-        Returns:
-            The new task.
-        """
-        prng = np.random.default_rng(seed)
-        return Task(uid, descriptors.sample(rng=prng))
-
-    @staticmethod
-    def create_tasks(
-        descriptors,
-        num_meta_tasks,
-        seed: Optional[int] = None,
-    ):
-        """Create the target task and the meta tasks.
-
-        Args:
-            descriptors: Parameter space of ``a``, ``b``, ``c``.
-            num_meta_tasks: Number of meta tasks.
-            seed: Random seed.
-
-        Returns:
-            Tuple ``(target_task, meta_tasks)``, with meta tasks keyed by uid 1..N.
-        """
-        prng = np.random.default_rng(seed)
-        target_task = Forrester.create_random_task(0, descriptors, prng)
-        meta_tasks = {
-            uid: Forrester.create_random_task(uid, descriptors, prng)
-            for uid in range(1, num_meta_tasks + 1)
-        }
-        return target_task, meta_tasks
-
-    def __call__(
-        self,
-        eval_spec: EvaluationSpecification,
-        task_uid: Optional[int] = None,
-    ) -> Evaluation:
-        """Evaluate a configuration on one task.
-
-        Args:
-            eval_spec: Specification holding the configuration ``{"x": ...}``.
-            task_uid: Meta task to evaluate; ``None`` means the target task.
-
-        Returns:
-            Evaluation with objective ``"loss"`` and ``task_uid`` in ``user_info``.
-        """
-        task = self.target_task if task_uid is None else self.meta_tasks[task_uid]
-
-        config = eval_spec.configuration
-        objective_values = forrester_function(**config, **task.descriptors)
-
-        return eval_spec.create_evaluation(
-            objectives={"loss": objective_values},
-            user_info={"task_uid": task_uid}
-        )
-
-    def get_meta_data(
-        self, seed: Optional[int] = None
-    ):
-        """Sample meta-data: uniform random evaluations on every meta task.
-
-        Args:
-            seed: Sampling seed; defaults to the benchmark seed.
-
-        Returns:
-            Dict mapping each meta-task uid to its list of evaluations.
-        """
-        seed = copy.copy(self.seed) if seed is None else seed
-        prng = np.random.default_rng(seed)
+    rng = np.random.default_rng(seed)
+    return [ForresterTask(*(rng.uniform(*ranges[k]) for k in "abc")) for _ in range(n)]
 
 
-        meta_data: Dict[Union[str, int], List[Evaluation]] = dict()
+def make_meta_tasks(n_tasks: int = 200, n_per_task: int = 32, seed: int = 0) -> list[Task]:
+    """Build meta-training data from in-distribution tasks.
 
-        for (uid, task), n_data in zip(self.meta_tasks.items(), self.n_data_per_task):
-            meta_data[uid] = []
-            for _ in range(n_data):
-                config = self.search_space.sample(rng=prng)
-                eval_spec = EvaluationSpecification(configuration=config)
-                evaluation = self.__call__(eval_spec, task_uid=uid)
-                meta_data[uid].append(evaluation)
+    Args:
+        n_tasks: Number of meta tasks.
+        n_per_task: Uniform random evaluations per task.
+        seed: Seed for the task parameters (inputs use ``seed + 10000``).
 
-        return meta_data
+    Returns:
+        List of ``Task`` with ``X`` of shape (n_per_task, 1) and ``y`` of shape (n_per_task,).
+    """
+    rng = np.random.default_rng(seed + 10_000)
+    out = []
+    for t in sample_tasks(n_tasks, seed):
+        X = rng.random((n_per_task, 1))
+        out.append(Task(objective=t, X=X, y=t(X)))
+    return out
