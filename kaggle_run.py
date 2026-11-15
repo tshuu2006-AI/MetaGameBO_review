@@ -15,7 +15,7 @@ Steps (each skipped when already done):
 
 Kaggle notebook (Settings: Internet on; GPU optional, used by PFN):
 
-    !git clone -b metagameBO_experiments https://github.com/tshuu2006-AI/MetaGameBO_review.git /tmp/repo
+    !rm -rf /tmp/repo && git clone -b metagameBO_experiments https://github.com/tshuu2006-AI/MetaGameBO_review.git /tmp/repo
     !cd /tmp/repo && python kaggle_run.py --benchmarks nasbench201 hpob --hours 11
 
 Resume in a later session: add the previous notebook's output as an input and pass
@@ -47,7 +47,9 @@ SYNETUNE_FILES = ["configspace.json", "fidelities_values.npy", "fidelityspace.js
 AUTHOR_REPO = "https://github.com/Allen0497/MetaGameBO.git"
 PFN_REPO = "https://github.com/automl/PFNs4BO.git"
 PFN_WEIGHTS = ["model_hebo_morebudget_9_unused_features_3.pt"]  # the model used by models/pfn
-PIP = ["parameterspace==0.10.0", "blackboxopt==5.0.4", "pyarrow"]
+# the author pinned blackboxopt==5.0.4, which needs Python < 3.12 (Kaggle has 3.13);
+# the author code also runs with blackboxopt 5.3.8 / parameterspace 0.10.2
+PIP = ["parameterspace>=0.10.0", "blackboxopt>=5.0.4", "pyarrow"]
 
 
 def log(msg: str) -> None:
@@ -71,7 +73,7 @@ def download(url: str, dest: Path) -> None:
 def install_packages() -> None:
     missing = []
     for spec in PIP:
-        mod = spec.split("==")[0]
+        mod = spec.split("=")[0].split(">")[0].split("<")[0]
         try:
             __import__(mod)
         except ImportError:
