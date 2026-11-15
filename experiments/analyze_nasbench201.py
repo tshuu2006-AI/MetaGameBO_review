@@ -12,12 +12,12 @@ from benchmarks import nasbench201
 from experiments.common import bench_main
 
 
-def group(key, seed):
-    return [nasbench201.problems(seed)[key]]
+def group(key, seed, noisy=False):
+    return [nasbench201.problems(seed, noisy=noisy)[key]]
 
 
 NOTES = ("Setting: leave-one-task-out over cifar10, cifar100, ImageNet16-120; 512 meta cells per "
          "source task; cells encoded as 6 operation indices (PFN accepts at most 18 inputs).")
 
 if __name__ == "__main__":
-    bench_main("nasbench201", "NASBench201", list(range(len(nasbench201.TASKS))), group, NOTES)
+    bench_main("nasbench201", "NASBench201", list(range(len(nasbench201.TASKS))), group, NOTES, noisy_ok=True)

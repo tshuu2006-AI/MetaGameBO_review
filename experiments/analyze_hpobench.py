@@ -15,8 +15,8 @@ from benchmarks import hpobench
 from experiments.common import bench_main
 
 
-def group(key, seed):
-    return [hpobench.problems(seed)[key]]
+def group(key, seed, noisy=False):
+    return [hpobench.problems(seed, noisy=noisy)[key]]
 
 
 NOTES = ("Setting: leave-one-task-out over protein, naval, parkinsons, slice; 512 meta points per "
@@ -24,4 +24,4 @@ NOTES = ("Setting: leave-one-task-out over protein, naval, parkinsons, slice; 51
          "make the max very large, hence the tiny regrets, as in the paper's figure).")
 
 if __name__ == "__main__":
-    bench_main("hpobench", "HPOBench", list(range(len(hpobench.TASKS))), group, NOTES)
+    bench_main("hpobench", "HPOBench", list(range(len(hpobench.TASKS))), group, NOTES, noisy_ok=True)

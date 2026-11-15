@@ -45,7 +45,17 @@ def load(cache: Path = DATA / "compact.npz"):
     return X, Y
 
 
-def problems(seed: int, n_meta: int = 512) -> List[Problem]:
-    """Leave-one-task-out problems for one seed."""
+def load_seeds(cache: Path = DATA / "compact_seeds.npz") -> np.ndarray:
+    """Final validation objective per training seed, shape (tasks, seeds, n)."""
+    if cache.exists():
+        return np.load(cache)["Ys"]
+    ev = np.load(DATA / "objectives_evaluations.npy", mmap_mode="r")
+    Ys = np.asarray(ev[:, :, :, -1, 0], dtype=float).transpose(0, 2, 1)
+    np.savez(cache, Ys=Ys)
+    return Ys
+
+
+def problems(seed: int, n_meta: int = 512, noisy: bool = False) -> List[Problem]:
+    """Leave-one-task-out problems for one seed (``noisy``: observe one random training seed)."""
     X, Y = load()
-    return leave_one_task_out("hpobench", X, Y, TASKS, n_meta, seed)
+    return leave_one_task_out("hpobench", X, Y, TASKS, n_meta, seed, load_seeds() if noisy else None)

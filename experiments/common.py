@@ -243,34 +243,68 @@ def plot_training(axes, results: List[dict], methods: Sequence[str]) -> None:
             ax.set_visible(False)
 
 
-def plot_benchmark(results: List[dict], methods: Sequence[str], budget: int, title: str, path: Path) -> None:
-    """``<dataset>_plot.png``: regret curves (log scale, mean ± s.e.) + meta-training curves."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+def regret_floor(results: List[dict], methods: Sequence[str], budget: int) -> float:
+    """Where regret 0 (optimum found) is drawn on the log axis: half the smallest positive regret."""
+    pos = [R[R > 0].min() for m in methods for R in [regret_matrix(results, m, budget)] if np.any(R > 0)]
+    return 0.5 * min(pos) if pos else 1e-5
+
+
+def _regret_stat(R: np.ndarray, stat: str, floor: float):
+    """Centre and band of regret curves R (runs, steps): mean ± s.e., median + IQR, or geometric mean ± s.e."""
+    if stat == "mean":
+        mu, se = mean_se(R)
+        return mu, mu - se, mu + se
+    if stat == "median":
+        return np.median(R, 0), np.quantile(R, 0.25, 0), np.quantile(R, 0.75, 0)
+    L = np.log10(np.maximum(R, floor))  # "geomean": mean of log10 regret
+    mu, se = mean_se(L)
+    return 10 ** mu, 10 ** (mu - se), 10 ** (mu + se)
+
+
+def _regret_panel(ax, results, methods, budget, title, floor, stat="mean", legend=True) -> None:
     from visualizer.style import method_style
-    fig, axes = plt.subplots(1, 4, figsize=(20, 4.4))
-    ax = axes[0]
     x = np.arange(1, budget + 1)
     for m in methods:
         R = regret_matrix(results, m, budget)
         if len(R) == 0:
             continue
-        mu, se = mean_se(R)
+        mu, lo, hi = (np.maximum(v, floor) for v in _regret_stat(R, stat, floor))
         st = method_style(m)
-        lo = np.maximum(mu - se, mu[mu > 0].min() * 0.5 if np.any(mu > 0) else 1e-12)
-        ax.plot(x, mu, label=m, color=st["color"], ls=st["ls"], lw=st.get("lw", 1.8))
-        ax.fill_between(x, lo, mu + se, color=st["color"], alpha=0.15, lw=0)
+        ax.plot(x, mu, label=f"{m} ({len(R)})", color=st["color"], ls=st["ls"], lw=st.get("lw", 1.8))
+        ax.fill_between(x, lo, hi, color=st["color"], alpha=0.12, lw=0)
     ax.set_yscale("log")
+    ax.set_ylim(bottom=floor * 0.7)
+    ax.axhline(floor, color="0.6", lw=0.8, ls=":")
     ax.set_xlabel("Steps")
     ax.set_ylabel("Normalized regret (log)")
     ax.set_title(title, fontweight="bold")
     ax.grid(alpha=0.3, which="both")
-    ax.legend(fontsize=7, ncol=2)
+    if legend:
+        ax.legend(fontsize=7, ncol=2, title="method (runs)", title_fontsize=7)
+
+
+def plot_benchmark(results: List[dict], methods: Sequence[str], budget: int, title: str, path: Path) -> None:
+    """``<dataset>_plot.png``: regret curves (mean ± s.e., zero regret drawn at ``regret_floor``)
+    + meta-training curves; ``<dataset>_plot_variants.png``: mean / median / geometric mean."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    floor = regret_floor(results, methods, budget)
+    fig, axes = plt.subplots(1, 4, figsize=(20, 4.4))
+    _regret_panel(axes[0], results, methods, budget, title, floor, "mean")
     plot_training(axes[1:], results, [m for m in methods if m in TRAINED])
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 4.8), sharey=True)
+    for ax, (stat, name) in zip(axes, [("mean", "mean ± s.e."), ("median", "median, IQR band"),
+                                       ("geomean", "geometric mean ± s.e.")]):
+        _regret_panel(ax, results, methods, budget, f"{title}: {name}", floor, stat, legend=ax is axes[0])
+    fig.suptitle(f"dotted line = regret 0 (optimum found), drawn at {floor:.2g}", fontsize=9)
+    fig.tight_layout()
+    fig.savefig(path.with_name(path.stem + "_variants.png"), dpi=150)
     plt.close(fig)
 
 
@@ -282,7 +316,7 @@ BENCH_KWARGS = {"MALIBO": dict(iters=2000), "MetaGameBO (remake)": dict(iters=20
 
 
 def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, notes: str,
-               default_seeds: int = 5, budget: int = 500) -> None:
+               default_seeds: int = 5, budget: int = 500, noisy_ok: bool = False) -> None:
     """Command line of ``analyze_<dataset>.py``: run jobs, write the table and the figure."""
     import argparse
     ap = argparse.ArgumentParser(description=f"{title} benchmark")
@@ -294,7 +328,17 @@ def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, n
     ap.add_argument("--gpu-workers", type=int, default=2)
     ap.add_argument("--rerun", action="store_true")
     ap.add_argument("--report-only", action="store_true", help="only rebuild table/plot from the cache")
+    if noisy_ok:
+        ap.add_argument("--noisy", action="store_true",
+                        help="observe one random training seed per evaluation; regret of the incumbent's "
+                             "mean value (results under <dataset>_noisy)")
     a = ap.parse_args()
+    if getattr(a, "noisy", False):
+        import functools
+        dataset, title = f"{dataset}_noisy", f"{title} (noisy)"
+        group_fn = functools.partial(group_fn, noisy=True)
+        notes += (" Noisy protocol: each evaluation returns the validation error of one random training "
+                  "seed; regret = mean-over-seeds error of the incumbent (best observed point).")
     groups = [g for g in groups if a.groups is None or str(g) in a.groups]
     if not a.report_only:
         run_jobs(dataset, a.methods, groups, range(a.seeds), group_fn, a.budget, workers=a.workers,

@@ -15,12 +15,13 @@ Steps (each skipped when already done):
 
 Kaggle notebook (Settings: Internet on; GPU optional, used by PFN):
 
-    !rm -rf /tmp/repo && git clone -b metagameBO_experiments https://github.com/tshuu2006-AI/MetaGameBO_review.git /tmp/repo
+    !rm -rf /tmp/repo && git clone -b kaggle https://github.com/tshuu2006-AI/MetaGameBO_review.git /tmp/repo
     !cd /tmp/repo && python kaggle_run.py --benchmarks nasbench201 hpob --hours 11
 
 Resume in a later session: add the previous notebook's output as an input and pass
 ``--resume /kaggle/input/<name>/results``; finished jobs are not run again.
-Anything after ``--`` is passed to every analyze script, e.g. ``-- --seeds 3``.
+Anything after ``--`` is passed to every analyze script, e.g. ``-- --seeds 20``.
+``--noisy`` runs hpobench/nasbench201 with noisy observations (results ``<benchmark>_noisy``).
 """
 from __future__ import annotations
 
@@ -136,9 +137,9 @@ def fetch_data(benchmarks) -> None:
     # compact caches (built once, small)
     code = []
     if "hpobench" in benchmarks:
-        code.append("from benchmarks import hpobench; hpobench.load()")
+        code.append("from benchmarks import hpobench; hpobench.load(); hpobench.load_seeds()")
     if "nasbench201" in benchmarks:
-        code.append("from benchmarks import nasbench201; nasbench201.load()")
+        code.append("from benchmarks import nasbench201; nasbench201.load(); nasbench201.load_seeds()")
     if "hpob" in benchmarks:
         code.append("from benchmarks import hpob\n"
                     "if not hpob.CACHE.exists() or not any(hpob.CACHE.glob('*.npz')): hpob.prepare()")
@@ -201,6 +202,8 @@ def main():
                     default=Path("/kaggle/working/results") if ON_KAGGLE else ROOT / "results")
     ap.add_argument("--resume", type=Path, default=None,
                     help="a previous results/ folder (e.g. a Kaggle input) whose raw/ jobs are reused")
+    ap.add_argument("--noisy", action="store_true",
+                    help="hpobench/nasbench201: noisy protocol (results under <benchmark>_noisy)")
     ap.add_argument("--setup-only", action="store_true", help="install and download, do not run")
     a = ap.parse_args(argv)
     t_end = time.time() + a.hours * 3600 if a.hours else None
@@ -225,6 +228,8 @@ def main():
         args = [f"experiments.analyze_{bench}", "--workers", str(a.workers), *extra]
         if bench == "hpob" and a.hpob_groups:
             args += ["--groups", *a.hpob_groups]
+        if a.noisy and bench in ("hpobench", "nasbench201"):
+            args.append("--noisy")
         log(f"running {' '.join(args)}" + (f" (budget {left / 3600:.1f} h)" if left else ""))
         ok = run_module(args, left)
         if not ok:  # stopped or failed: rebuild table/figure from the finished jobs
