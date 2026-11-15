@@ -15,7 +15,7 @@ import torch
 from scipy.stats import norm
 
 from models.malibo.meta_net import DT
-from models.metagamebo_remake.kdpp import KDPP
+from models.metagamebo_remake.kdpp import KDPP, DiagonalKDPP
 
 
 def kde_quantile(values: np.ndarray, alpha: float) -> float:
@@ -77,7 +77,7 @@ class KDPPSamples:
             sl = self.slices[i]
             wt = self.W[sl].numpy()
             k = max(1, int(self.frac * len(sl)))
-            d = KDPP.diagonal(wt, k) if self.kernel == "diag" else KDPP.quality_diversity(wt, self.X[sl].numpy(), k)
+            d = DiagonalKDPP(wt, k) if self.kernel == "diag" else KDPP.quality_diversity(wt, self.X[sl].numpy(), k)
             S = d.sample(self.rng)
             idx_l.append(sl[S]); q_l.append(d.marginals()[S])
         self._sizes = [len(s) for s in idx_l]

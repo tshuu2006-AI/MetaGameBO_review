@@ -158,3 +158,55 @@ class KDPP:
             if V.shape[1] > 0:
                 V, _ = np.linalg.qr(V)
         return np.array(sorted(out), dtype=int)
+
+
+def _esp_prefix(lams: np.ndarray, k: int) -> np.ndarray:
+    """``E[l, m] = e_l(lams[:m])`` for l <= k, vectorised over l (n numpy steps)."""
+    n = len(lams)
+    E = np.zeros((k + 1, n + 1))
+    E[0, :] = 1.0
+    for m in range(1, n + 1):
+        E[1:, m] = E[1:, m - 1] + lams[m - 1] * E[:-1, m - 1]
+    return E
+
+
+class DiagonalKDPP:
+    """Exact k-DPP with a diagonal kernel ``L = diag(w)`` (the paper's kernel).
+
+    Same distribution as ``KDPP(np.diag(w), k)``, but without the
+    eigendecomposition and projection phase: with a diagonal kernel the
+    eigenvectors are the items themselves, so the k-DPP reduces to choosing k
+    items with probability proportional to the product of their weights.
+    O(n k) instead of O(n^3).
+    """
+
+    def __init__(self, w: np.ndarray, k: int):
+        w = np.clip(np.asarray(w, dtype=float), 0.0, None)
+        self.n = len(w)
+        self.k = int(min(max(k, 1), self.n))
+        s = w.mean() if w.mean() > 0 else 1.0  # invariant to scaling; keeps e_k in range
+        self.lams = w / s
+        self._E = _esp_prefix(self.lams, self.k)
+
+    def sample(self, rng: np.random.Generator) -> np.ndarray:
+        """Sorted indices of the k selected items."""
+        lams, E = self.lams, self._E
+        chosen, l = [], self.k
+        u = rng.random(self.n)
+        for m in range(self.n, 0, -1):
+            if l == 0:
+                break
+            if m == l or u[m - 1] < lams[m - 1] * E[l - 1, m - 1] / E[l, m]:
+                chosen.append(m - 1)
+                l -= 1
+        return np.array(sorted(chosen), dtype=int)
+
+    def marginals(self) -> np.ndarray:
+        """``P(i in S) = w_i e_{k-1}(w_{-i}) / e_k(w)`` from prefix x suffix tables."""
+        k, lams = self.k, self.lams
+        P = self._E                                        # P[l, i] = e_l(lams[:i])
+        Sfx = _esp_prefix(lams[::-1], k)[:, ::-1]          # Sfx[l, i] = e_l(lams[i:])
+        # e_{k-1}(lams without i) = sum_j P[j, i] * Sfx[k-1-j, i+1]
+        j = np.arange(k)
+        ex = (P[j, :-1] * Sfx[k - 1 - j, 1:]).sum(0)
+        return np.clip(lams * ex / P[k, -1], 0.0, 1.0)

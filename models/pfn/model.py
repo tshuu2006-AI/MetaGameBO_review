@@ -22,10 +22,36 @@ PFN_DIR = Path(__file__).resolve().parent / "PFNs4BO"
 _MODELS: dict = {}
 
 
+def _torch_compat() -> None:
+    """Restore names that ``pfns4bo/layer.py`` imports from ``torch.nn.modules.transformer``.
+
+    Newer torch versions no longer re-export e.g. ``Optional`` there (ImportError on Kaggle).
+    """
+    import typing
+    import torch
+    import torch.nn.functional as F
+    tm = torch.nn.modules.transformer
+    names = dict(Optional=typing.Optional, Tensor=torch.Tensor, Module=torch.nn.Module,
+                 MultiheadAttention=torch.nn.MultiheadAttention, Linear=torch.nn.Linear,
+                 Dropout=torch.nn.Dropout, LayerNorm=torch.nn.LayerNorm)
+    for k, v in names.items():
+        if not hasattr(tm, k):
+            setattr(tm, k, v)
+    if not hasattr(tm, "_get_activation_fn"):
+        def _get_activation_fn(activation):
+            if activation == "relu":
+                return F.relu
+            if activation == "gelu":
+                return F.gelu
+            raise RuntimeError(f"activation should be relu/gelu, not {activation}")
+        tm._get_activation_fn = _get_activation_fn
+
+
 def load_pfn(name: str = "hebo_plus_model", device: str = "cpu"):
     """Load (and cache per process) a pre-trained PFN by its ``pfns4bo`` name."""
     if name not in _MODELS:
         import torch
+        _torch_compat()
         if str(PFN_DIR) not in sys.path:
             sys.path.insert(0, str(PFN_DIR))
         import pfns4bo
