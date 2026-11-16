@@ -332,7 +332,7 @@ def _regret_stat(R: np.ndarray, stat: str, floor: float):
     return 10 ** mu, 10 ** (mu - se), 10 ** (mu + se)
 
 
-def _regret_panel(ax, results, methods, budget, title, floor, stat="mean", legend=True) -> None:
+def _regret_panel(ax, results, methods, budget, title, floor, stat="mean", legend=True, ylim=None) -> None:
     from visualizer.style import method_style
     x = np.arange(1, budget + 1)
     for m in methods:
@@ -344,8 +344,11 @@ def _regret_panel(ax, results, methods, budget, title, floor, stat="mean", legen
         ax.plot(x, mu, label=f"{m} ({len(R)})", color=st["color"], ls=st["ls"], lw=st.get("lw", 1.8))
         ax.fill_between(x, lo, hi, color=st["color"], alpha=0.12, lw=0)
     ax.set_yscale("log")
-    ax.set_ylim(bottom=floor * 0.7)
-    ax.axhline(floor, color="0.6", lw=0.8, ls=":")
+    if ylim is None:
+        ax.set_ylim(bottom=floor * 0.7)
+        ax.axhline(floor, color="0.6", lw=0.8, ls=":")
+    else:  # fixed axis: the floor is its lower edge, curves above the upper edge are cut
+        ax.set_ylim(*ylim)
     ax.set_xlabel("Steps")
     ax.set_ylabel("Normalized regret (log)")
     ax.set_title(title, fontweight="bold")
@@ -354,15 +357,22 @@ def _regret_panel(ax, results, methods, budget, title, floor, stat="mean", legen
         ax.legend(fontsize=7, ncol=2, title="method (runs)", title_fontsize=7)
 
 
-def plot_benchmark(results: List[dict], methods: Sequence[str], budget: int, title: str, path: Path) -> None:
+def plot_benchmark(results: List[dict], methods: Sequence[str], budget: int, title: str, path: Path,
+                   ylim: Optional[Sequence[float]] = None) -> None:
     """``<dataset>_plot.png``: regret curves (mean ± s.e., zero regret drawn at ``regret_floor``)
-    + meta-training curves; ``<dataset>_plot_variants.png``: mean / median / geometric mean."""
+    + meta-training curves; ``<dataset>_plot_variants.png``: mean / median / geometric mean.
+
+    ``ylim = (low, high)`` fixes the log axis of the regret panels (e.g. ``(1e-9, 1e-3)``):
+    regrets below ``low``, including 0, are drawn on the lower edge.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    floor = regret_floor(results, methods, budget)
+    if ylim is not None:
+        ylim = (min(ylim), max(ylim))
+    floor = regret_floor(results, methods, budget) if ylim is None else ylim[0]
     fig, axes = plt.subplots(1, 4, figsize=(20, 4.4))
-    _regret_panel(axes[0], results, methods, budget, title, floor, "mean")
+    _regret_panel(axes[0], results, methods, budget, title, floor, "mean", ylim=ylim)
     plot_training(axes[1:], results, [m for m in methods if m in TRAINED])
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -372,8 +382,9 @@ def plot_benchmark(results: List[dict], methods: Sequence[str], budget: int, tit
     fig, axes = plt.subplots(1, 3, figsize=(18, 4.8), sharey=True)
     for ax, (stat, name) in zip(axes, [("mean", "mean ± s.e."), ("median", "median, IQR band"),
                                        ("geomean", "geometric mean ± s.e.")]):
-        _regret_panel(ax, results, methods, budget, f"{title}: {name}", floor, stat, legend=ax is axes[0])
-    fig.suptitle(f"dotted line = regret 0 (optimum found), drawn at {floor:.2g}", fontsize=9)
+        _regret_panel(ax, results, methods, budget, f"{title}: {name}", floor, stat, legend=ax is axes[0], ylim=ylim)
+    fig.suptitle(f"dotted line = regret 0 (optimum found), drawn at {floor:.2g}" if ylim is None else
+                 f"regret below {floor:.0e} (including 0) is drawn on the lower edge", fontsize=9)
     fig.tight_layout()
     fig.savefig(path.with_name(path.stem + "_variants.png"), dpi=150)
     plt.close(fig)
@@ -400,6 +411,8 @@ def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, n
     ap.add_argument("--gpu-workers", type=int, default=2)
     ap.add_argument("--rerun", action="store_true")
     ap.add_argument("--report-only", action="store_true", help="only rebuild table/plot from the cache")
+    ap.add_argument("--ylim", type=float, nargs=2, default=None, metavar=("LOW", "HIGH"),
+                    help="fixed log range of the regret axis, e.g. --ylim 1e-9 1e-3 (default: automatic)")
     if noisy_ok:
         ap.add_argument("--noisy", action="store_true",
                         help="observe one random training seed per evaluation; regret of the incumbent's "
@@ -431,6 +444,6 @@ def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, n
     steps = [s for s in (1, 10, 50, 100, 200, 300, 500) if s <= a.budget]
     md = regret_table(results, a.methods, a.budget, steps, f"{title} benchmark", notes)
     (RESULTS / f"{dataset}_benchmark.md").write_text(md)
-    plot_benchmark(results, a.methods, a.budget, title, RESULTS / f"{dataset}_plot.png")
+    plot_benchmark(results, a.methods, a.budget, title, RESULTS / f"{dataset}_plot.png", ylim=a.ylim)
     print(md)
     print("wrote", RESULTS / f"{dataset}_benchmark.md", "and", RESULTS / f"{dataset}_plot.png")
