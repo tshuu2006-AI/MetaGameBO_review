@@ -387,7 +387,8 @@ BENCH_KWARGS = {"MALIBO": dict(iters=2000), "MetaGameBO (remake)": dict(iters=20
 
 
 def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, notes: str,
-               default_seeds: int = 5, budget: int = 500, noisy_ok: bool = False) -> None:
+               default_seeds: int = 5, budget: int = 500, noisy_ok: bool = False,
+               discrete_ok: bool = False) -> None:
     """Command line of ``analyze_<dataset>.py``: run jobs, write the table and the figure."""
     import argparse
     ap = argparse.ArgumentParser(description=f"{title} benchmark")
@@ -403,7 +404,19 @@ def bench_main(dataset: str, title: str, groups: Sequence, group_fn: Callable, n
         ap.add_argument("--noisy", action="store_true",
                         help="observe one random training seed per evaluation; regret of the incumbent's "
                              "mean value (results under <dataset>_noisy)")
+    if discrete_ok:
+        ap.add_argument("--discrete", action="store_true",
+                        help="choose among the tabulated evaluations of each test dataset, as in the "
+                             "MALIBO/MetaGameBO code (results under <dataset>_discrete)")
     a = ap.parse_args()
+    if getattr(a, "discrete", False):
+        import functools
+        dataset, title = f"{dataset}_discrete", f"{title} (discrete)"
+        group_fn = functools.partial(group_fn, discrete=True)
+        notes = (notes.replace("continuous search spaces with the official surrogates",
+                               "tabulated evaluations of each test dataset (discrete protocol of run_hpob.py)")
+                 + " Regret normalised by the min/max accuracy of the test dataset; a dataset smaller than "
+                   "the budget is evaluated completely. Steps include the 5 initial points.")
     if getattr(a, "noisy", False):
         import functools
         dataset, title = f"{dataset}_noisy", f"{title} (noisy)"

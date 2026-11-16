@@ -160,6 +160,8 @@ class BaseOptimizer(ABC):
 
     def _loop(self, objective, budget, callback) -> History:
         while len(self.history.y) < budget:
+            if self.pool is not None and not self._pool_free.any():
+                break  # every pool point is evaluated (small tabular task): the run ends early
             X = self.suggest(1)
             self.observe(X, objective(X))
             if callback is not None:

@@ -1,10 +1,17 @@
-"""HPO-B (Arango et al. 2021), continuous version: 16 search spaces (2-18 dims),
-86 test datasets. The objective of a test dataset is its XGBoost surrogate of
-the accuracy (we minimise ``-accuracy``); the regret is
-``(y_max - best accuracy) / (y_max - y_min)`` with the surrogate statistics,
-clipped to [0, 1]. Each run starts from the 5 fixed initial points of the
-HPO-B seed ``test0..test4``. Meta-training uses the provided meta-train
-datasets of the same search space (each subsampled to 512 points).
+"""HPO-B v3 (Arango et al. 2021): 16 search spaces (2-18 dims), 86 test datasets.
+Each run starts from the 5 fixed initial points of the HPO-B seed
+``test0..test4``. Meta-training uses the provided meta-train datasets of the
+same search space (each subsampled to 512 points).
+
+Two versions of a test dataset:
+* continuous (default): the objective is its XGBoost surrogate of the accuracy
+  (we minimise ``-accuracy``); regret ``(y_max - best accuracy) / (y_max - y_min)``
+  with the surrogate statistics, clipped to [0, 1].
+* discrete (``problems(..., discrete=True)``; the protocol of the MALIBO and
+  MetaGameBO code, ``run_hpob.py``): BO chooses among the dataset's tabulated
+  evaluations (200 to 102,306 configurations); regret
+  ``(acc_max - best accuracy) / (acc_max - acc_min)`` over that table. A dataset
+  with fewer evaluations than the budget is evaluated completely (regret 0).
 
 Data (``hpob-data``, ``saved-surrogates``) in ``benchmarks/data``; the meta-train
 JSON is large, so ``prepare()`` writes one compact ``.npz`` per search space.
@@ -17,7 +24,7 @@ from typing import List
 
 import numpy as np
 
-from benchmarks.common import Problem
+from benchmarks.common import LookupTable, Problem
 from models.base import Task
 
 DATA = Path(__file__).resolve().parent / "data"
@@ -85,8 +92,9 @@ class Surrogate:
         return np.clip((self.y_max - acc) / (self.y_max - self.y_min), 0.0, 1.0)
 
 
-def problems(space: str, seed_id: str = "test0") -> List[Problem]:
-    """One problem per test dataset of ``space`` for the HPO-B seed ``seed_id``."""
+def problems(space: str, seed_id: str = "test0", discrete: bool = False) -> List[Problem]:
+    """One problem per test dataset of ``space`` for the HPO-B seed ``seed_id``
+    (``discrete``: tabulated evaluations instead of the surrogate)."""
     d = np.load(CACHE / f"{space}.npz")
     meta = [Task(objective=None, X=d[f"train_X_{i}"], y=-d[f"train_y_{i}"])
             for i in range(sum(k.startswith("train_X_") for k in d.files))]
@@ -94,8 +102,12 @@ def problems(space: str, seed_id: str = "test0") -> List[Problem]:
     for k in sorted(f for f in d.files if f.startswith("test_X_")):
         ds = k[len("test_X_"):]
         X = d[k]
-        sur = Surrogate(space, ds)
         bounds = np.column_stack([np.zeros(X.shape[1]), np.ones(X.shape[1])])
         init = X[d[f"init_{ds}_{seed_id}"]]
-        probs.append(Problem(f"hpob/{space}/{ds}", bounds, sur, sur.regret, meta, init=init))
+        if discrete:
+            table = LookupTable(X, -d[f"test_y_{ds}"])
+            probs.append(Problem(f"hpob/{space}/{ds}", bounds, table, table.regret, meta, pool=table.X, init=init))
+        else:
+            sur = Surrogate(space, ds)
+            probs.append(Problem(f"hpob/{space}/{ds}", bounds, sur, sur.regret, meta, init=init))
     return probs

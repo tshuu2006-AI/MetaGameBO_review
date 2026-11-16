@@ -35,6 +35,7 @@ python -m experiments.analyze_forrester        # Table 1   -> results/forrester_
 python -m experiments.analyze_hpobench         # Figure 3  -> results/hpobench_*
 python -m experiments.analyze_nasbench201      #           -> results/nasbench201_*
 python -m experiments.analyze_hpob             #           -> results/hpob_*
+python -m experiments.author_forrester_ablation   # authors' code, flag by flag -> results/forrester_author_ablation.md
 ```
 
 Every job is cached in `results/raw/<dataset>/`; an interrupted run resumes, and
@@ -49,6 +50,11 @@ from there; `--rerun` starts from scratch. `METAGAMEBO_RESULTS` moves the result
 folder (used by `kaggle_run.py` to write straight into the Kaggle output).
 `--noisy` (HPOBench, NAS-Bench-201) evaluates one random training seed per step
 and scores the incumbent by its mean value; results go to `<dataset>_noisy_*`.
+`--discrete` (HPO-B) chooses among the tabulated evaluations of each test dataset
+instead of the surrogate, as the MALIBO / MetaGameBO code does; results go to
+`hpob_discrete_*` (`--budget 105` = 5 initial points + 100 steps, the MALIBO protocol).
+
+`DEVIATION_ANALYSIS.md` compares the paper's evaluation with this reproduction.
 
 ## Metrics
 

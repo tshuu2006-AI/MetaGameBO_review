@@ -27,6 +27,8 @@ Resume in a later session: add the previous notebook's output as an input and pa
 unfinished ones continue from their checkpoints.
 Anything after ``--`` is passed to every analyze script, e.g. ``-- --seeds 20``.
 ``--noisy`` runs hpobench/nasbench201 with noisy observations (results ``<benchmark>_noisy``).
+``--discrete`` runs hpob on the tabulated test evaluations, as the official code does
+(results ``hpob_discrete``); with ``-- --budget 105`` this is 5 initial points + 100 steps.
 """
 from __future__ import annotations
 
@@ -208,6 +210,8 @@ def main():
     ap.add_argument("--resume", type=Path, default=None,
                     help="a previous results/ folder (e.g. a Kaggle input) whose raw/ jobs are reused")
     ap.add_argument("--ckpt-minutes", type=float, default=5, help="minutes between BO checkpoints of a job")
+    ap.add_argument("--discrete", action="store_true",
+                    help="hpob: tabulated test evaluations instead of surrogates (results under hpob_discrete)")
     ap.add_argument("--noisy", action="store_true",
                     help="hpobench/nasbench201: noisy protocol (results under <benchmark>_noisy)")
     ap.add_argument("--setup-only", action="store_true", help="install and download, do not run")
@@ -240,6 +244,8 @@ def main():
             args += ["--groups", *a.hpob_groups]
         if a.noisy and bench in ("hpobench", "nasbench201"):
             args.append("--noisy")
+        if a.discrete and bench == "hpob":
+            args.append("--discrete")
         log(f"running {' '.join(args)}" + (f" (budget {left / 3600:.1f} h)" if left else ""))
         ok = run_module(args, left)
         if not ok:  # stopped or failed: rebuild table/figure from the finished jobs
