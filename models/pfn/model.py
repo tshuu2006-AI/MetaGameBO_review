@@ -83,6 +83,11 @@ class PFN(BaseOptimizer):
         self.model_name = model
         self._bo = None
 
+    def __getstate__(self):  # checkpoints: the pre-trained model is reloaded, not pickled
+        d = self.__dict__.copy()
+        d["_bo"] = None
+        return d
+
     def _method(self):
         if self._bo is None:
             m = load_pfn(self.model_name, self.device)  # also puts PFNs4BO on sys.path

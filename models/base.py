@@ -135,7 +135,7 @@ class BaseOptimizer(ABC):
 
     def optimize(self, objective: Callable[[np.ndarray], np.ndarray], budget: int,
                  n_init: int = 0, init: Optional[np.ndarray] = None,
-                 callback: Optional[Callable[[int], None]] = None) -> History:
+                 callback: Optional[Callable[[int], None]] = None, resume: bool = False) -> History:
         """Run sequential optimisation on one task.
 
         Args:
@@ -144,14 +144,21 @@ class BaseOptimizer(ABC):
             n_init: Number of random initial points (ignored if ``init`` is given).
             init: Fixed initial points, shape (k, d).
             callback: Called with the number of evaluations after each step.
+            resume: Continue the current history (e.g. restored from a checkpoint)
+                instead of starting a new run.
 
         Returns:
             The history of all evaluations.
         """
+        if resume and len(self.history.y):
+            return self._loop(objective, budget, callback)
         self.reset()
         X0 = init if init is not None else (self._candidates(n_init) if n_init > 0 else None)
         if X0 is not None and len(X0):
             self.observe(X0, objective(X0))
+        return self._loop(objective, budget, callback)
+
+    def _loop(self, objective, budget, callback) -> History:
         while len(self.history.y) < budget:
             X = self.suggest(1)
             self.observe(X, objective(X))

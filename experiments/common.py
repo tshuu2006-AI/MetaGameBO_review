@@ -3,7 +3,11 @@
 * ``run_jobs``: run (method, group, seed) jobs in parallel; each job meta-trains
   the method once on the group's meta tasks, then optimises every target problem
   of the group. Results are cached as JSON in ``results/raw/<dataset>/`` so an
-  interrupted run resumes. PFN jobs run in a small separate pool on the GPU.
+  interrupted run resumes; a running job also keeps a checkpoint next to it
+  (``<job>.ckpt.pkl``: the optimizer after meta-training, the finished problems
+  and, every ``METAGAMEBO_CKPT_SECONDS`` (300), the BO run in progress), which
+  the next run continues from. ``--rerun`` ignores both.
+  PFN jobs run in a small separate pool on the GPU.
 * ``regret_table`` / ``plot_benchmark``: the ``<dataset>_benchmark.md`` table and
   the ``<dataset>_plot.png`` figure (regret curves + meta-training curves).
 """
@@ -20,7 +24,47 @@ from typing import Callable, Dict, List, Optional, Sequence
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULTS = ROOT / "results"
+# results folder; METAGAMEBO_RESULTS lets kaggle_run.py write straight into the Kaggle output
+RESULTS = Path(os.environ.get("METAGAMEBO_RESULTS", ROOT / "results"))
+CKPT_EVERY = float(os.environ.get("METAGAMEBO_CKPT_SECONDS", 300))  # seconds between BO checkpoints
+
+
+def _atomic_write(path: Path, data: bytes) -> None:
+    """Write via a temporary file + rename, so a killed process never leaves a half-written file."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_bytes(data)
+    os.replace(tmp, path)
+
+
+class _Checkpoint:
+    """Job state in ``<job>.ckpt.pkl``: optimizer (after meta-training / mid-run), finished runs,
+    the problem being optimised and its objective's state (noise RNG, values seen)."""
+
+    def __init__(self, out_path: str):
+        self.path = Path(out_path).with_suffix(".ckpt.pkl")
+        self.last = time.time()
+
+    def load(self) -> Optional[dict]:
+        import pickle
+        if not self.path.exists():
+            return None
+        try:
+            return pickle.loads(self.path.read_bytes())
+        except Exception:  # corrupt / incompatible checkpoint: start over
+            return None
+
+    def save(self, **state) -> None:
+        import pickle
+        _atomic_write(self.path, pickle.dumps(state))
+        self.last = time.time()
+
+    def remove(self) -> None:
+        self.path.unlink(missing_ok=True)
+
+
+def _objective_state(obj):
+    return {k: getattr(obj, k) for k in ("rng", "true_seen") if hasattr(obj, k)}
+
 TRAINED = {"MALIBO", "MetaGameBO (original)", "MetaGameBO (remake)", "ABLR"}
 
 
@@ -60,26 +104,51 @@ def _run_job(job):
     out_path, method, group_fn, group_key, seed, budget, n_init, kw = job
     from models import build
     t0 = time.time()
+    ck = _Checkpoint(out_path)
     try:
         problems = group_fn(group_key, seed)
-        P0 = problems[0]
-        opt = build(method, P0.bounds, seed, **kw.get(method, {}))
-        opt.set_pool(P0.pool)
-        if opt.is_meta:
-            opt.meta_train(P0.meta_tasks)
-        t_train = time.time() - t0
-        runs = []
-        for P in problems:
-            opt.set_pool(P.pool)
+        state = ck.load()
+        if state is not None:  # resume: skip meta-training and the finished problems
+            opt, runs, t_train, t_prev = state["opt"], state["runs"], state["train_time"], state["elapsed"]
+            current = state.get("current")
+        else:
+            P0 = problems[0]
+            opt = build(method, P0.bounds, seed, **kw.get(method, {}))
+            opt.set_pool(P0.pool)
+            if opt.is_meta:
+                opt.meta_train(P0.meta_tasks)
+            t_train, t_prev, runs, current = time.time() - t0, 0.0, [], None
+            ck.save(opt=opt, runs=runs, train_time=t_train, elapsed=t_train, current=None)
+        elapsed = lambda: t_prev + time.time() - t0
+        for i, P in enumerate(problems):
+            if i < len(runs):
+                continue
+            resume = current is not None and current["problem"] == i
+            if resume:  # the restored optimizer already holds this pool and its evaluated rows
+                for k, v in current["objective"].items():
+                    setattr(P.objective, k, v)
+            else:
+                opt.set_pool(P.pool)
+
+            def save(_n, i=i, P=P):
+                if time.time() - ck.last >= CKPT_EVERY:
+                    ck.save(opt=opt, runs=runs, train_time=t_train, elapsed=elapsed(),
+                            current=dict(problem=i, objective=_objective_state(P.objective)))
+
             k = 0 if (opt.is_meta or P.init is not None) else n_init
-            h = opt.optimize(P.objective, budget, n_init=k, init=P.init)
+            h = opt.optimize(P.objective, budget, n_init=k, init=P.init, callback=save, resume=resume)
             runs.append(dict(problem=P.name, regret=P.regret(np.asarray(h.y)).tolist()))
+            current = None
+            if i + 1 < len(problems):
+                ck.save(opt=opt, runs=runs, train_time=t_train, elapsed=elapsed(), current=None)
         res = dict(method=method, group=str(group_key), seed=seed, budget=budget, runs=runs, train=train_curves(opt),
-                   train_time=t_train, time=time.time() - t0)
+                   train_time=t_train, time=elapsed(), resumed=state is not None)
     except Exception as e:  # keep the other jobs running
         res = dict(method=method, group=str(group_key), seed=seed, error=f"{type(e).__name__}: {e}",
                    traceback=traceback.format_exc())
-    Path(out_path).write_text(json.dumps(res))
+    _atomic_write(Path(out_path), json.dumps(res).encode())
+    if "error" not in res:
+        ck.remove()
     return method, group_key, seed, res.get("error"), time.time() - t0
 
 
@@ -111,6 +180,8 @@ def run_jobs(dataset: str, methods: Sequence[str], groups: Sequence, seeds: Sequ
                 path = raw / f"{slug(m)}__{slug(str(g))}__s{s}__b{budget}.json"
                 if path.exists() and not rerun and "error" not in json.loads(path.read_text()):
                     continue
+                if rerun:  # start from scratch, not from a checkpoint
+                    path.with_suffix(".ckpt.pkl").unlink(missing_ok=True)
                 (jobs_gpu if m == "PFN" else jobs_cpu).append((str(path), m, group_fn, g, s, budget, n_init, kw))
     jobs_cpu.sort(key=lambda j: j[1] not in TRAINED)  # long (meta-trained) jobs first
     total = len(jobs_cpu) + len(jobs_gpu)

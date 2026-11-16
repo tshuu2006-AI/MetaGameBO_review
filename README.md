@@ -41,6 +41,15 @@ Every job is cached in `results/raw/<dataset>/`; an interrupted run resumes, and
 `--report-only` rebuilds the table and figure. Useful options: `--seeds`,
 `--methods`, `--groups` (subset of targets / search spaces), `--budget`, `--workers`.
 
+Checkpoints (HPOBench, NAS-Bench-201, HPO-B): a running job keeps
+`results/raw/<dataset>/<job>.ckpt.pkl` (state after meta-training, finished target
+problems, and the BO run in progress every 5 minutes; `METAGAMEBO_CKPT_SECONDS`
+changes the interval). Running the same command again continues unfinished jobs
+from there; `--rerun` starts from scratch. `METAGAMEBO_RESULTS` moves the results
+folder (used by `kaggle_run.py` to write straight into the Kaggle output).
+`--noisy` (HPOBench, NAS-Bench-201) evaluates one random training seed per step
+and scores the incumbent by its mean value; results go to `<dataset>_noisy_*`.
+
 ## Metrics
 
 **Forrester (Table 1)** reports a classifier loss, as the authors confirmed: per

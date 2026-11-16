@@ -10,8 +10,12 @@ Steps (each skipped when already done):
   4. Run ``experiments.analyze_<benchmark>`` for each selected benchmark, within
      an optional time budget (the run is stopped, then the table/figure are
      rebuilt from the finished jobs).
-  5. Copy ``results/`` (tables, figures, per-job JSON cache) to ``--output``
-     (default ``/kaggle/working/results``) after every benchmark.
+  5. Results go straight to ``--output`` (default ``/kaggle/working/results``):
+     every finished job is a JSON file there at once, and every running job
+     keeps a checkpoint (``*.ckpt.pkl``: state after meta-training, then every
+     ``--ckpt-minutes`` of BO), so a stopped or crashed run loses at most a few
+     minutes per running job. Run the same command again (``--resume`` for a new
+     session) and the jobs continue from their checkpoints.
 
 Kaggle notebook (Settings: Internet on; GPU optional, used by PFN):
 
@@ -19,7 +23,8 @@ Kaggle notebook (Settings: Internet on; GPU optional, used by PFN):
     !cd /tmp/repo && python kaggle_run.py --benchmarks nasbench201 hpob --hours 11
 
 Resume in a later session: add the previous notebook's output as an input and pass
-``--resume /kaggle/input/<name>/results``; finished jobs are not run again.
+``--resume /kaggle/input/<name>/results``; finished jobs are not run again and
+unfinished ones continue from their checkpoints.
 Anything after ``--`` is passed to every analyze script, e.g. ``-- --seeds 20``.
 ``--noisy`` runs hpobench/nasbench201 with noisy observations (results ``<benchmark>_noisy``).
 """
@@ -177,11 +182,11 @@ def report_forrester() -> None:
 
 
 def save_results(output: Path) -> None:
-    src = ROOT / "results"
-    if not src.exists() or src.resolve() == output.resolve():
-        return
-    shutil.copytree(src, output, dirs_exist_ok=True)
-    log(f"results copied to {output}")
+    """Results are written into ``output`` directly; only report what is there."""
+    raw = output / "raw"
+    n = len(list(raw.glob("*/*.json"))) if raw.exists() else 0
+    c = len(list(raw.glob("*/*.ckpt.pkl"))) if raw.exists() else 0
+    log(f"{output}: {n} finished jobs, {c} checkpoints of unfinished jobs")
 
 
 def main():
@@ -202,19 +207,24 @@ def main():
                     default=Path("/kaggle/working/results") if ON_KAGGLE else ROOT / "results")
     ap.add_argument("--resume", type=Path, default=None,
                     help="a previous results/ folder (e.g. a Kaggle input) whose raw/ jobs are reused")
+    ap.add_argument("--ckpt-minutes", type=float, default=5, help="minutes between BO checkpoints of a job")
     ap.add_argument("--noisy", action="store_true",
                     help="hpobench/nasbench201: noisy protocol (results under <benchmark>_noisy)")
     ap.add_argument("--setup-only", action="store_true", help="install and download, do not run")
     a = ap.parse_args(argv)
     t_end = time.time() + a.hours * 3600 if a.hours else None
 
+    a.output.mkdir(parents=True, exist_ok=True)
+    os.environ["METAGAMEBO_RESULTS"] = str(a.output.resolve())  # inherited by the analyze runs
+    os.environ["METAGAMEBO_CKPT_SECONDS"] = str(60 * a.ckpt_minutes)
     install_packages()
     fetch_code()
     link_data(a.data_dir)
     fetch_data(a.benchmarks)
     if a.resume:
         src = a.resume / "raw" if (a.resume / "raw").exists() else a.resume
-        shutil.copytree(src, ROOT / "results" / "raw", dirs_exist_ok=True)
+        if src.resolve() != (a.output / "raw").resolve():
+            shutil.copytree(src, a.output / "raw", dirs_exist_ok=True)
         log(f"resumed cached jobs from {src}")
     if a.setup_only:
         log("setup done")
