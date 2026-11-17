@@ -64,17 +64,43 @@ def log(msg: str) -> None:
     print(f"[kaggle_run {time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def download(url: str, dest: Path) -> None:
-    """Stream ``url`` to ``dest`` (skipped if ``dest`` exists and is not empty)."""
+def download(url: str, dest: Path, tries: int = 8) -> None:
+    """Stream ``url`` to ``dest`` (skipped if ``dest`` exists and is not empty).
+
+    The size is checked against ``Content-Length``; a dropped connection is
+    continued with an HTTP Range request (or restarted if the server ignores it).
+    """
     if dest.exists() and dest.stat().st_size > 0:
         return
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".part")
+    tmp.unlink(missing_ok=True)
     log(f"downloading {url}")
-    req = urllib.request.Request(url, headers={"User-Agent": "metagamebo-repro"})
-    with urllib.request.urlopen(req) as r, open(tmp, "wb") as f:
-        shutil.copyfileobj(r, f, length=1 << 22)
-    tmp.rename(dest)
+    total = None
+    for attempt in range(1, tries + 1):
+        have = tmp.stat().st_size if tmp.exists() else 0
+        headers = {"User-Agent": "metagamebo-repro"}
+        if have:
+            headers["Range"] = f"bytes={have}-"
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=120) as r:
+                if have and r.status != 206:  # Range ignored: start again
+                    have = 0
+                n = r.headers.get("Content-Length")
+                if n is not None:
+                    total = have + int(n)
+                with open(tmp, "ab" if have else "wb") as f:
+                    shutil.copyfileobj(r, f, length=1 << 22)
+        except OSError as e:  # URLError, timeouts, connection resets
+            log(f"download interrupted ({type(e).__name__}: {e}); attempt {attempt}/{tries}")
+            time.sleep(min(60, 5 * attempt))
+            continue
+        size = tmp.stat().st_size
+        if total is None or size >= total:
+            tmp.rename(dest)
+            return
+        log(f"download incomplete ({size / 2**20:.0f} of {total / 2**20:.0f} MiB); attempt {attempt}/{tries}")
+    raise RuntimeError(f"could not download {url} after {tries} attempts")
 
 
 # ---------------------------------------------------------------- setup steps
@@ -126,20 +152,29 @@ def link_data(data_dir: Path) -> None:
         log(f"benchmarks/data already exists as a folder; using it instead of {data_dir}")
 
 
-def fetch_data(benchmarks) -> None:
+def fetch_data(benchmarks, discrete: bool = False) -> None:
     data = ROOT / "benchmarks" / "data"
     for bench, folder in (("hpobench", "fcnet"), ("nasbench201", "nasbench201")):
         if bench in benchmarks:
             for f in SYNETUNE_FILES:
                 download(f"{HF}/{folder}/{f}", data / folder / f)
     if "hpob" in benchmarks:
-        for name in ("hpob-data", "saved-surrogates"):
+        # the discrete protocol uses the tabulated evaluations only, not the XGBoost surrogates
+        for name in ("hpob-data",) if discrete else ("hpob-data", "saved-surrogates"):
             if not (data / name).is_dir():
                 zp = data / f"{name}.zip"
-                download(f"{HPOB}/{name}.zip", zp)
-                log(f"unzipping {zp.name}")
-                with zipfile.ZipFile(zp) as z:
-                    z.extractall(data)
+                for attempt in (1, 2):
+                    download(f"{HPOB}/{name}.zip", zp)
+                    log(f"unzipping {zp.name}")
+                    try:
+                        with zipfile.ZipFile(zp) as z:
+                            z.extractall(data)
+                        break
+                    except zipfile.BadZipFile:
+                        zp.unlink()
+                        if attempt == 2:
+                            raise
+                        log(f"{zp.name} is corrupt; downloading it again")
                 zp.unlink()
     # compact caches (built once, small)
     code = []
@@ -224,7 +259,7 @@ def main():
     install_packages()
     fetch_code()
     link_data(a.data_dir)
-    fetch_data(a.benchmarks)
+    fetch_data(a.benchmarks, discrete=a.discrete)
     if a.resume:
         src = a.resume / "raw" if (a.resume / "raw").exists() else a.resume
         if src.resolve() != (a.output / "raw").resolve():
