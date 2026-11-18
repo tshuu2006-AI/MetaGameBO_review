@@ -1,0 +1,85 @@
+{
+  "version": "portable-source-ei-component-v2",
+  "author_evidence": {
+    "evidence": "User-provided author reply reviewed locally; images not distributed.",
+    "confirmed": [
+      "Table1 reports classifier-loss-based metrics, not normalized BO regret",
+      "Per-task weighted BCE divides by number of samples, not sum(weights)",
+      "CVaR averages largest k task losses; k=max(1,int(N*(1-alpha))),alpha=.8",
+      "Author cannot recover complete original experiment records or guarantee exact Table1 reproduction from current defaults"
+    ],
+    "not_specified": [
+      "LFBO/GP Table1 baseline classifier evaluator and output",
+      "GP binary probability/logit mapping",
+      "Exact baseline configurations and original Table1 exporter"
+    ]
+  },
+  "source_commit": "489213ddcfbfe275a8b443c0d8b136ef6c36ad2c",
+  "sources": [
+    {
+      "path": "MetaGameBO.py",
+      "local_path": "vendor/metagamebo/MetaGameBO.py",
+      "sha256": "8168f5702f2b1938d6bc6e3dd861e9219dda20d19cba6576f9cac4159c6b4cab",
+      "git_blob_sha": "79e9c4c82858ae14187d7f5d8f99b9198bc23ad1",
+      "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/MetaGameBO.py"
+    },
+    {
+      "path": "meta_learning/trainer.py",
+      "local_path": "vendor/metagamebo/meta_learning/trainer.py",
+      "sha256": "e850b34e83aa94b1dda6ec974774c2b3a4f5a36536dca916e966f1c3479b6b01",
+      "git_blob_sha": "b20659ce79f74e7840f87ed2efb75ea3dbcd4199",
+      "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/meta_learning/trainer.py"
+    },
+    {
+      "path": "meta_learning/loss.py",
+      "local_path": "vendor/metagamebo/meta_learning/loss.py",
+      "sha256": "b8428bf2e10839c67fe446ee0ea718948095169ac42b6ccee88b66c273b9a178",
+      "git_blob_sha": "71ec83f57001e98aa29b331838278fbe5899bc0c",
+      "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/meta_learning/loss.py"
+    },
+    {
+      "path": "run_forrester.py",
+      "local_path": "vendor/metagamebo/run_forrester.py",
+      "sha256": "2e0a3893d37cadb2f76d7c2be4c259777b0214fd82872ac5b555079c780ecbfa",
+      "git_blob_sha": "55b322f3ac955c3b4b61bd5cba0d5c29ed70d907",
+      "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/run_forrester.py"
+    }
+  ],
+  "metric": {
+    "loss": "weighted_BCE_with_logits",
+    "reduction": "mean over rows within task",
+    "alpha": 0.8,
+    "CVaR": "mean largest max(1,int(N*(1-alpha))) task losses",
+    "dtype": "float64 source train default"
+  },
+  "EI_preparation": {
+    "scope": "Exact base-EI _reweight_samples component only; not a verified Table1 baseline evaluator",
+    "tau": "quantile(unique(y), gamma)",
+    "gamma_default": 0.3333333333333333,
+    "positive_label": "strict y<tau",
+    "augmentation": "good positive rows followed by all-point background negative rows",
+    "weights": "exact original function; nonuniform utility weights and mean normalization"
+  },
+  "current_runner_defaults_not_Table1": {
+    "meta_tasks": 200,
+    "observations_per_task": 32,
+    "epochs": 100,
+    "batch_size": 10,
+    "seed": 44,
+    "BO_steps": 16
+  },
+  "readiness": {
+    "metric": "SOURCE_VERIFIED_COMPONENT",
+    "base_EI_rows": "SOURCE_VERIFIED_COMPONENT",
+    "exact_Table1_reproduction": "NOT_PAPER_EQUIVALENT",
+    "GP_probability": "GROUP_DERIVED_EVALUATOR_NOT_AUTHOR_VERIFIED"
+  },
+  "forbidden": [
+    "Substitute PI weights=1 for source EI weighting",
+    "Use GP posterior mean as a binary logit",
+    "Treat event CDF as EI-augmented-class probability",
+    "Run or label new100 baseline results as exact Table1 without verified evaluator",
+    "Create handoff ZIP",
+    "Claim group-derived GP EI probability was verified by the author"
+  ]
+}

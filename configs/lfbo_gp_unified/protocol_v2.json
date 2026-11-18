@@ -1,0 +1,447 @@
+{
+  "schema_version": 2,
+  "status": "PAPER_INSPIRED_INDEPENDENT_REPRODUCTION",
+  "paper_equivalence": "NOT_PAPER_EQUIVALENT",
+  "runtime": {
+    "python": "3.12.14",
+    "executable": ".venv/bin/python",
+    "packages": {
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "scikit-learn": "1.7.2",
+      "joblib": "1.6.0",
+      "threadpoolctl": "3.8.0",
+      "matplotlib": "3.10.1"
+    }
+  },
+  "dataset": {
+    "version": "native-target-first-separate-coordinate-rng-v1",
+    "base_seed": 44,
+    "seeds": [
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143
+    ],
+    "families": 100,
+    "tasks": 200,
+    "smoke_tasks": 3,
+    "observations": 32,
+    "excluded_uid": 0,
+    "domain": [
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "split": {
+      "algorithm": "numpy.default_rng(derived_seed).permutation(32); first26 train, final6 validation",
+      "train_count": 26,
+      "validation_count": 6,
+      "namespace": "raw-split",
+      "no_coordinate_overlap": true,
+      "registered_manifest": "configs/lfbo_gp_unified/split_manifest_v1.json",
+      "manifest_sha256": "2e4eb69c68299a71ad3a7a31fd7d7426cd10b1f757cdb99847539254107fcdfa"
+    },
+    "rng": {
+      "derivation": "uint32 little-endian first4 SHA256(json([family_seed,\"unified-v1\",stream,task_id],separators=(comma,colon)))",
+      "descriptor": "native default_rng(family_seed) target-first",
+      "coordinates": "separate native default_rng(family_seed); native source parity retained",
+      "streams": [
+        "raw-split",
+        "rf-event",
+        "lfbo-ei",
+        "gp",
+        "bo-initial",
+        "bo-candidates",
+        "bo-lfbo",
+        "bo-gp"
+      ]
+    }
+  },
+  "classification": {
+    "gamma": 0.3333333333333333,
+    "tau": "numpy.quantile(numpy.unique(training_y),gamma)",
+    "strict_event": "y < tau",
+    "precision": "float64",
+    "alpha": 0.8,
+    "cvar": "max(1,int(N*(1-alpha))) largest task losses, literal Python",
+    "denominator": "validation_augmented_row_count for B; raw_row_count for A",
+    "aggregation": "mean and sample SE of family means/CVaRs; SE=null for singleton",
+    "RF_epsilon": 1e-12,
+    "GP_variance": "latent; fail explicitly at nonpositive variance, no floor",
+    "degenerate_training": "FAIL task/run if training has one event class or U_train<=0; do not change seed or discard task",
+    "calibration": {
+      "bins": 10,
+      "minimum_rows": 20,
+      "track_A_only": true
+    },
+    "track_A": {
+      "status": "MATCHED_RAW_EVENT_DIAGNOSTIC",
+      "methods": [
+        "RF_EVENT_BASELINE",
+        "GP_POSTERIOR_EVENT"
+      ],
+      "weights": 1
+    },
+    "track_B": {
+      "status": "GROUP_DERIVED_EVALUATOR / NOT_AUTHOR_VERIFIED",
+      "methods": [
+        "LFBO_EI_HELDOUT",
+        "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC"
+      ],
+      "training": "source EI order/weights from training only",
+      "validation": "positive utility rows then all negative background; freeze training c,U; never renormalize validation",
+      "constants": "U=mean(max(tau-training_y,0)); c=(n_train+n_good)/(2*n_train)",
+      "derived_probability": "EI(tau)/(EI(tau)+U_train)",
+      "semantics": "Bayes optimum population weighted augmented-row risk; independent group derivation, not author GP evaluator"
+    }
+  },
+  "RF": {
+    "owner_options": {
+      "gamma": 0.3333333333333333,
+      "weight_type": "ei",
+      "classifier": "rf",
+      "n_estimators": 1000,
+      "min_samples_split": 2,
+      "n_candidates": 5000,
+      "n_jobs": 1,
+      "duplicate_atol": 1e-08
+    },
+    "parameters": {
+      "n_estimators": 1000,
+      "criterion": "gini",
+      "max_depth": null,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "min_weight_fraction_leaf": 0.0,
+      "max_features": "sqrt",
+      "max_leaf_nodes": null,
+      "min_impurity_decrease": 0.0,
+      "bootstrap": true,
+      "oob_score": false,
+      "n_jobs": 1,
+      "verbose": 0,
+      "warm_start": false,
+      "class_weight": null,
+      "ccp_alpha": 0.0,
+      "max_samples": null,
+      "monotonic_cst": null
+    }
+  },
+  "GP": {
+    "length_scale": 0.2,
+    "length_scale_bounds": [
+      0.01,
+      10.0
+    ],
+    "amplitude": 1.0,
+    "amplitude_bounds": [
+      0.001,
+      1000.0
+    ],
+    "nu": 2.5,
+    "observation_noise": 1e-06,
+    "jitter_schedule": [
+      1e-10,
+      1e-09,
+      1e-08
+    ],
+    "normalize_y": true,
+    "optimizer": "fmin_l_bfgs_b",
+    "n_restarts_optimizer": 0,
+    "n_candidates": 5000,
+    "duplicate_atol": 1e-08,
+    "acquisition": "ei"
+  },
+  "numerics": {
+    "quadrature": "32-node Gauss-Laguerre for exact Gaussian tail integral identities when z<-8",
+    "tail_boundary": -8.0,
+    "nodes": [
+      0.04448936583326739,
+      0.23452610951961825,
+      0.5768846293018863,
+      1.072448753817818,
+      1.7224087764446456,
+      2.5283367064257942,
+      3.492213273021994,
+      4.616456769749767,
+      5.903958504174244,
+      7.358126733186241,
+      8.982940924212597,
+      10.78301863253997,
+      12.763697986742725,
+      14.931139755522558,
+      17.292454336715316,
+      19.855860940336054,
+      22.630889013196775,
+      25.628636022459247,
+      28.862101816323474,
+      32.346629153964734,
+      36.10049480575197,
+      40.14571977153944,
+      44.50920799575494,
+      49.22439498730864,
+      54.33372133339691,
+      59.89250916213402,
+      65.97537728793505,
+      72.68762809066271,
+      80.18744697791352,
+      88.7353404178924,
+      98.82954286828398,
+      111.7513980979377
+    ],
+    "weights": [
+      0.10921834195242515,
+      0.2104431079387924,
+      0.23521322966984298,
+      0.19590333597287354,
+      0.1299837862860684,
+      0.07057862386571556,
+      0.03176091250917397,
+      0.011918214834838204,
+      0.003738816294611417,
+      0.0009808033066149246,
+      0.0002148649188013578,
+      3.920341967987801e-05,
+      5.934541612868448e-06,
+      7.41640457866734e-07,
+      7.604567879120552e-08,
+      6.350602226625618e-09,
+      4.281382971040738e-10,
+      2.305899491891237e-11,
+      9.799379288726772e-13,
+      3.2378016577291567e-14,
+      8.171823443420549e-16,
+      1.542133833393811e-17,
+      2.119792290163547e-19,
+      2.0544296737880036e-21,
+      1.3469825866373617e-23,
+      5.661294130397462e-26,
+      1.4185605454629684e-28,
+      1.9133754944539943e-31,
+      1.1922487600982012e-34,
+      2.6715112192396625e-38,
+      1.3386169421064243e-42,
+      4.5105361938987784e-48
+    ]
+  },
+  "BO": {
+    "enabled_by_explicit_evaluation_flag": true,
+    "targets": "family target UID0 from seeds44..143; NOT historical target cohort14000..14099",
+    "budget": 16,
+    "n_init": 2,
+    "candidates": 5000,
+    "candidate_policy": "same independently seeded uniform pool per target/step, method-specific duplicate filtering, first argmax",
+    "reference_grid": 4097,
+    "reference_xatol": 1e-12,
+    "regret_tolerance": 1e-08,
+    "cvar": "fractional empirical upper20% over final target regrets; separate from classifier literal top-k"
+  },
+  "paper_reference": {
+    "LFBO": {
+      "average_loss": 0.5823,
+      "CVaR": 0.9876
+    },
+    "GP": {
+      "average_loss": 0.7891,
+      "CVaR": 1.3245
+    }
+  },
+  "run_ids": {
+    "smoke_A": "unified-a-smoke-01",
+    "smoke_B": "unified-b-smoke-01",
+    "family_A": "unified-a-family200-01",
+    "family_B": "unified-b-family200-01",
+    "full_A": "unified-a-full100-01",
+    "full_B": "unified-b-full100-01",
+    "BO": "unified-paired-bo100-01"
+  },
+  "provenance": {
+    "author_commit": "489213ddcfbfe275a8b443c0d8b136ef6c36ad2c",
+    "sources": [
+      {
+        "path": "MetaGameBO.py",
+        "local_path": "vendor/metagamebo/MetaGameBO.py",
+        "sha256": "8168f5702f2b1938d6bc6e3dd861e9219dda20d19cba6576f9cac4159c6b4cab",
+        "git_blob_sha": "79e9c4c82858ae14187d7f5d8f99b9198bc23ad1",
+        "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/MetaGameBO.py"
+      },
+      {
+        "path": "meta_learning/trainer.py",
+        "local_path": "vendor/metagamebo/meta_learning/trainer.py",
+        "sha256": "e850b34e83aa94b1dda6ec974774c2b3a4f5a36536dca916e966f1c3479b6b01",
+        "git_blob_sha": "b20659ce79f74e7840f87ed2efb75ea3dbcd4199",
+        "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/meta_learning/trainer.py"
+      },
+      {
+        "path": "meta_learning/loss.py",
+        "local_path": "vendor/metagamebo/meta_learning/loss.py",
+        "sha256": "b8428bf2e10839c67fe446ee0ea718948095169ac42b6ccee88b66c273b9a178",
+        "git_blob_sha": "71ec83f57001e98aa29b331838278fbe5899bc0c",
+        "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/meta_learning/loss.py"
+      },
+      {
+        "path": "run_forrester.py",
+        "local_path": "vendor/metagamebo/run_forrester.py",
+        "sha256": "2e0a3893d37cadb2f76d7c2be4c259777b0214fd82872ac5b555079c780ecbfa",
+        "git_blob_sha": "55b322f3ac955c3b4b61bd5cba0d5c29ed70d907",
+        "url": "https://github.com/Allen0497/MetaGameBO/blob/489213ddcfbfe275a8b443c0d8b136ef6c36ad2c/run_forrester.py"
+      }
+    ],
+    "lfbo_upstream_commit": "7d3364dd0eeab5ac2cfcfcb17c02473d89146195",
+    "email_evidence": "Author reply was reviewed locally; no email screenshot is distributed. GP evaluator remains group-derived and unverified.",
+    "assumptions": [
+      {
+        "status": "AUTHOR_CONFIRMED",
+        "items": [
+          "Table1 classifier losses",
+          "Weighted BCE row-count denominator",
+          "within-family task CVaR alpha=.8"
+        ]
+      },
+      {
+        "status": "SOURCE_GROUNDED",
+        "items": [
+          "native Forrester generator",
+          "EI augmentation and utility weights",
+          "RF1000 variant",
+          "validation task BCE/CVaR loop"
+        ]
+      },
+      {
+        "status": "GROUP_ASSUMPTION",
+        "items": [
+          "raw heldout26/6 per task",
+          "fixed seed schedule44..143",
+          "RF event baseline",
+          "local GP kernel/noise/optimizer",
+          "GP EI-derived evaluator",
+          "family-level aggregation and paired BO budget2+14"
+        ]
+      }
+    ],
+    "additional_audit_inputs": [
+      {
+        "path": "vendor/lfbo/model.py",
+        "sha256": "548c67bdc138e0ecd684d58b623e0473ac6159262b1e16d7f86f522cfd04b6f1"
+      }
+    ]
+  },
+  "fixture": {
+    "status": "SYNTHETIC_FIXTURE_NOT_EXPERIMENT",
+    "seeds": [
+      44
+    ],
+    "tasks": 3,
+    "RF_trees": 7,
+    "GP_optimizer": null,
+    "BO_targets": 1,
+    "BO_budget": 4,
+    "BO_candidates": 64,
+    "BO_reference_grid": 257
+  },
+  "tracking": "disabled",
+  "distribution": {
+    "version": "portable-v2",
+    "previous_protocol": "local-v1",
+    "scientific_parameters": "Unchanged from full100 v1; new source lineage, no v1 resume with v2 code",
+    "local_audit_evidence": "Retained locally; not required or distributed with the runtime"
+  }
+}

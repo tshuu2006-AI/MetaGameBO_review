@@ -1,0 +1,12 @@
+# Optional CPU environment for source/PyTorch arithmetic parity only.
+# Use separately from requirements.txt; no additional optimizer is installed.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
+numpy==1.26.4
+scipy==1.11.4
+scikit-learn==1.1.3
+joblib==1.6.0
+threadpoolctl==3.8.0
+matplotlib==3.10.1
+pyparsing==3.2.3
+pytest==8.3.5

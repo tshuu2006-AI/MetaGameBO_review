@@ -1,6 +1,3 @@
-# Preserve measured bytes and their SHA-256 identities across checkouts.
-artifacts/forrester_benchmark/** -text
-configs/forrester_benchmark/** -text
-artifacts/forrester_benchmark/**/*.csv whitespace=cr-at-eol
-# This is an exact upstream snapshot, including its original whitespace.
-configs/forrester_benchmark/author_snapshot/forrester.py -whitespace
+# Keep upstream source bytes and checksums identical across checkouts.
+vendor/** -text -whitespace
+configs/lfbo_gp_unified/** -text

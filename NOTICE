@@ -1,0 +1,15 @@
+LFBO / GP independent Forrester experiments by Phuoc.
+
+This distribution contains and adapts components from MetaGameBO,
+commit 489213ddcfbfe275a8b443c0d8b136ef6c36ad2c:
+https://github.com/Allen0497/MetaGameBO
+Original source and notices are under vendor/metagamebo/ (GNU AGPL v3).
+Repository code incorporating those components is distributed under LICENSE.
+
+The LFBO reference at commit 7d3364dd0eeab5ac2cfcfcb17c02473d89146195
+is preserved under vendor/lfbo/ with its original MIT license.
+https://github.com/lfbo-ml/lfbo
+
+Modifications: deterministic held-out data splits, native RF/GP baselines,
+independent metrics/checkpoints and the portable CLI. This is a group-derived
+independent experiment, not an author-verified reproduction of Table 1.
