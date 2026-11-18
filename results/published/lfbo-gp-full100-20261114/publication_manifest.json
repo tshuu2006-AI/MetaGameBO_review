@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "publication_type": "MEASURED_RESULTS_SUBSET_NOT_FULL_RUN_ARCHIVE",
+  "source_run_id": "unified-b-full100-20261114",
+  "paper_equivalence": "NOT_PAPER_EQUIVALENT",
+  "gp_evaluator": "GROUP_DERIVED_EVALUATOR / NOT_AUTHOR_VERIFIED",
+  "coverage": {
+    "families": 100,
+    "tasks_per_family": 200,
+    "methods": 2,
+    "task_loss_rows": 40000
+  },
+  "files": {
+    "summary.json": {
+      "sha256": "2e3d82b34cb4093b63168f1b84b11744ff14972100ffbe94675d6ebbe016777d",
+      "bytes": 1050,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/summary.json"
+    },
+    "run_metrics.json": {
+      "sha256": "6189e3049a1cf72f232f88b8b4ec61909e3d2fa14ecd4bf817b5e67989e95565",
+      "bytes": 38267,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/run_metrics.json"
+    },
+    "task_losses.csv": {
+      "sha256": "f1b8788065fa21a32bc5f85755d64302b9837b1ee24cc7e04381e4a80ae92ba6",
+      "bytes": 2679230,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/task_losses.csv"
+    },
+    "paired_task_differences.csv": {
+      "sha256": "74728d13c1a137a2caf807938fff0284c1bb68b038d89e69f5f24fd0e000f20e",
+      "bytes": 1748670,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/paired_task_differences.csv"
+    },
+    "failure_tails.json": {
+      "sha256": "8c92475e0ff48e0eb9cc9c464c73fe173a4f9c0c33f8da937c819653c000d033",
+      "bytes": 10708,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/failure_tails.json"
+    },
+    "calibration.json": {
+      "sha256": "68a9ae7f1e6d2073c537ca9efae513811a040f4b54de86823b16c261db50ce1f",
+      "bytes": 336,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/calibration.json"
+    },
+    "BCE_CVaR_same_protocol.png": {
+      "sha256": "65c3a1bd2ca76e4c0853eda08156391a25ba80bec8404ffc6cce91c436f4595a",
+      "bytes": 51232,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/BCE_CVaR_same_protocol.png"
+    },
+    "paired_task_differences.png": {
+      "sha256": "e18b1f0de03cda21e77d12440216cfd27ba3f3dfea1b0d813a528a2acf66ee4a",
+      "bytes": 42700,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/paired_task_differences.png"
+    },
+    "task_loss_distribution_and_tails.png": {
+      "sha256": "431aa0f8e10f1f7f626fbb5e48fdc880165247abc4d84fdc378446aa4a91c9df",
+      "bytes": 67971,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/task_loss_distribution_and_tails.png"
+    },
+    "config.json": {
+      "sha256": "730bf07e3191b28a9b7f302df2244c73fe569d95b7430849cdfa5269719a90c7",
+      "bytes": 12239,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/config.json"
+    },
+    "environment.json": {
+      "sha256": "21215e41e841e68c85842055e09cb9aa28190bea44e0196d74e276b586e94f75",
+      "bytes": 315,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/environment.json"
+    },
+    "registration.json": {
+      "sha256": "6becfb09f3cc215320b779c37faa830ab41753b9357db98d536aa35796a658be",
+      "bytes": 1084,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/registration.json"
+    },
+    "job.json": {
+      "sha256": "8f10e5f5bbec8bbc287a42e94053c93910c6b8f819d6aabd46be7b8b6d145129",
+      "bytes": 1061,
+      "source": "results/lfbo_gp_unified/unified-b-full100-20261114/job.json"
+    },
+    "logs/execution.log": {
+      "sha256": "e4cf2ed521c19c6cfeb3791286806da69de7c0df8a14f99b0263588918039c64",
+      "bytes": 1561697,
+      "source": "output/lfbo_gp_unified_full100/execution.log"
+    },
+    "logs/verify.log": {
+      "sha256": "4f673f4b3f5c614ddf61f5e05033f8720f1a5833d8b7af149f248f4f93e1c166",
+      "bytes": 86,
+      "source": "output/lfbo_gp_unified_full100/verify.log"
+    },
+    "logs/completion.json": {
+      "sha256": "791f9d7b03f0032674eed58d95894ce218e5068c3f5398bc318df6c3fd317f8f",
+      "bytes": 78,
+      "source": "output/lfbo_gp_unified_full100/completion.json"
+    },
+    "logs/torch_actual_parity.json": {
+      "sha256": "92f52f322da0f06d86ae264e004f14925a3eea3fc3353b550065644922164988",
+      "bytes": 55029,
+      "source": "output/lfbo_gp_unified_full100/torch_actual_parity.json"
+    }
+  },
+  "omitted_local_only": {
+    "raw_observations_and_task_predictions": "results/lfbo_gp_unified/unified-b-full100-20261114/families",
+    "aggregate_predictions": "results/lfbo_gp_unified/unified-b-full100-20261114/predictions.csv",
+    "historical_source_snapshot": "results/lfbo_gp_unified/unified-b-full100-20261114/source_snapshot",
+    "private_audit_evidence": "Not published"
+  },
+  "verification_scope": "SHA256 confirms publication bytes. task_losses.csv and run_metrics.json allow independent task-to-family-to-summary aggregation checks. Original verify.log and torch parity are historical evidence from full local archive; this subset cannot reverify row-level BCE or source lineage and cannot be resumed."
+}

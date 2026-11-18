@@ -1,0 +1,10 @@
+{
+  "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+    "reason": "EI weighted augmented distribution has different semantics",
+    "status": "NOT_APPLICABLE_RAW_EVENT_CALIBRATION"
+  },
+  "LFBO_EI_HELDOUT": {
+    "reason": "EI weighted augmented distribution has different semantics",
+    "status": "NOT_APPLICABLE_RAW_EVENT_CALIBRATION"
+  }
+}

@@ -1,0 +1,1802 @@
+[
+  {
+    "family_index": 0,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5710498691449717,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3168649511604058
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9348366798187465,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44294482043621036
+      }
+    },
+    "seed": 44
+  },
+  {
+    "family_index": 1,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6043267923221787,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.338944355918912
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8706015709040468,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44990778727270303
+      }
+    },
+    "seed": 45
+  },
+  {
+    "family_index": 2,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6474063573715678,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35569051108238875
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 2.655760538356172,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.8110556531136259
+      }
+    },
+    "seed": 46
+  },
+  {
+    "family_index": 3,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6423989977280378,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35156952779146816
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.3277168587915975,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5430838440038357
+      }
+    },
+    "seed": 47
+  },
+  {
+    "family_index": 4,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6283165774002577,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3301800950570214
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.7635539489517753,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.6091141177857528
+      }
+    },
+    "seed": 48
+  },
+  {
+    "family_index": 5,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.604652113060337,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3491115511604955
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.3050134366443675,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5472082267279917
+      }
+    },
+    "seed": 49
+  },
+  {
+    "family_index": 6,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5882270783647925,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3179944679160618
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8370965390144611,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4234076413787373
+      }
+    },
+    "seed": 50
+  },
+  {
+    "family_index": 7,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5737935326239009,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3250750202535033
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.2034035781498855,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.49839727692291497
+      }
+    },
+    "seed": 51
+  },
+  {
+    "family_index": 8,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6103714256632189,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32114050212262896
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9534326700893303,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4421037754958304
+      }
+    },
+    "seed": 52
+  },
+  {
+    "family_index": 9,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6029674747665468,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3364588534275314
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0834924082108863,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4933104961977255
+      }
+    },
+    "seed": 53
+  },
+  {
+    "family_index": 10,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6040177257368976,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3369557360065167
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8687561840974147,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4424223733006332
+      }
+    },
+    "seed": 54
+  },
+  {
+    "family_index": 11,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6400720097123014,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32565960291996093
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9845591862949824,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.45836573885229437
+      }
+    },
+    "seed": 55
+  },
+  {
+    "family_index": 12,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5757119437396204,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32458216542461427
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 2.1739954446767835,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.693414714635216
+      }
+    },
+    "seed": 56
+  },
+  {
+    "family_index": 13,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5897440218827723,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30591325054424245
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9843836900262207,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4316148869749255
+      }
+    },
+    "seed": 57
+  },
+  {
+    "family_index": 14,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6192062563250572,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33968084579555574
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0008261348022773,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4697923220802008
+      }
+    },
+    "seed": 58
+  },
+  {
+    "family_index": 15,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5903760186532615,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3265123922757936
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9497801404730685,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.45021844409780093
+      }
+    },
+    "seed": 59
+  },
+  {
+    "family_index": 16,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6036284367742408,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32927854737611295
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 2.453057855331763,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.7524419128834001
+      }
+    },
+    "seed": 60
+  },
+  {
+    "family_index": 17,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5616503231024154,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30944453247405324
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.7672176018937359,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.40263764284783554
+      }
+    },
+    "seed": 61
+  },
+  {
+    "family_index": 18,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6146383028625864,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32518405014084634
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.412706579531582,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5380504270420133
+      }
+    },
+    "seed": 62
+  },
+  {
+    "family_index": 19,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5448090111837934,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30624153673478
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.5641624269474594,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5622425577673569
+      }
+    },
+    "seed": 63
+  },
+  {
+    "family_index": 20,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6215504353818189,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33866374650850256
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0996230622976921,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.49136124451141494
+      }
+    },
+    "seed": 64
+  },
+  {
+    "family_index": 21,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5917470218550309,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.31800385186187724
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8103130182975875,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4113473030181487
+      }
+    },
+    "seed": 65
+  },
+  {
+    "family_index": 22,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5931661437437187,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33468758809055976
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9252004388843063,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44972097816473655
+      }
+    },
+    "seed": 66
+  },
+  {
+    "family_index": 23,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6276925541111438,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33154201664014354
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.2251099906622214,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5121779966360194
+      }
+    },
+    "seed": 67
+  },
+  {
+    "family_index": 24,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5726342386955107,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30185312551474225
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8928958148524037,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4182686476585801
+      }
+    },
+    "seed": 68
+  },
+  {
+    "family_index": 25,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5871624162518191,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32277887616572226
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8713477806576773,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4312174761977455
+      }
+    },
+    "seed": 69
+  },
+  {
+    "family_index": 26,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5951922331777164,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3041539729762202
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9325980882679507,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.42361653228148066
+      }
+    },
+    "seed": 70
+  },
+  {
+    "family_index": 27,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5647296933273592,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3077355539145859
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8355888249372578,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.41224112205967833
+      }
+    },
+    "seed": 71
+  },
+  {
+    "family_index": 28,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6044233758529578,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3227493423273969
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.3113358765703953,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5151997013062644
+      }
+    },
+    "seed": 72
+  },
+  {
+    "family_index": 29,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5726090135111749,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3228094183224974
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.486295396251745,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5598005771894317
+      }
+    },
+    "seed": 73
+  },
+  {
+    "family_index": 30,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6153383066849037,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3387536743419958
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 2.117351659391336,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.6888891475835687
+      }
+    },
+    "seed": 74
+  },
+  {
+    "family_index": 31,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6110952532611514,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35784984785451734
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.029537742370221,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5055616737749212
+      }
+    },
+    "seed": 75
+  },
+  {
+    "family_index": 32,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5628835457149887,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30174387886357623
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8850242369788728,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4216717500975441
+      }
+    },
+    "seed": 76
+  },
+  {
+    "family_index": 33,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6130166071693129,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33513455757105326
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0440371575382001,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.47917680859797473
+      }
+    },
+    "seed": 77
+  },
+  {
+    "family_index": 34,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5825251683648982,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30522571894740735
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9602560694480059,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44092080668871975
+      }
+    },
+    "seed": 78
+  },
+  {
+    "family_index": 35,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5930241692905863,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3177805996186881
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9909307792911671,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4522430661957641
+      }
+    },
+    "seed": 79
+  },
+  {
+    "family_index": 36,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6315221831127606,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35055902953248347
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 14.344098177991928,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 3.0854521197585973
+      }
+    },
+    "seed": 80
+  },
+  {
+    "family_index": 37,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6112032371834698,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3121573006001233
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.820042922282747,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4042876378771029
+      }
+    },
+    "seed": 81
+  },
+  {
+    "family_index": 38,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5694308644020798,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3060439003774378
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.1420468800049366,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4750281417880342
+      }
+    },
+    "seed": 82
+  },
+  {
+    "family_index": 39,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6009252746020108,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32614786915483895
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.2857621249071494,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.520539247827056
+      }
+    },
+    "seed": 83
+  },
+  {
+    "family_index": 40,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6394842503586998,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3351511371730336
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.6545073981153238,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5909963865414164
+      }
+    },
+    "seed": 84
+  },
+  {
+    "family_index": 41,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6017467128705043,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3424965638447069
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.014292967358781,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.48452013807968886
+      }
+    },
+    "seed": 85
+  },
+  {
+    "family_index": 42,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6258898777920133,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3280556082045429
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.3143325819078269,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5194359372275034
+      }
+    },
+    "seed": 86
+  },
+  {
+    "family_index": 43,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.609557654630695,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3367670978562393
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.2855488545884988,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5370127281566303
+      }
+    },
+    "seed": 87
+  },
+  {
+    "family_index": 44,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.589340998938315,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3515087899983843
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.4444830375216209,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5739531217057223
+      }
+    },
+    "seed": 88
+  },
+  {
+    "family_index": 45,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5971494242526632,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32731154911804167
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9503817659945561,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4491020047571049
+      }
+    },
+    "seed": 89
+  },
+  {
+    "family_index": 46,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5420039311033713,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3189771527561842
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.8998458562412537,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.6457257436941182
+      }
+    },
+    "seed": 90
+  },
+  {
+    "family_index": 47,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6264666261092098,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3392935575566994
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0759590569998245,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.48655767753015733
+      }
+    },
+    "seed": 91
+  },
+  {
+    "family_index": 48,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5802728674171698,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3180719687812362
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.673976951845638,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5850731374373497
+      }
+    },
+    "seed": 92
+  },
+  {
+    "family_index": 49,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5780505578970713,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3281935855518707
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.7915828752457907,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.6221601608328972
+      }
+    },
+    "seed": 93
+  },
+  {
+    "family_index": 50,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5961346041829909,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32322574130370735
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9164336252412274,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4376262686398942
+      }
+    },
+    "seed": 94
+  },
+  {
+    "family_index": 51,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.624886249448758,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3337384011469747
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9069841595833703,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.45050219701183886
+      }
+    },
+    "seed": 95
+  },
+  {
+    "family_index": 52,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.593708031444144,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32666399263364015
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.902087815188855,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4408490083672549
+      }
+    },
+    "seed": 96
+  },
+  {
+    "family_index": 53,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.632638465453855,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.34580921988010305
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8518212815383067,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4448367042176131
+      }
+    },
+    "seed": 97
+  },
+  {
+    "family_index": 54,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6231699997728527,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35070168391936674
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.907503545338817,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4672200976449988
+      }
+    },
+    "seed": 98
+  },
+  {
+    "family_index": 55,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6008453270516886,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33553141402584624
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9017578073001163,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.45065461093491294
+      }
+    },
+    "seed": 99
+  },
+  {
+    "family_index": 56,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6041379176798666,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3208903938507318
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9583662171076778,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44766245599568466
+      }
+    },
+    "seed": 100
+  },
+  {
+    "family_index": 57,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5732135114362561,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32924387252409576
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 3.1228818099404045,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.8894944702590241
+      }
+    },
+    "seed": 101
+  },
+  {
+    "family_index": 58,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5826065692229734,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30870472273937644
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.4245486745416749,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5188197155689727
+      }
+    },
+    "seed": 102
+  },
+  {
+    "family_index": 59,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.607675909499278,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3202662885261941
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8311284530057579,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4215497118142231
+      }
+    },
+    "seed": 103
+  },
+  {
+    "family_index": 60,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6211051253161309,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32610494607646845
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.1250037089675289,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4790640942876592
+      }
+    },
+    "seed": 104
+  },
+  {
+    "family_index": 61,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5819837491901405,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3182090750050658
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8617491384966249,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4278482067176469
+      }
+    },
+    "seed": 105
+  },
+  {
+    "family_index": 62,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6112556628984964,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32880471570893405
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9346634780943156,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44730159698594163
+      }
+    },
+    "seed": 106
+  },
+  {
+    "family_index": 63,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.606964355861321,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3254747000096993
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0886202191221455,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.47669339773721525
+      }
+    },
+    "seed": 107
+  },
+  {
+    "family_index": 64,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6319844111711819,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.34231606384592855
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 2.2150016181640417,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.7140826324420021
+      }
+    },
+    "seed": 108
+  },
+  {
+    "family_index": 65,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5721252540628932,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3117899488923271
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9679839457703601,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4429087515665372
+      }
+    },
+    "seed": 109
+  },
+  {
+    "family_index": 66,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5958337884215735,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33606669432584807
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0024633069799445,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.477382330364421
+      }
+    },
+    "seed": 110
+  },
+  {
+    "family_index": 67,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6034956677084352,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33082263291789743
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9457121552775907,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.46327148089690245
+      }
+    },
+    "seed": 111
+  },
+  {
+    "family_index": 68,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5546530480485478,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3380663187178459
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9724676928155156,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.48222199965113094
+      }
+    },
+    "seed": 112
+  },
+  {
+    "family_index": 69,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5586898821899252,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.2992069116723538
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8243830430442615,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.40485600530176086
+      }
+    },
+    "seed": 113
+  },
+  {
+    "family_index": 70,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.603965896578687,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32610003785447456
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9483025245794672,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.45519501881924257
+      }
+    },
+    "seed": 114
+  },
+  {
+    "family_index": 71,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5917932698827307,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33949810669834074
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8532051634749535,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4592298659474062
+      }
+    },
+    "seed": 115
+  },
+  {
+    "family_index": 72,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5900067957985391,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3279831546827845
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.584493236634032,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.577843362684058
+      }
+    },
+    "seed": 116
+  },
+  {
+    "family_index": 73,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5627810217807631,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.30799748537512506
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.7443890607828785,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4032520720057884
+      }
+    },
+    "seed": 117
+  },
+  {
+    "family_index": 74,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.625862778139133,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.34982780106303646
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.062572085513951,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.49190890002612836
+      }
+    },
+    "seed": 118
+  },
+  {
+    "family_index": 75,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6128494182102266,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32768669249000687
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.1945676365657598,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.49187890481666485
+      }
+    },
+    "seed": 119
+  },
+  {
+    "family_index": 76,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6046336252854216,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3381234962545108
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0218733673036102,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.47479932703239464
+      }
+    },
+    "seed": 120
+  },
+  {
+    "family_index": 77,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6140118958784889,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3410455665853169
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.5349301317566129,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5863139864354018
+      }
+    },
+    "seed": 121
+  },
+  {
+    "family_index": 78,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5957073128434913,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33568931395122187
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8041659195887139,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.435167023373897
+      }
+    },
+    "seed": 122
+  },
+  {
+    "family_index": 79,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6042762272264404,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.34352262204787726
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.1189774470778664,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5096244956836635
+      }
+    },
+    "seed": 123
+  },
+  {
+    "family_index": 80,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5907353549987483,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3294732077312176
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.4732263381464326,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5698873715227785
+      }
+    },
+    "seed": 124
+  },
+  {
+    "family_index": 81,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6376786993150352,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3307506370559545
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9730994581292374,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4551868420213211
+      }
+    },
+    "seed": 125
+  },
+  {
+    "family_index": 82,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5946214215980464,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33277159640643406
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8805000470053158,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4409906349527613
+      }
+    },
+    "seed": 126
+  },
+  {
+    "family_index": 83,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.609478887396852,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.339331986017673
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.198569755480143,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5151443203551742
+      }
+    },
+    "seed": 127
+  },
+  {
+    "family_index": 84,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6088898997149447,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3385773679970513
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8546352175085319,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.44011794060251175
+      }
+    },
+    "seed": 128
+  },
+  {
+    "family_index": 85,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5998586117976747,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3470446684328075
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9411260143403685,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.47302276144775174
+      }
+    },
+    "seed": 129
+  },
+  {
+    "family_index": 86,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5690804477934694,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3159018135517864
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.932867832483117,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.439408809686423
+      }
+    },
+    "seed": 130
+  },
+  {
+    "family_index": 87,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5847061529529829,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3156787683254788
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8864543989063906,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4342260108290378
+      }
+    },
+    "seed": 131
+  },
+  {
+    "family_index": 88,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5942410118599704,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.31698801115165315
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.165687614921,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.48385324007902064
+      }
+    },
+    "seed": 132
+  },
+  {
+    "family_index": 89,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6080187303558472,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3289392268884788
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.4266423766374208,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5473493919557805
+      }
+    },
+    "seed": 133
+  },
+  {
+    "family_index": 90,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5834852400805719,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3210735642324716
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.9172995260058519,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4422625414403414
+      }
+    },
+    "seed": 134
+  },
+  {
+    "family_index": 91,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6293645630383147,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3417077807642973
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.70864391570581,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.6156993884102968
+      }
+    },
+    "seed": 135
+  },
+  {
+    "family_index": 92,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6005697584868214,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3231509525888212
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8545976757246025,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4221364704646929
+      }
+    },
+    "seed": 136
+  },
+  {
+    "family_index": 93,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.5891390892488043,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.32149200379660803
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.4004012085878592,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.5384747634922651
+      }
+    },
+    "seed": 137
+  },
+  {
+    "family_index": 94,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6018167382828464,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3409814182013707
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.992569038682105,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.47978023706004697
+      }
+    },
+    "seed": 138
+  },
+  {
+    "family_index": 95,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6405687523990051,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.359932224690825
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.1677599902148472,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.518570509276523
+      }
+    },
+    "seed": 139
+  },
+  {
+    "family_index": 96,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6197406612961422,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.33991660037260685
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.0746019829628006,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.4864286582892332
+      }
+    },
+    "seed": 140
+  },
+  {
+    "family_index": 97,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6055428139883283,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.3243100649020289
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8162205491284589,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.41947140637732583
+      }
+    },
+    "seed": 141
+  },
+  {
+    "family_index": 98,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6287900326965465,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.332319572157839
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.8714067692387941,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.43176878069074515
+      }
+    },
+    "seed": 142
+  },
+  {
+    "family_index": 99,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.6464187143744395,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.35515218930969406
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 1.12305832307991,
+        "N": 200,
+        "k": 39,
+        "mean_BCE": 0.518446870009434
+      }
+    },
+    "seed": 143
+  }
+]

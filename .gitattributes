@@ -1,3 +1,6 @@
 # Keep upstream source bytes and checksums identical across checkouts.
 vendor/** -text -whitespace
 configs/lfbo_gp_unified/** -text
+
+# Preserve measured result bytes and original CSV/log line endings.
+results/published/lfbo-gp-full100-20261114/** -text -whitespace
