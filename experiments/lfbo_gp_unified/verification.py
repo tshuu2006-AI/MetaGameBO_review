@@ -98,14 +98,19 @@ def family(folder,index,complete=True):
         return verify_family(folder,index,d,c,job,pid)
     require(d['version']==('synthetic-fixture-v1' if job['fixture'] else c['dataset']['version']),'Dataset generation version')
     losses={m:[] for m in methods(c,job['track'])};units=[]
-    for t in d['tasks']:
+    from .checkpoints import selected,model_path,check
+    for task_index,t in enumerate(d['tasks']):
         audit_task(t,family_seed,c,folder/'source_snapshot')
         for method in losses:
             path=directory/'units'/t['task_id']/(method+'.json')
             if not path.exists():
                 require(not complete,'Incomplete task: '+str(path));continue
             identity=dict(protocol_id=pid,dataset_sha256=sha(directory/'dataset.json'),family_index=index,task_id=t['task_id'],track=job['track'],method=method)
-            r=audit_unit(unseal(path),t,job['track'],c,identity);losses[method].append(r['task_loss']);units.append((t['task_id'],r))
+            r=audit_unit(unseal(path),t,job['track'],c,identity)
+            if selected(job.get('checkpoint_policy','none'),index,task_index):
+                require('model_checkpoint' in r,'Expected fitted model checkpoint missing')
+            if 'model_checkpoint' in r:check(model_path(directory,t['task_id'],method),r['model_checkpoint'])
+            losses[method].append(r['task_loss']);units.append((t['task_id'],r))
     stats={m:task_summary(v,c['classification']['alpha']) for m,v in losses.items()}
     require(all(s['N']==job['tasks'] for s in stats.values()),'Task dropped from family')
     return dict(family_index=index,seed=family_seed,methods=stats),units,d

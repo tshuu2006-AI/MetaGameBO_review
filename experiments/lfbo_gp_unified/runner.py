@@ -28,12 +28,13 @@ def fixture_data(family_seed,tasks,c):
     return dict(version='synthetic-fixture-v1',family_seed=family_seed,tasks=values,excluded_target_uid=0,objective_observations=0)
 
 
-def initialize(folder,mode,track,evaluation,c,fixture=False):
+def initialize(folder,mode,track,evaluation,c,fixture=False,checkpoint_policy='none'):
     env=environment(c);folder=Path(folder)
     require(mode in ('smoke','family','full'),'Execution mode')
     job=dict(mode=mode,track=track,evaluation=evaluation,seeds=c['dataset']['seeds'] if mode=='full' else [c['dataset']['base_seed']],
         tasks=1 if evaluation=='bo' else (c['dataset']['smoke_tasks'] if mode=='smoke' else c['dataset']['tasks']),
-        fixture=fixture,status=c['fixture']['status'] if fixture else c['status'],run_id=folder.name)
+        fixture=fixture,status=c['fixture']['status'] if fixture else c['status'],run_id=folder.name,
+        checkpoint_policy=checkpoint_policy)
     if fixture:job['tasks']=1 if evaluation=='bo' else c['fixture']['tasks'];job['seeds']=c['fixture']['seeds']
     folder.mkdir(parents=True,exist_ok=False)
     save(folder/'config.json',c);save(folder/'job.json',job);save(folder/'environment.json',env)
@@ -74,11 +75,15 @@ def execute_family(folder_text,index):
         else:
             from .lfbo_runner import fit as fit_rf
             from .gp_runner import fit as fit_gp
-            for t in data['tasks']:
+            from .checkpoints import selected,model_path
+            for task_index,t in enumerate(data['tasks']):
                 for method,fit in zip(methods(c,job['track']),(fit_rf,fit_gp)):
                     p=directory/'units'/t['task_id']/(method+'.json');identity=dict(protocol_id=pid,dataset_sha256=sha(path),family_index=index,task_id=t['task_id'],track=job['track'],method=method)
                     if p.exists():audit_unit(unseal(p),t,job['track'],c,identity);continue
-                    result=fit(t,job['track'],c);seal(p,dict(identity=identity,result=result));new+=1
+                    options={}
+                    if selected(job.get('checkpoint_policy','none'),index,task_index):
+                        options['checkpoint_path']=model_path(directory,t['task_id'],method)
+                    result=fit(t,job['track'],c,**options);seal(p,dict(identity=identity,result=result));new+=1
                 emit(directory,dict(event='TASK_COMPLETE',seed=family_seed,task=t['task_id'],new_fits=new))
     stats,_,_=family(folder,index);seal(directory/'completed.json',stats)
     emit(directory,dict(event='FAMILY_COMPLETE',metrics=stats,new_fits=new));return dict(index=index,cached=False,new_fits=new)
@@ -91,15 +96,17 @@ def guarded_family(folder,index):
         raise
 
 
-def run(folder,mode,track,evaluation,c,workers=1,resume=False,fixture=False):
+def run(folder,mode,track,evaluation,c,workers=1,resume=False,fixture=False,checkpoint_policy=None):
     folder=Path(folder)
+    require(checkpoint_policy in (None,'none','representative','all'),'Unknown checkpoint policy')
     if folder.exists():
         require(resume,'Run exists; choose new ID or resume');check_lock(folder,current=True)
         require(canonical(read(folder/'config.json'))==canonical(c),'Resume config differs')
         job=read(folder/'job.json');require((job['track'],job['evaluation'],job['fixture'])==(track,evaluation,fixture),'Resume track/evaluation/profile differs')
+        require(checkpoint_policy is None or checkpoint_policy==job.get('checkpoint_policy','none'),'Resume checkpoint policy differs')
         require(read(folder/'environment.json')==environment(c),'Resume runtime differs')
     else:
-        require(not resume,'Missing run to resume');job=initialize(folder,mode,track,evaluation,c,fixture)
+        require(not resume,'Missing run to resume');job=initialize(folder,mode,track,evaluation,c,fixture,checkpoint_policy or 'none')
     with (folder/'.execution.lock').open('a') as guard:
         fcntl.flock(guard,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if (folder/'report_manifest.json').exists():verify(folder);print('COMPLETE CACHE: new_fits=0, new_objective_calls=0');return

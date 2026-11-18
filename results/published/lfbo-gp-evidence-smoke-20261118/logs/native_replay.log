@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "checkpoints_replayed": 2,
+  "operation": "inference_only",
+  "model_fits": 0,
+  "objective_calls": 0
+}

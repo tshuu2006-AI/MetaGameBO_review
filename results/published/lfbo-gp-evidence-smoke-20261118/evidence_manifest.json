@@ -1,0 +1,59 @@
+{
+  "checkpoint_scope": "first task of first family only",
+  "checkpoint_status": "SAVED_DURING_FIT",
+  "checkpoints": [
+    {
+      "format": "joblib-native-estimator-v1",
+      "kind": "random_forest",
+      "method": "LFBO_EI_HELDOUT",
+      "path": "checkpoints/LFBO_EI_HELDOUT.joblib",
+      "sha256": "a81f7559229c3a56b44bbe9995cd55ac79200de6f0d8eebac975c7280f6fcd03",
+      "task_index": 0
+    },
+    {
+      "format": "joblib-native-estimator-v1",
+      "kind": "gaussian_process",
+      "method": "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC",
+      "path": "checkpoints/GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC.joblib",
+      "sha256": "41ff944d5e19eb0acdda4b4dbf89d387222711494d9d5236e1f98a297ecd84f8",
+      "task_index": 0
+    }
+  ],
+  "classifier_rows": 50,
+  "families": 1,
+  "files": {
+    "checkpoints/GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC.joblib": "41ff944d5e19eb0acdda4b4dbf89d387222711494d9d5236e1f98a297ecd84f8",
+    "checkpoints/LFBO_EI_HELDOUT.joblib": "a81f7559229c3a56b44bbe9995cd55ac79200de6f0d8eebac975c7280f6fcd03",
+    "classifier_predictions.npz": "82cccc9a8b4b1cd412ae9158dbada4274e8383f4734bf58f62b7f8d143a0ec1c",
+    "config.json": "11e80ea1effc611b94e13ced130b50997c43943ac4cf1b28b42fe69954d09204",
+    "environment.json": "21215e41e841e68c85842055e09cb9aa28190bea44e0196d74e276b586e94f75",
+    "job.json": "2a1d49309a00c85c15ad2e8be917db948ce78e586b8323af50fdabd434ad7230",
+    "logs/native_replay.log": "758632028357c7e8c09f09ab99ab8d0b9c7a9d405ca055cdf1c8756d582fb075",
+    "logs/native_smoke.log": "4a9fead541dc2e3d779b48a185a06f2b9efec7c3dc747028cc19dfd2ee2a098c",
+    "logs/native_verify.log": "84a19ac960fd4bed871aa6e5b6d68a127b7b4b149ffdd152ce15ecccaf0c7efb",
+    "logs/tests.xml": "780fa9eaeaffec34dd177acd59f5cb2e63fbb1a06a24be141b1fa165e7d6718b",
+    "logs/torch_tests.xml": "258f007b5cfe9a94b1f0ab7750180ad1980a25d24b442cd033c6cd8e1cc5d608",
+    "meta_dataset.npz": "9c2094fa85e8490398c83815ee448c13467dacdd4f62b0d5503d5c6695e54061",
+    "protocol_lock.json": "f28f04f47196ae8c21a5d616ce9b56a785811e32856fd7ccae9a1bacec6d1b4a",
+    "registration.json": "83923eb0461f7796d898135e53a231445bc2e0ea77a9d3ce4a9a58f2f9eafcb6",
+    "run_metrics.json": "34ce753ff9e3bbe3c2383281a5f0b17481be0648a016ec6bf61b83d74d2dcea7",
+    "summary.json": "80ac41ea9617e030729eeafd1248210612150e5e0fee6013efb709cc200f86f3"
+  },
+  "methods": [
+    "LFBO_EI_HELDOUT",
+    "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC"
+  ],
+  "missing_field_policy": "posterior_mean/latent_variance are NaN only for RF rows (not applicable)",
+  "model_fits_during_export": 0,
+  "objective_calls_during_export": 0,
+  "observations": 96,
+  "paper_equivalence": "NOT_PAPER_EQUIVALENT",
+  "schema_version": 1,
+  "source_protocol_id": "171252146114ab66a1e2b2841f19ecbdcb524dc81361089018d89abf1bfe54ed",
+  "source_run_id": "lfbo-gp-evidence-smoke-20261118",
+  "status": "PAPER_INSPIRED_INDEPENDENT_REPRODUCTION",
+  "task_count": 3,
+  "tasks_per_family": 3,
+  "track": "B",
+  "verification_scope": "Complete raw observation arrays, splits, validation predictions and task losses; source snapshot and all model checkpoints are not bundled. Original protocol lock is provenance metadata, not a full source archive."
+}

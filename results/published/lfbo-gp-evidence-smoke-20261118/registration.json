@@ -1,0 +1,9 @@
+{
+  "config_sha256": "386a9f020eef918b49965771c7cf3b50a092b87a0e03c10ff466edfabf449597",
+  "dataset_policy": "fresh deterministic family manifests sealed before first fit",
+  "fixed_seeds": [
+    44
+  ],
+  "model_fits": 0,
+  "objective_calls": 0
+}

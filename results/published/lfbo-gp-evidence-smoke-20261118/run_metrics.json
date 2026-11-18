@@ -1,0 +1,20 @@
+[
+  {
+    "family_index": 0,
+    "methods": {
+      "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+        "CVaR": 0.4254202408770668,
+        "N": 3,
+        "k": 1,
+        "mean_BCE": 0.32266498723014164
+      },
+      "LFBO_EI_HELDOUT": {
+        "CVaR": 0.4688602093662518,
+        "N": 3,
+        "k": 1,
+        "mean_BCE": 0.4333925649542835
+      }
+    },
+    "seed": 44
+  }
+]

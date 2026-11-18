@@ -1,0 +1,13 @@
+{
+  "checkpoint_policy": "representative",
+  "evaluation": "classifier",
+  "fixture": false,
+  "mode": "smoke",
+  "run_id": "lfbo-gp-evidence-smoke-20261118",
+  "seeds": [
+    44
+  ],
+  "status": "PAPER_INSPIRED_INDEPENDENT_REPRODUCTION",
+  "tasks": 3,
+  "track": "B"
+}

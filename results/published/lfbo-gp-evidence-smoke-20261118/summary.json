@@ -1,0 +1,38 @@
+{
+  "config_sha256": "386a9f020eef918b49965771c7cf3b50a092b87a0e03c10ff466edfabf449597",
+  "evaluation": "classifier",
+  "families": 1,
+  "methods": {
+    "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC": {
+      "CVaR": {
+        "SE": null,
+        "mean": 0.4254202408770668,
+        "runs": 1
+      },
+      "mean_BCE": {
+        "SE": null,
+        "mean": 0.32266498723014164,
+        "runs": 1
+      }
+    },
+    "LFBO_EI_HELDOUT": {
+      "CVaR": {
+        "SE": null,
+        "mean": 0.4688602093662518,
+        "runs": 1
+      },
+      "mean_BCE": {
+        "SE": null,
+        "mean": 0.4333925649542835,
+        "runs": 1
+      }
+    }
+  },
+  "paper_equivalence": "NOT_PAPER_EQUIVALENT",
+  "protocol_id": "171252146114ab66a1e2b2841f19ecbdcb524dc81361089018d89abf1bfe54ed",
+  "run_id": "lfbo-gp-evidence-smoke-20261118",
+  "status": "PAPER_INSPIRED_INDEPENDENT_REPRODUCTION",
+  "tasks_per_family": 3,
+  "track": "B",
+  "track_status": "GROUP_DERIVED_EVALUATOR / NOT_AUTHOR_VERIFIED"
+}

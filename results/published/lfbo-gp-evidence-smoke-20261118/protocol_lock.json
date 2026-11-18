@@ -1,0 +1,50 @@
+{
+  "payload": {
+    "files": {
+      "config.json": "11e80ea1effc611b94e13ced130b50997c43943ac4cf1b28b42fe69954d09204",
+      "environment.json": "21215e41e841e68c85842055e09cb9aa28190bea44e0196d74e276b586e94f75",
+      "job.json": "2a1d49309a00c85c15ad2e8be917db948ce78e586b8323af50fdabd434ad7230",
+      "registration.json": "83923eb0461f7796d898135e53a231445bc2e0ea77a9d3ce4a9a58f2f9eafcb6"
+    },
+    "sources": {
+      "configs/lfbo_gp_unified/protocol_v2.json": "3cdce4661760cf0e4d49b7b5660ec09b09e43ed94e61cb4801e8060a71667831",
+      "configs/lfbo_gp_unified/protocol_v2.sha256": "248186051e2e3c51130ced680e713242fb23798b3cd5f930bccde17635913819",
+      "configs/lfbo_gp_unified/source_contract.json": "fea2bf057325b3ab19e85b8a5d32a6341f92e06d50da7970502bc55722a77bfa",
+      "configs/lfbo_gp_unified/split_manifest_v1.json": "2e4eb69c68299a71ad3a7a31fd7d7426cd10b1f757cdb99847539254107fcdfa",
+      "experiments/__init__.py": "d412784ec2cdfc282526ced1496229df5dbc3130d97a6864108489a285dc7830",
+      "experiments/lfbo_gp_unified/__init__.py": "8aee1535ef3a4e6efd8907f73049a2b55f7e542bb081c6bf50668248ccf1fb4e",
+      "experiments/lfbo_gp_unified/bo.py": "f610a10f5443014271988afe2a7745df17c2aa698d4551d80accb38d08c93d9f",
+      "experiments/lfbo_gp_unified/checkpoints.py": "a0a51055881e40dd29eb36293111120f65ff7bfa57914bc75754f2bf670af372",
+      "experiments/lfbo_gp_unified/cli.py": "d8b511989b4f026e92a29b9afdeaf81c03d07457f153141f82b8f0fd11080f89",
+      "experiments/lfbo_gp_unified/common.py": "636011b4384327d7a7245c4a3d02c23a75b4211a20c18e8f0489dd9301fb22f2",
+      "experiments/lfbo_gp_unified/data.py": "e0baeb2aa92d2d5808091ae71b21a1269b8bc8d726377cbf50a73fd385bcd020",
+      "experiments/lfbo_gp_unified/evidence.py": "276b342d06206fdd74bbc5d7e610b71632a917cda24da66c713e90cfa5a28d45",
+      "experiments/lfbo_gp_unified/generator.py": "bfbad9a4e93a224c90f5d5a488e02f49f09f93029bf0939721e98451b1a782a6",
+      "experiments/lfbo_gp_unified/gp_runner.py": "7b98cd391e17263a14d0ba04590d476c8d123c0b00296c5cd1f31e0f0985f562",
+      "experiments/lfbo_gp_unified/historical.py": "f0b0c3a07902f6ab35e4ceea6108077e4d2552c3e1f42ecfef45a679f19f8ffe",
+      "experiments/lfbo_gp_unified/lfbo_runner.py": "26d1e4e101801c0c92bca820565336afdedf8d680f60cac02dd1f72b3dba3df2",
+      "experiments/lfbo_gp_unified/metrics.py": "6d31d85c5f3377312fb7780778b28c3940e071299064eac5f8b623cfb07948f9",
+      "experiments/lfbo_gp_unified/objective.py": "191e22d09906005f394bada707beb4caf6c0b2e57e5b912bef15082afa77c31e",
+      "experiments/lfbo_gp_unified/probability.py": "73720810cea5169a3b57d42ede37b0e147ca935f1510acb2d983806fe387af98",
+      "experiments/lfbo_gp_unified/protocol.py": "b38d45ef320d2c19a670ee28dec18b1a2b58fc32468117fe8a08d44af67de23a",
+      "experiments/lfbo_gp_unified/reporting.py": "72f115cadb24bae4c261d36c6f292b0e4cc96aff51361cd632f2393bd954bebb",
+      "experiments/lfbo_gp_unified/runner.py": "3f13e47e15441bc48cb299501e52360d72898b451b4a948131e203aea1b14f1d",
+      "experiments/lfbo_gp_unified/source_ei.py": "150a8de9f7940cc38840b44acce9bad0378bad2be21942de800969bc2f1e472a",
+      "experiments/lfbo_gp_unified/verification.py": "242f03953f1d2287f00f4d8b9c2a8c8ee689fed3600a9dd48837c5ab999a12d0",
+      "experiments/metrics.py": "3485e76d3046a7c370604f2a3e5c9a66956a20c939c44e444a47767742275e95",
+      "main.py": "dc70e48c67f2a60d6270d5e2f819ab0dbc3e1c4c8c4c945b3c7e533a7793bfef",
+      "models/__init__.py": "e227a0280ca8638a87f56c0afb75b7048a62a41a18988bb6958cbcca49ba7735",
+      "models/base_model.py": "79745d7e3858f1d137856868bea2cb3aa5e2430c9aee9b496e192cb5b132057b",
+      "models/gp.py": "09c67cb4d24ff7cf45fd44dd28b4b123bf389bef41056d47703ec63db95ddb37",
+      "models/lfbo.py": "011792d24810a2544eee892355f3e4dc2aba4e509c821e98f5425e07970eefd0",
+      "requirements.txt": "c5ca39d9cc1b9627591729ba83ce09268456d12e335331faae4c83bbbfb0fc80",
+      "vendor/lfbo/model.py": "548c67bdc138e0ecd684d58b623e0473ac6159262b1e16d7f86f522cfd04b6f1",
+      "vendor/metagamebo/MetaGameBO.py": "8168f5702f2b1938d6bc6e3dd861e9219dda20d19cba6576f9cac4159c6b4cab",
+      "vendor/metagamebo/benchmarks/forrester.py": "d9c01f7582534f85026df82f1bd6106300e758a03b99f95d565d3b16fc20194d",
+      "vendor/metagamebo/meta_learning/loss.py": "b8428bf2e10839c67fe446ee0ea718948095169ac42b6ccee88b66c273b9a178",
+      "vendor/metagamebo/meta_learning/trainer.py": "e850b34e83aa94b1dda6ec974774c2b3a4f5a36536dca916e966f1c3479b6b01",
+      "vendor/metagamebo/run_forrester.py": "2e0a3893d37cadb2f76d7c2be4c259777b0214fd82872ac5b555079c780ecbfa"
+    }
+  },
+  "protocol_id": "171252146114ab66a1e2b2841f19ecbdcb524dc81361089018d89abf1bfe54ed"
+}

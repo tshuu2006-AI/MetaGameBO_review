@@ -4,3 +4,4 @@ configs/lfbo_gp_unified/** -text
 
 # Preserve measured result bytes and original CSV/log line endings.
 results/published/lfbo-gp-full100-20261114/** -text -whitespace
+results/published/lfbo-gp-evidence-smoke-20261118/** -text -whitespace

@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "tasks": 20000,
+  "classifier_rows": 323176,
+  "checked": "raw splits/weights/probabilities/logits/Weighted BCE/task CVaR/family SE/checksums",
+  "checkpoint_count": 0,
+  "model_fits": 0,
+  "objective_calls": 0
+}

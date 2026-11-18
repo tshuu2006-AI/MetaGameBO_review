@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "publication_type": "MEASURED_RESULTS_SUBSET_NOT_FULL_RUN_ARCHIVE",
+  "publication_type": "MEASURED_RESULTS_WITH_COMPACT_RAW_EVIDENCE_NOT_FULL_RUN_ARCHIVE",
   "source_run_id": "unified-b-full100-20261114",
   "paper_equivalence": "NOT_PAPER_EQUIVALENT",
   "gp_evaluator": "GROUP_DERIVED_EVALUATOR / NOT_AUTHOR_VERIFIED",
@@ -8,7 +8,9 @@
     "families": 100,
     "tasks_per_family": 200,
     "methods": 2,
-    "task_loss_rows": 40000
+    "task_loss_rows": 40000,
+    "raw_observations": 640000,
+    "validation_classifier_rows": 323176
   },
   "files": {
     "summary.json": {
@@ -95,13 +97,68 @@
       "sha256": "92f52f322da0f06d86ae264e004f14925a3eea3fc3353b550065644922164988",
       "bytes": 55029,
       "source": "output/lfbo_gp_unified_full100/torch_actual_parity.json"
+    },
+    "evidence/classifier_predictions.npz": {
+      "sha256": "3be85f9718b094db7376243bfa9fd227ee6749b2a2650a0bc2d12b9b177c9803",
+      "bytes": 12403094,
+      "source": "results/evidence/lfbo-gp-full100-20261114/classifier_predictions.npz"
+    },
+    "evidence/config.json": {
+      "sha256": "730bf07e3191b28a9b7f302df2244c73fe569d95b7430849cdfa5269719a90c7",
+      "bytes": 12239,
+      "source": "results/evidence/lfbo-gp-full100-20261114/config.json"
+    },
+    "evidence/environment.json": {
+      "sha256": "21215e41e841e68c85842055e09cb9aa28190bea44e0196d74e276b586e94f75",
+      "bytes": 315,
+      "source": "results/evidence/lfbo-gp-full100-20261114/environment.json"
+    },
+    "evidence/evidence_manifest.json": {
+      "sha256": "849c7f924e2e2719cb1ac3aab3883e6942b209fa27e901f48e65782f98924b89",
+      "bytes": 1882,
+      "source": "results/evidence/lfbo-gp-full100-20261114/evidence_manifest.json"
+    },
+    "evidence/job.json": {
+      "sha256": "8f10e5f5bbec8bbc287a42e94053c93910c6b8f819d6aabd46be7b8b6d145129",
+      "bytes": 1061,
+      "source": "results/evidence/lfbo-gp-full100-20261114/job.json"
+    },
+    "evidence/meta_dataset.npz": {
+      "sha256": "4a387872e95f9039deb86ee67e4ca152b30ce0481080b50f56da3c0ce7125bfc",
+      "bytes": 10743763,
+      "source": "results/evidence/lfbo-gp-full100-20261114/meta_dataset.npz"
+    },
+    "evidence/protocol_lock.json": {
+      "sha256": "90a3304da024617c88c2b608920ea8e67b2a6ffb27eab9b88758e5d2f4dc5604",
+      "bytes": 5098,
+      "source": "results/evidence/lfbo-gp-full100-20261114/protocol_lock.json"
+    },
+    "evidence/registration.json": {
+      "sha256": "6becfb09f3cc215320b779c37faa830ab41753b9357db98d536aa35796a658be",
+      "bytes": 1084,
+      "source": "results/evidence/lfbo-gp-full100-20261114/registration.json"
+    },
+    "evidence/run_metrics.json": {
+      "sha256": "6189e3049a1cf72f232f88b8b4ec61909e3d2fa14ecd4bf817b5e67989e95565",
+      "bytes": 38267,
+      "source": "results/evidence/lfbo-gp-full100-20261114/run_metrics.json"
+    },
+    "evidence/summary.json": {
+      "sha256": "2e3d82b34cb4093b63168f1b84b11744ff14972100ffbe94675d6ebbe016777d",
+      "bytes": 1050,
+      "source": "results/evidence/lfbo-gp-full100-20261114/summary.json"
+    },
+    "logs/compact_evidence_verify.log": {
+      "sha256": "3f14b9bd920287f07fd37f25de5f44f87883373635acc414273d61126a09627d",
+      "bytes": 237,
+      "source": "output/lfbo_gp_evidence_20261118/full100_npz_verify.log"
     }
   },
   "omitted_local_only": {
-    "raw_observations_and_task_predictions": "results/lfbo_gp_unified/unified-b-full100-20261114/families",
-    "aggregate_predictions": "results/lfbo_gp_unified/unified-b-full100-20261114/predictions.csv",
+    "full_JSON_raw_archive": "results/lfbo_gp_unified/unified-b-full100-20261114/families",
+    "aggregate_predictions_CSV": "results/lfbo_gp_unified/unified-b-full100-20261114/predictions.csv",
     "historical_source_snapshot": "results/lfbo_gp_unified/unified-b-full100-20261114/source_snapshot",
     "private_audit_evidence": "Not published"
   },
-  "verification_scope": "SHA256 confirms publication bytes. task_losses.csv and run_metrics.json allow independent task-to-family-to-summary aggregation checks. Original verify.log and torch parity are historical evidence from full local archive; this subset cannot reverify row-level BCE or source lineage and cannot be resumed."
+  "verification_scope": "SHA256 confirms publication bytes. Compact evidence contains all raw X/y, splits and validation classifier predictions. verify-evidence independently checks train-only weights, probability/logit semantics, Weighted BCE, task/family CVaR and sample SE. Original full100 estimator checkpoints were not saved and are not recreated. Complete historical source snapshot is not bundled; the publication cannot resume the run."
 }

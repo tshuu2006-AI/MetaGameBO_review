@@ -1,0 +1,35 @@
+{
+  "checkpoint_scope": "first task of first family only",
+  "checkpoint_status": "NOT_SAVED_DURING_ORIGINAL_RUN",
+  "checkpoints": [],
+  "classifier_rows": 323176,
+  "families": 100,
+  "files": {
+    "classifier_predictions.npz": "3be85f9718b094db7376243bfa9fd227ee6749b2a2650a0bc2d12b9b177c9803",
+    "config.json": "730bf07e3191b28a9b7f302df2244c73fe569d95b7430849cdfa5269719a90c7",
+    "environment.json": "21215e41e841e68c85842055e09cb9aa28190bea44e0196d74e276b586e94f75",
+    "job.json": "8f10e5f5bbec8bbc287a42e94053c93910c6b8f819d6aabd46be7b8b6d145129",
+    "meta_dataset.npz": "4a387872e95f9039deb86ee67e4ca152b30ce0481080b50f56da3c0ce7125bfc",
+    "protocol_lock.json": "90a3304da024617c88c2b608920ea8e67b2a6ffb27eab9b88758e5d2f4dc5604",
+    "registration.json": "6becfb09f3cc215320b779c37faa830ab41753b9357db98d536aa35796a658be",
+    "run_metrics.json": "6189e3049a1cf72f232f88b8b4ec61909e3d2fa14ecd4bf817b5e67989e95565",
+    "summary.json": "2e3d82b34cb4093b63168f1b84b11744ff14972100ffbe94675d6ebbe016777d"
+  },
+  "methods": [
+    "LFBO_EI_HELDOUT",
+    "GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC"
+  ],
+  "missing_field_policy": "posterior_mean/latent_variance are NaN only for RF rows (not applicable)",
+  "model_fits_during_export": 0,
+  "objective_calls_during_export": 0,
+  "observations": 640000,
+  "paper_equivalence": "NOT_PAPER_EQUIVALENT",
+  "schema_version": 1,
+  "source_protocol_id": "af542f4adf1cb8ea6679e8c1bf8be18dee5ff92964e99a5f7f83c34be897c5f7",
+  "source_run_id": "unified-b-full100-20261114",
+  "status": "PAPER_INSPIRED_INDEPENDENT_REPRODUCTION",
+  "task_count": 20000,
+  "tasks_per_family": 200,
+  "track": "B",
+  "verification_scope": "Complete raw observation arrays, splits, validation predictions and task losses; source snapshot and all model checkpoints are not bundled. Original protocol lock is provenance metadata, not a full source archive."
+}

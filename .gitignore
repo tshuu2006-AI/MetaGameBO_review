@@ -21,6 +21,8 @@
 !/experiments/lfbo_gp_unified/__init__.py
 !/experiments/lfbo_gp_unified/bo.py
 !/experiments/lfbo_gp_unified/cli.py
+!/experiments/lfbo_gp_unified/checkpoints.py
+!/experiments/lfbo_gp_unified/evidence.py
 !/experiments/lfbo_gp_unified/common.py
 !/experiments/lfbo_gp_unified/data.py
 !/experiments/lfbo_gp_unified/generator.py
@@ -63,6 +65,7 @@
 !/tests/test_lfbo_gp_unified.py
 !/tests/test_lfbo_gp_unified_torch.py
 !/tests/test_publish_portability.py
+!/tests/test_lfbo_gp_evidence.py
 !/vendor/
 /vendor/*
 !/vendor/lfbo/
@@ -108,3 +111,39 @@
 !/results/published/lfbo-gp-full100-20261114/logs/verify.log
 !/results/published/lfbo-gp-full100-20261114/logs/completion.json
 !/results/published/lfbo-gp-full100-20261114/logs/torch_actual_parity.json
+
+# Native smoke evidence: three tasks, two representative fitted models.
+!/results/published/lfbo-gp-evidence-smoke-20261118/
+!/results/published/lfbo-gp-evidence-smoke-20261118/checkpoints/
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/
+!/results/published/lfbo-gp-evidence-smoke-20261118/checkpoints/GP_EI_DERIVED_AUGMENTED_DIAGNOSTIC.joblib
+!/results/published/lfbo-gp-evidence-smoke-20261118/checkpoints/LFBO_EI_HELDOUT.joblib
+!/results/published/lfbo-gp-evidence-smoke-20261118/classifier_predictions.npz
+!/results/published/lfbo-gp-evidence-smoke-20261118/config.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/environment.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/evidence_manifest.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/job.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/native_replay.log
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/native_smoke.log
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/native_verify.log
+!/results/published/lfbo-gp-evidence-smoke-20261118/meta_dataset.npz
+!/results/published/lfbo-gp-evidence-smoke-20261118/protocol_lock.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/registration.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/run_metrics.json
+!/results/published/lfbo-gp-evidence-smoke-20261118/summary.json
+
+# Full100 compact raw evidence and verification logs.
+!/results/published/lfbo-gp-full100-20261114/evidence/
+!/results/published/lfbo-gp-full100-20261114/evidence/classifier_predictions.npz
+!/results/published/lfbo-gp-full100-20261114/evidence/config.json
+!/results/published/lfbo-gp-full100-20261114/evidence/environment.json
+!/results/published/lfbo-gp-full100-20261114/evidence/evidence_manifest.json
+!/results/published/lfbo-gp-full100-20261114/evidence/job.json
+!/results/published/lfbo-gp-full100-20261114/evidence/meta_dataset.npz
+!/results/published/lfbo-gp-full100-20261114/evidence/protocol_lock.json
+!/results/published/lfbo-gp-full100-20261114/evidence/registration.json
+!/results/published/lfbo-gp-full100-20261114/evidence/run_metrics.json
+!/results/published/lfbo-gp-full100-20261114/evidence/summary.json
+!/results/published/lfbo-gp-full100-20261114/logs/compact_evidence_verify.log
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/tests.xml
+!/results/published/lfbo-gp-evidence-smoke-20261118/logs/torch_tests.xml
