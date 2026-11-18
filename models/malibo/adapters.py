@@ -74,6 +74,14 @@ class BLRAdapter:
         phi, m = self.phi_m(X)
 
         def f(z):
+            """Weighted negative log-posterior of z and its gradient.
+
+            Args:
+                z: Embedding, shape (num_features,).
+
+            Returns:
+                ``(value, gradient)`` for L-BFGS.
+            """
             a = m + phi @ z
             p = expit(a)
             nll = np.sum(w * (np.logaddexp(0, a) - lab * a)) + 0.5 * z @ z

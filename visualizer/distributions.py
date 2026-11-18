@@ -39,7 +39,7 @@ def plot_kdpp(w: np.ndarray, X: np.ndarray, k: int, lengthscale: float = 0.1, n_
         The matplotlib figure.
     """
     x = np.asarray(X)[:, 0]
-    o = np.argsort(x)
+    o = np.argsort(x)  # items sorted by x, so the marginals are drawn as a curve
     kernels = {"diagonal (paper)": KDPP.diagonal(w, k),
                "quality-diversity": KDPP.quality_diversity(w, X, k, lengthscale)}
     colors = dict(zip(kernels, CATEGORICAL[:2]))
@@ -88,7 +88,7 @@ def plot_embeddings(net: MetaNet, color_by: Optional[Sequence[float]] = None,
     Returns:
         The matplotlib figure.
     """
-    E = net.emb[1:].detach().cpu().numpy()
+    E = net.emb[1:].detach().cpu().numpy()  # skip row 0 (target task)
     fig, axes = subplots(3, width=3.8, height=3.4)
     ax = axes[0]
     lo, hi = min(E.min(), -3.5), max(E.max(), 3.5)
@@ -111,8 +111,8 @@ def plot_embeddings(net: MetaNet, color_by: Optional[Sequence[float]] = None,
     ax = axes[2]
     Ec = E - E.mean(0)
     _, s, Vt = np.linalg.svd(Ec, full_matrices=False)
-    P = Ec @ Vt[:2].T
-    ev = s ** 2 / (s ** 2).sum()
+    P = Ec @ Vt[:2].T  # first two principal components
+    ev = s ** 2 / (s ** 2).sum()  # explained variance ratios
     if color_by is None:
         ax.scatter(P[:, 0], P[:, 1], s=14, color=CATEGORICAL[0], edgecolors="white", lw=0.4)
     else:

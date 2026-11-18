@@ -16,6 +16,16 @@ from experiments.common import bench_main
 
 
 def group(key, seed, noisy=False):
+    """Problem group of one job: the task ``key`` as target, the other tasks as meta data.
+
+    Args:
+        key: Index of the target task in ``hpobench.TASKS``.
+        seed: Seed of the meta-data sampling.
+        noisy: Use the noisy protocol.
+
+    Returns:
+        A list with one ``Problem``.
+    """
     return [hpobench.problems(seed, noisy=noisy)[key]]
 
 

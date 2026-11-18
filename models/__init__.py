@@ -22,7 +22,17 @@ METHODS = ["Random", "GP", "LFBO", "PFN", "ABLR", "RGPE", "MALIBO",
 
 
 def build(name: str, bounds, seed: int = 0, **kw):
-    """Create the optimizer called ``name`` (one of ``METHODS``); imports lazily."""
+    """Create an optimizer by its display name; the package is imported only when needed.
+
+    Args:
+        name: One of ``METHODS``.
+        bounds: Search box of shape (d, 2).
+        seed: Random seed.
+        **kw: Extra constructor arguments of that optimizer.
+
+    Returns:
+        The optimizer (a ``BaseOptimizer``).
+    """
     if name == "Random":
         from models.random_search import RandomSearch as C
     elif name == "GP":

@@ -17,7 +17,17 @@ from models.base import Task
 
 @dataclass
 class Problem:
-    """One target task of a benchmark (see module docstring)."""
+    """One target task of a benchmark together with its meta-training tasks.
+
+    Attributes:
+        name: Identifier, e.g. ``"nasbench201/cifar10"``.
+        bounds: Search box, shape (d, 2).
+        objective: Maps points (n, d) to values (n,) to minimise.
+        regret: Maps observed values (in order) to the normalised simple-regret curve.
+        meta_tasks: Source tasks with ``X``/``y``.
+        pool: Finite search space of tabular benchmarks, shape (n_pool, d), or None.
+        init: Fixed initial points, shape (k, d), or None.
+    """
     name: str
     bounds: np.ndarray
     objective: Callable[[np.ndarray], np.ndarray]
@@ -46,10 +56,18 @@ class LookupTable:
         self.y = np.asarray(y, dtype=float)
         self.y_seeds = None if y_seeds is None else np.asarray(y_seeds, dtype=float)
         self.rng = np.random.default_rng(seed)
-        self.true_seen: List[float] = []
+        self.true_seen: List[float] = []  # mean values of the evaluated rows (noisy mode)
         self.index = {r.tobytes(): i for i, r in enumerate(self.X)}
 
     def __call__(self, Q: np.ndarray) -> np.ndarray:
+        """Look up the configurations.
+
+        Args:
+            Q: Query points, shape (n, d); a point outside the pool uses its nearest row.
+
+        Returns:
+            Values, shape (n,): the mean value, or one random seed's value in noisy mode.
+        """
         out = []
         for q in np.atleast_2d(np.asarray(Q, dtype=float)):
             i = self.index.get(np.ascontiguousarray(q).tobytes())
@@ -67,16 +85,20 @@ class LookupTable:
     def regret(self, y_seen: np.ndarray) -> np.ndarray:
         """Normalised simple regret ``(y(incumbent) - min) / (max - min)`` over the whole table.
 
-        Noise-free: the incumbent value is the running min of ``y_seen``.
-        Noisy: the incumbent is the running argmin of the observed values and is
-        scored by its mean value (the values seen by this table, in order).
+        In noisy mode the incumbent is the best *observed* point, scored by its mean value.
+
+        Args:
+            y_seen: Observed values in evaluation order, shape (n,) (the last n calls of this table).
+
+        Returns:
+            Regret curve, shape (n,), in [0, 1].
         """
         lo, hi = self.y.min(), self.y.max()
         y_seen = np.asarray(y_seen, float)
         if self.y_seeds is None:
             return (np.minimum.accumulate(y_seen) - lo) / (hi - lo)
         true = np.asarray(self.true_seen[-len(y_seen):], float)
-        inc = np.zeros(len(y_seen), int)
+        inc = np.zeros(len(y_seen), int)  # index of the incumbent after each step
         for t in range(1, len(y_seen)):
             inc[t] = t if y_seen[t] < y_seen[inc[t - 1]] else inc[t - 1]
         return (true[inc] - lo) / (hi - lo)
@@ -95,6 +117,9 @@ def leave_one_task_out(name: str, X: np.ndarray, Y: np.ndarray, task_names: List
         seed: Seed of the meta-data sampling.
         Y_seeds: Optional per-seed objective, shape (T, S, n): noisy targets
             (see ``LookupTable``); meta data always uses the mean ``Y``.
+
+    Returns:
+        One ``Problem`` per task, with the whole table as its pool.
     """
     rng = np.random.default_rng(seed)
     bounds = np.column_stack([np.zeros(X.shape[1]), np.ones(X.shape[1])])

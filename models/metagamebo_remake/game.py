@@ -19,12 +19,21 @@ from models.metagamebo_remake.kdpp import KDPP, DiagonalKDPP
 
 
 def kde_quantile(values: np.ndarray, alpha: float) -> float:
-    """Alpha-quantile of a Gaussian KDE (paper: "estimate xi with KDE"); min if degenerate."""
+    """Alpha-quantile of a Gaussian KDE of the values (paper: "estimate xi with KDE").
+
+    Args:
+        values: Task losses (NaNs dropped).
+        alpha: Quantile level.
+
+    Returns:
+        The quantile xi; the minimum if there are fewer than 2 values or they are all equal.
+    """
     v = np.asarray(values, dtype=float)
     v = v[~np.isnan(v)]
     if len(v) < 2 or v.std() == 0:
         return float(v.min())
-    h = 1.06 * v.std() * len(v) ** (-1 / 5)
+    h = 1.06 * v.std() * len(v) ** (-1 / 5)  # Silverman's bandwidth
+    # invert the KDE CDF on a grid over the observed range
     grid = np.linspace(v.min(), v.max(), 1000)
     cdf = norm.cdf((grid[:, None] - v[None, :]) / h).mean(1)
     return float(grid[np.argmin(np.abs(cdf - alpha))])
@@ -39,9 +48,17 @@ class CVaRTasks:
 
     def __init__(self, alpha: float = 0.8):
         self.alpha = alpha
-        self.xi = None
+        self.xi = None  # last threshold, logged by the training loop
 
     def select(self, task_losses: np.ndarray) -> np.ndarray:
+        """Select the tasks with ``L_i >= xi``.
+
+        Args:
+            task_losses: Loss per task, shape (M,).
+
+        Returns:
+            Indices of the hard tasks (the worst task alone if none passes the threshold).
+        """
         self.xi = kde_quantile(task_losses, self.alpha)
         hard = np.flatnonzero(task_losses >= self.xi)
         return hard if len(hard) else np.array([int(np.nanargmax(task_losses))])
@@ -65,13 +82,34 @@ class KDPPSamples:
         self.frac, self.eta, self.is_grad, self.kernel = frac, eta, is_grad, kernel
 
     def init(self, W_util: torch.Tensor, slices: list, X: torch.Tensor, rng) -> None:
+        """Start from the utility weights; keep the task slices, inputs and generator.
+
+        Args:
+            W_util: Eq. (3) weights of the training samples, tensor (n,) (updated in place).
+            slices: Per task, the indices of its samples in the training arrays.
+            X: Training inputs, tensor (n, d) (used by the ``"qd"`` kernel).
+            rng: Numpy random generator of the k-DPP draws.
+        """
         self.W, self.slices, self.X, self.rng = W_util, slices, X, rng
 
     @property
     def weights(self) -> torch.Tensor:
+        """Current sample weights w_t.
+
+        Returns:
+            Tensor of shape (n,).
+        """
         return self.W
 
     def select(self, hard: np.ndarray):
+        """Draw a k-DPP subset of every selected task and compute its gradient weights.
+
+        Args:
+            hard: Indices of the tasks selected by the leader.
+
+        Returns:
+            ``(idx, weights)``: sample indices and gradient weights normalised to mean 1.
+        """
         idx_l, q_l = [], []
         for i in hard:
             sl = self.slices[i]
@@ -79,7 +117,8 @@ class KDPPSamples:
             k = max(1, int(self.frac * len(sl)))
             d = DiagonalKDPP(wt, k) if self.kernel == "diag" else KDPP.quality_diversity(wt, self.X[sl].numpy(), k)
             S = d.sample(self.rng)
-            idx_l.append(sl[S]); q_l.append(d.marginals()[S])
+            idx_l.append(sl[S]); q_l.append(d.marginals()[S])  # q_i = P(i in S)
+        # kept for ``update``: subset size per task and inclusion probabilities
         self._sizes = [len(s) for s in idx_l]
         self._q = np.concatenate(q_l)
         idx = np.concatenate(idx_l)
@@ -89,14 +128,20 @@ class KDPPSamples:
         return idx, gw / gw.mean()
 
     def update(self, hard, idx, per_sample_loss) -> None:
-        """Eq. (6) with the importance correction 1/q_i; weights kept mean-1 per task."""
+        """Multiplicative weight update of Eq. (6) with the correction 1/q_i; weights stay mean-1 per task.
+
+        Args:
+            hard: Indices of the selected tasks.
+            idx: Indices of the samples used in the step (from ``select``).
+            per_sample_loss: Unweighted BCE of those samples.
+        """
         upd = np.zeros_like(per_sample_loss)
         pos = 0
-        for n in self._sizes:
+        for n in self._sizes:  # centre the losses within each task
             li = per_sample_loss[pos:pos + n]
             upd[pos:pos + n] = li - li.mean()
             pos += n
-        expo = np.clip(self.eta * upd / np.maximum(self._q, 1e-3), -5, 5)
+        expo = np.clip(self.eta * upd / np.maximum(self._q, 1e-3), -5, 5)  # clipped for stability
         idx_t = torch.as_tensor(idx)
         with torch.no_grad():
             self.W[idx_t] = self.W[idx_t] * torch.tensor(np.exp(expo), dtype=DT)

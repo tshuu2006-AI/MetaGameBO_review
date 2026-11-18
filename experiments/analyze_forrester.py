@@ -46,7 +46,16 @@ N_TASKS, N_PER_TASK, ALPHA = 200, 32, 0.8
 
 
 def task_losses_without_meta(method: str, meta, seed: int) -> np.ndarray:
-    """Held-out weighted BCE of every task for a method fitted per task (no meta-learning)."""
+    """Held-out weighted BCE of every task for a method fitted on each task alone (no meta-learning).
+
+    Args:
+        method: Method name (Random, GP, LFBO or PFN).
+        meta: Meta-training tasks of this seed.
+        seed: Seed of the train/held-out split and of the method.
+
+    Returns:
+        Loss per task, shape (M,); NaN for a task without held-out samples.
+    """
     from benchmarks.forrester import BOUNDS
     from models import build
     from models.lfbo import threshold
@@ -59,6 +68,7 @@ def task_losses_without_meta(method: str, meta, seed: int) -> np.ndarray:
         val = rows & md.is_val
         if not val.any():
             continue
+        # context = the task's points without any copy in the held-out set
         held = np.unique(md.src[val])
         ctx = np.setdiff1d(np.arange(len(t.y)), held)
         p = opt.prob_good(t.X[ctx], t.y[ctx], md.X[val], threshold(t.y))
@@ -67,6 +77,14 @@ def task_losses_without_meta(method: str, meta, seed: int) -> np.ndarray:
 
 
 def run_job(job):
+    """Compute the Table-1 losses of one (method, seed) and write them as JSON.
+
+    Args:
+        job: ``(path, method, seed)``.
+
+    Returns:
+        ``(method, seed, error or None, seconds)`` for the progress log.
+    """
     path, method, seed = job
     from benchmarks.forrester import BOUNDS, make_meta_tasks
     from models import build
@@ -91,6 +109,15 @@ def run_job(job):
 
 
 def table(results, methods) -> str:
+    """Markdown version of Table 1 with the change relative to MALIBO.
+
+    Args:
+        results: Job results.
+        methods: Methods (rows), in order.
+
+    Returns:
+        The table as Markdown; the best value of each column is in bold.
+    """
     rows = ["## Forrester benchmark (paper Table 1)", "",
             f"Weighted BCE of the classifier on held-out samples of the {N_TASKS} meta-training tasks "
             f"({N_PER_TASK} points each); mean ± standard error over seeds. Lower is better.", "",
@@ -125,6 +152,12 @@ def table(results, methods) -> str:
 
 
 def plot(results, path: Path) -> None:
+    """Save the meta-training curves (train/held-out average loss and CVaR) of the meta-learned methods.
+
+    Args:
+        results: Job results.
+        path: Output PNG.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -153,6 +186,7 @@ def plot(results, path: Path) -> None:
 
 
 def main():
+    """Command line: run the missing (method, seed) jobs, then write the table and the figure."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--seeds", type=int, default=10, help="number of seeds (paper: 100)")
     ap.add_argument("--methods", nargs="+", default=METHODS)
@@ -167,7 +201,7 @@ def main():
             p = raw / f"{slug(m)}__s{s}.json"
             if a.rerun or not p.exists() or "error" in json.loads(p.read_text()):
                 jobs.append((str(p), m, s))
-    jobs.sort(key=lambda j: j[1] not in META)
+    jobs.sort(key=lambda j: j[1] not in META)  # long (meta-trained) jobs first
     print(f"[forrester] {len(jobs)} jobs to run", flush=True)
     if jobs:
         t0 = time.time()

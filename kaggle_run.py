@@ -61,14 +61,23 @@ PIP = ["parameterspace>=0.10.0", "blackboxopt>=5.0.4", "pyarrow"]
 
 
 def log(msg: str) -> None:
+    """Print a timestamped progress line.
+
+    Args:
+        msg: Message.
+    """
     print(f"[kaggle_run {time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
 def download(url: str, dest: Path, tries: int = 8) -> None:
-    """Stream ``url`` to ``dest`` (skipped if ``dest`` exists and is not empty).
+    """Download a file, checking its size against ``Content-Length`` and retrying a dropped connection.
 
-    The size is checked against ``Content-Length``; a dropped connection is
-    continued with an HTTP Range request (or restarted if the server ignores it).
+    A retry continues with an HTTP Range request, or restarts if the server ignores it.
+
+    Args:
+        url: Source URL.
+        dest: Destination; skipped if it already exists and is not empty.
+        tries: Maximum number of attempts.
     """
     if dest.exists() and dest.stat().st_size > 0:
         return
@@ -105,9 +114,10 @@ def download(url: str, dest: Path, tries: int = 8) -> None:
 
 # ---------------------------------------------------------------- setup steps
 def install_packages() -> None:
+    """pip-install the packages of ``PIP`` that cannot be imported."""
     missing = []
     for spec in PIP:
-        mod = spec.split("=")[0].split(">")[0].split("<")[0]
+        mod = spec.split("=")[0].split(">")[0].split("<")[0]  # module name without the version
         try:
             __import__(mod)
         except ImportError:
@@ -118,6 +128,7 @@ def install_packages() -> None:
 
 
 def fetch_code() -> None:
+    """Clone the authors' MetaGameBO code and PFNs4BO, and unzip the pre-trained PFN weights."""
     author = ROOT / "models" / "metagamebo_original" / "author"
     if not (author / "MetaGameBO.py").exists():
         log("cloning the authors' MetaGameBO code")
@@ -139,7 +150,11 @@ def fetch_code() -> None:
 
 
 def link_data(data_dir: Path) -> None:
-    """Make ``benchmarks/data`` point to ``data_dir`` (keeps the data out of the Kaggle output)."""
+    """Make ``benchmarks/data`` a symlink to ``data_dir``, keeping the data out of the Kaggle output.
+
+    Args:
+        data_dir: Folder that holds (or will hold) the benchmark data.
+    """
     link = ROOT / "benchmarks" / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     if link.is_symlink() or not link.exists():
@@ -153,6 +168,12 @@ def link_data(data_dir: Path) -> None:
 
 
 def fetch_data(benchmarks, discrete: bool = False) -> None:
+    """Download the data of the selected benchmarks and build their compact caches.
+
+    Args:
+        benchmarks: Benchmark names (subset of ``BENCHMARKS``).
+        discrete: HPO-B runs the discrete protocol, so its surrogates are not downloaded.
+    """
     data = ROOT / "benchmarks" / "data"
     for bench, folder in (("hpobench", "fcnet"), ("nasbench201", "nasbench201")):
         if bench in benchmarks:
@@ -192,7 +213,15 @@ def fetch_data(benchmarks, discrete: bool = False) -> None:
 
 # ---------------------------------------------------------------- running
 def run_module(args, timeout):
-    """Run ``python -m <args>`` in its own process group; stop the whole group on timeout."""
+    """Run ``python -m <args>`` in its own process group and stop the whole group on timeout.
+
+    Args:
+        args: Module name and its arguments.
+        timeout: Seconds before the run is stopped, or None for no limit.
+
+    Returns:
+        True if the run finished with exit code 0.
+    """
     p = subprocess.Popen([sys.executable, "-m", *args], cwd=ROOT, start_new_session=True)
     try:
         p.wait(timeout=timeout)
@@ -219,7 +248,11 @@ def report_forrester() -> None:
 
 
 def save_results(output: Path) -> None:
-    """Results are written into ``output`` directly; only report what is there."""
+    """Log how many finished jobs and checkpoints ``output`` holds (results are written there directly).
+
+    Args:
+        output: The results folder.
+    """
     raw = output / "raw"
     n = len(list(raw.glob("*/*.json"))) if raw.exists() else 0
     c = len(list(raw.glob("*/*.ckpt.pkl"))) if raw.exists() else 0
@@ -227,8 +260,9 @@ def save_results(output: Path) -> None:
 
 
 def main():
+    """Command line: set up, then run each selected benchmark within the time budget."""
     argv = sys.argv[1:]
-    extra = []
+    extra = []  # arguments after "--" go to every analyze script
     if "--" in argv:
         i = argv.index("--")
         argv, extra = argv[:i], argv[i + 1:]
@@ -270,7 +304,7 @@ def main():
         return
 
     for bench in a.benchmarks:
-        left = None if t_end is None else t_end - time.time() - 600  # keep 10 min to save
+        left = None if t_end is None else t_end - time.time() - 600  # keep 10 min for the report
         if left is not None and left <= 0:
             log(f"no time left for {bench}; skipped")
             continue

@@ -17,7 +17,7 @@ N_CAND = 5120
 
 @dataclass
 class History:
-    """Observations collected on one task.
+    """Observations collected on one task, in evaluation order.
 
     Attributes:
         X: Query points, each an array of shape (d,).
@@ -27,14 +27,23 @@ class History:
     y: list = field(default_factory=list)
 
     def add(self, x: np.ndarray, y: np.ndarray) -> None:
-        """Append points ``x`` (n, d) or (d,) with values ``y`` (n,) or scalar."""
+        """Append one or several observations.
+
+        Args:
+            x: Points, shape (n, d) or (d,).
+            y: Values, shape (n,) or a scalar.
+        """
         for xi, yi in zip(np.atleast_2d(x), np.atleast_1d(y)):
             self.X.append(np.asarray(xi, dtype=float))
             self.y.append(float(yi))
 
     @property
     def arrays(self) -> tuple[np.ndarray, np.ndarray]:
-        """Return ``(X, y)`` of shapes (n, d) and (n,)."""
+        """All observations as arrays.
+
+        Returns:
+            ``(X, y)`` of shapes (n, d) and (n,); empty arrays when nothing is observed.
+        """
         if not self.X:
             return np.zeros((0, 0)), np.zeros(0)
         return np.asarray(self.X), np.asarray(self.y)
@@ -55,11 +64,10 @@ class Task:
 
 
 class BaseOptimizer(ABC):
-    """Sequential optimizer: optional ``meta_train``, then ``optimize`` per target task.
+    """Sequential optimizer: optional ``meta_train``, then ``optimize`` on each target task.
 
-    The search space is the box ``bounds`` or, after ``set_pool``, a finite set of
-    points (tabular benchmarks): candidates are then drawn from the not yet
-    evaluated pool points.
+    The search space is the box ``bounds`` or, after ``set_pool``, the not yet
+    evaluated rows of a finite pool (tabular benchmarks).
 
     Args:
         bounds: Search box of shape (d, 2), one ``[low, high]`` row per dimension.
@@ -78,6 +86,7 @@ class BaseOptimizer(ABC):
         self.dim = self.bounds.shape[0]
         self.rng = np.random.default_rng(seed)
         self.history = History()
+        # discrete search space: the pool, a row -> index map and a "not yet evaluated" mask
         self.pool: Optional[np.ndarray] = None
         self._pool_index: dict = {}
         self._pool_free: Optional[np.ndarray] = None
@@ -85,50 +94,86 @@ class BaseOptimizer(ABC):
     # ---------- must be implemented ----------
     @abstractmethod
     def suggest(self, n: int = 1) -> np.ndarray:
-        """Return the next ``n`` query points, shape (n, d)."""
+        """Propose the next query points.
+
+        Args:
+            n: Number of points.
+
+        Returns:
+            Points of shape (n, d).
+        """
 
     # ---------- optional hooks ----------
     def meta_train(self, tasks: Sequence[Task], **kwargs) -> None:
-        """Learn from source tasks with pre-collected ``X``/``y`` (no-op by default)."""
+        """Learn from source tasks with pre-collected data (no-op for non-meta methods).
+
+        Args:
+            tasks: Source tasks with ``X``/``y`` filled in.
+            **kwargs: Method-specific options.
+        """
 
     def _update(self, x: np.ndarray, y: np.ndarray) -> None:
-        """Refit the model on all observations ``x`` (n, d), ``y`` (n,) (no-op by default)."""
+        """Refit the model on all observations of the current task (no-op by default).
+
+        Args:
+            x: All observed points, shape (n, d).
+            y: Their values, shape (n,).
+        """
 
     def prob_good(self, X: np.ndarray, y: np.ndarray, Xq: np.ndarray, tau: float) -> np.ndarray:
-        """Classifier view of the model for the Table-1 metric.
+        """Classifier view of the model, used by the Table-1 metric.
 
-        Given context data ``(X, y)`` of one task, return the predicted probability
-        that ``f(Xq) < tau`` (the "good" class of LFBO/MALIBO), shape (m,).
+        Args:
+            X: Context points of one task, shape (n, d).
+            y: Context values, shape (n,).
+            Xq: Query points, shape (m, d).
+            tau: Threshold of the "good" class (``f(x) < tau``).
+
+        Returns:
+            Predicted probability that ``f(Xq) < tau``, shape (m,).
         """
         raise NotImplementedError(f"{type(self).__name__} has no classifier view")
 
     # ---------- shared logic ----------
     def set_pool(self, pool: Optional[np.ndarray]) -> None:
-        """Restrict the search space to the rows of ``pool`` (n_pool, d); None = box."""
+        """Restrict the search space to a finite set of points and mark them all unevaluated.
+
+        Args:
+            pool: Points of shape (n_pool, d), or None for the continuous box.
+        """
         self.pool = None if pool is None else np.asarray(pool, dtype=float)
         self._pool_index = {} if pool is None else {r.tobytes(): i for i, r in enumerate(self.pool)}
         self._pool_free = None if pool is None else np.ones(len(self.pool), bool)
 
     def reset(self) -> None:
-        """Forget the observations of the current task (meta-learned state is kept)."""
+        """Forget the observations of the current task; the meta-learned state is kept."""
         self.history = History()
         if self.pool is not None:
             self._pool_free[:] = True
 
     def observe(self, x: np.ndarray, y: np.ndarray) -> None:
-        """Record new points ``x`` (n, d) with values ``y`` (n,) and refit."""
+        """Record new observations, mark them as evaluated in the pool and refit the model.
+
+        Args:
+            x: Points, shape (n, d).
+            y: Values, shape (n,).
+        """
         x = np.atleast_2d(np.asarray(x, dtype=float))
         if self.pool is not None:
             for r in x:
                 i = self._pool_index.get(r.tobytes())
-                if i is not None:
+                if i is not None:  # points outside the pool (e.g. fixed inits) are ignored
                     self._pool_free[i] = False
         self.history.add(x, y)
         self._update(*self.history.arrays)
 
     @property
     def best(self) -> tuple[np.ndarray, float]:
-        """Best observed point and value ``(x, y)``."""
+        """Incumbent of the current task.
+
+        Returns:
+            The best observed point and its value ``(x, y)``.
+        """
         X, y = self.history.arrays
         i = int(np.argmin(y))
         return X[i], float(y[i])
@@ -159,6 +204,16 @@ class BaseOptimizer(ABC):
         return self._loop(objective, budget, callback)
 
     def _loop(self, objective, budget, callback) -> History:
+        """Suggest-evaluate-observe until the budget is spent or the pool is exhausted.
+
+        Args:
+            objective: Maps points (n, d) to values (n,).
+            budget: Total number of evaluations.
+            callback: Called with the number of evaluations after each step, or None.
+
+        Returns:
+            The history of all evaluations.
+        """
         while len(self.history.y) < budget:
             if self.pool is not None and not self._pool_free.any():
                 break  # every pool point is evaluated (small tabular task): the run ends early
@@ -169,29 +224,47 @@ class BaseOptimizer(ABC):
         return self.history
 
     def _candidates(self, n: int) -> np.ndarray:
-        """``n`` random candidates: uniform in the box, or unevaluated pool points."""
+        """Draw random candidates: uniform in the box, or unevaluated pool points.
+
+        Args:
+            n: Number of candidates (fewer if the pool has fewer free points).
+
+        Returns:
+            Candidates of shape (n, d).
+        """
         if self.pool is None:
             lo, hi = self.bounds[:, 0], self.bounds[:, 1]
             return lo + (hi - lo) * self.rng.random((n, self.dim))
         free = np.flatnonzero(self._pool_free)
-        if len(free) == 0:
+        if len(free) == 0:  # never happens inside ``optimize`` (the loop stops first)
             free = np.arange(len(self.pool))
         idx = self.rng.choice(free, size=min(n, len(free)), replace=False)
         return self.pool[idx]
 
     def _normalize(self, X: np.ndarray) -> np.ndarray:
-        """Map points of the box to the unit cube."""
+        """Map points of the box to the unit cube.
+
+        Args:
+            X: Points in the box, shape (n, d).
+
+        Returns:
+            Points in [0, 1]^d, shape (n, d); degenerate dimensions are left unscaled.
+        """
         lo, hi = self.bounds[:, 0], self.bounds[:, 1]
         return (np.asarray(X, dtype=float) - lo) / np.where(hi > lo, hi - lo, 1.0)
 
 
 def cvar(values: np.ndarray, alpha: float = 0.8) -> float:
-    """Empirical CVaR as in the author's ``meta_learning/trainer.py``.
+    """Empirical CVaR as in the author's ``meta_learning/trainer.py``: the mean of the worst ``1 - alpha`` share.
 
-    Sort descending and average the ``k = max(1, int(n * (1 - alpha)))`` largest
-    values (NaNs dropped). With alpha = 0.8 this is about the worst 20%.
+    Args:
+        values: Losses (NaNs are dropped).
+        alpha: Confidence level; the ``max(1, int(n * (1 - alpha)))`` largest values are averaged.
+
+    Returns:
+        The CVaR as a float.
     """
     v = np.asarray(values, dtype=float)
-    v = np.sort(v[~np.isnan(v)])[::-1]
+    v = np.sort(v[~np.isnan(v)])[::-1]  # descending
     k = max(1, int(len(v) * (1 - alpha)))
     return float(v[:k].mean())

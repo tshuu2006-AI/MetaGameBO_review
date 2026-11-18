@@ -27,7 +27,11 @@ AUTHOR_DIR = Path(__file__).resolve().parent / "author"
 
 
 def _import_author():
-    """Import the author's ``MetaGameBO`` module without shadowing our packages."""
+    """Import the author's ``MetaGameBO`` module; ``author/`` is on ``sys.path`` only during the import.
+
+    Returns:
+        The imported module (cached in ``sys.modules``).
+    """
     if "MetaGameBO" in sys.modules:
         return sys.modules["MetaGameBO"]
     sys.path.insert(0, str(AUTHOR_DIR))
@@ -40,6 +44,14 @@ def _import_author():
 
 @contextlib.contextmanager
 def _in_dir(path):
+    """Context manager that temporarily changes the working directory.
+
+    Args:
+        path: Directory to work in.
+
+    Yields:
+        None; the previous working directory is restored on exit.
+    """
     old = os.getcwd()
     os.chdir(path)
     try:
@@ -49,13 +61,21 @@ def _in_dir(path):
 
 
 def parse_author_log(path: Path) -> dict:
-    """Parse the author's training file into curves and final losses."""
+    """Parse the author's training file into curves and final losses.
+
+    Args:
+        path: The ``results/<name>.txt`` file written by the author trainer.
+
+    Returns:
+        Dict with lists ``epoch``, ``train_loss``, ``train_cvar``, ``val_loss``,
+        ``val_cvar`` and a dict ``final`` (``train_avg``, ``train_cvar``, ``val_avg``, ``val_cvar``).
+    """
     log = dict(epoch=[], train_loss=[], train_cvar=[], val_loss=[], val_cvar=[], final={})
     keys = {"Final Train Loss": "train_avg", "Final Train CVaR": "train_cvar",
             "Final Val Loss": "val_avg", "Final Val CVaR": "val_cvar"}
     for line in path.read_text().splitlines():
         parts = line.split("\t")
-        if len(parts) == 5 and parts[0].isdigit():
+        if len(parts) == 5 and parts[0].isdigit():  # "epoch<TAB>train<TAB>cvar<TAB>val<TAB>cvar"
             for k, v in zip(["epoch", "train_loss", "train_cvar", "val_loss", "val_cvar"], parts):
                 log[k].append(float(v))
         for k, name in keys.items():
@@ -92,6 +112,11 @@ class MetaGameBOOriginal(BaseOptimizer):
         self.log = None
 
     def _space(self):
+        """The unit cube as a ``parameterspace`` space (the author code works on [0, 1]^d).
+
+        Returns:
+            A ``ParameterSpace`` with parameters ``x0 .. x{d-1}``.
+        """
         import parameterspace as ps
         space = ps.ParameterSpace()
         for j in range(self.dim):
@@ -99,7 +124,12 @@ class MetaGameBOOriginal(BaseOptimizer):
         return space
 
     def meta_train(self, tasks: Sequence[Task], **kwargs) -> None:
-        """Run the author's ``meta_fit`` on the source tasks."""
+        """Run the author's ``meta_fit`` on the source tasks and keep its training log.
+
+        Args:
+            tasks: Source tasks with ``X``/``y``.
+            **kwargs: Unused.
+        """
         import torch
         from blackboxopt import EvaluationSpecification
         mod = _import_author()
@@ -111,6 +141,7 @@ class MetaGameBOOriginal(BaseOptimizer):
             if self.max_per_task and len(y) > self.max_per_task:
                 keep = rng.choice(len(y), self.max_per_task, replace=False)
                 X, y = X[keep], y[keep]
+            # the author code expects blackboxopt evaluations keyed by task id
             meta_data[uid] = [
                 EvaluationSpecification(configuration={f"x{j}": float(v) for j, v in enumerate(x)})
                 .create_evaluation(objectives={"loss": float(v)}) for x, v in zip(X, y)]
@@ -121,18 +152,27 @@ class MetaGameBOOriginal(BaseOptimizer):
                      alpha=0.8, seed=self.seed)
         if self.use_kdpp:
             train.update(use_kdpp=True, kdpp_alpha=0.4, kdpp_lr=0.1)
+        # the trainer writes results/<name>.txt to the working directory: run it in a temporary one
         with tempfile.TemporaryDirectory() as tmp, _in_dir(tmp), contextlib.redirect_stdout(open(os.devnull, "w")):
             self.opt.meta_fit(meta_data, **train)
             files = list(Path(tmp, "results").glob("*.txt"))
             self.log = parse_author_log(files[0]) if files else None
 
     def reset(self) -> None:
+        """Clear the target-task history and the author's target-task state (meta-training is kept)."""
         super().reset()
         if self.opt is not None:
             self.opt.X, self.opt.losses, self.opt.classifier_gb, self.opt.kdpp = [], [], None, None
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """The author's ``observe_and_suggest`` over ``N_CAND`` candidates of our search space."""
+        """Pick a point with the author's ``observe_and_suggest`` among ``N_CAND`` candidates of our search space.
+
+        Args:
+            n: Unused (one point per step).
+
+        Returns:
+            One point, shape (1, d).
+        """
         X, y = self.history.arrays
         C = self._candidates(N_CAND)
         Xo = self._normalize(X) if len(y) else np.zeros((0, self.dim))

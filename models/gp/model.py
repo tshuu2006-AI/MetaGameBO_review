@@ -14,7 +14,17 @@ from models.base import N_CAND, BaseOptimizer
 
 
 def fit_gp(X: np.ndarray, y: np.ndarray, seed: int = 0, restarts: int = 2) -> GaussianProcessRegressor:
-    """Fit a GP with a Matern-5/2 ARD kernel and noise on unit-cube inputs ``X``."""
+    """Fit a GP with a Matern-5/2 ARD kernel plus a noise term.
+
+    Args:
+        X: Inputs in the unit cube, shape (n, d).
+        y: Targets, shape (n,) (normalised inside the GP).
+        seed: Seed of the hyperparameter restarts.
+        restarts: Number of extra optimizer restarts of the marginal likelihood.
+
+    Returns:
+        The fitted ``GaussianProcessRegressor``.
+    """
     d = X.shape[1]
     k = ConstantKernel(1.0) * Matern(length_scale=np.full(d, 0.3), nu=2.5,
                                      length_scale_bounds=(1e-3, 1e2)) \
@@ -27,7 +37,16 @@ def fit_gp(X: np.ndarray, y: np.ndarray, seed: int = 0, restarts: int = 2) -> Ga
 
 
 def expected_improvement(mu: np.ndarray, sd: np.ndarray, best: float) -> np.ndarray:
-    """EI for minimisation."""
+    """Expected Improvement for minimisation under a Gaussian predictive.
+
+    Args:
+        mu: Predictive means, shape (m,).
+        sd: Predictive standard deviations, shape (m,).
+        best: Incumbent value.
+
+    Returns:
+        EI values, shape (m,).
+    """
     sd = np.maximum(sd, 1e-12)
     imp = best - mu
     return imp * norm.cdf(imp / sd) + sd * norm.pdf(imp / sd)
@@ -50,6 +69,15 @@ class GPEI(BaseOptimizer):
         self.max_points = max_points
 
     def _subset(self, X, y):
+        """Keep the best half of ``max_points`` and fill the rest at random.
+
+        Args:
+            X: Observed points, shape (n, d).
+            y: Observed values, shape (n,).
+
+        Returns:
+            ``(X, y)`` with at most ``max_points`` rows.
+        """
         if len(y) <= self.max_points:
             return X, y
         order = np.argsort(y)
@@ -59,7 +87,14 @@ class GPEI(BaseOptimizer):
         return X[idx], y[idx]
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """EI maximiser over ``N_CAND`` candidates (random while < 2 observations)."""
+        """Pick the EI maximiser among ``N_CAND`` random candidates.
+
+        Args:
+            n: Number of points (random points while fewer than 2 distinct values are observed).
+
+        Returns:
+            Points of shape (1, d), or (n, d) when falling back to random points.
+        """
         X, y = self.history.arrays
         if len(y) < 2 or np.ptp(y) == 0:
             return self._candidates(n)
@@ -70,7 +105,17 @@ class GPEI(BaseOptimizer):
         return C[[int(np.argmax(expected_improvement(mu, sd, y.min())))]]
 
     def prob_good(self, X, y, Xq, tau):
-        """P(f(Xq) < tau) under the GP posterior fitted on the context."""
+        """P(f(x) < tau) under the GP posterior fitted on the context data.
+
+        Args:
+            X: Context points, shape (n, d).
+            y: Context values, shape (n,).
+            Xq: Query points, shape (m, d).
+            tau: Threshold of the "good" class.
+
+        Returns:
+            Probabilities of shape (m,); 0.5 everywhere with fewer than 2 distinct values.
+        """
         if len(y) < 2 or np.ptp(y) == 0:
             return np.full(len(Xq), 0.5)
         gp = fit_gp(self._normalize(X), np.asarray(y), seed=int(self.rng.integers(1 << 30)))

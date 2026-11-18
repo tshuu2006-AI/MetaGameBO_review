@@ -20,11 +20,18 @@ TASKS = ["protein_structure", "naval_propulsion", "parkinsons_telemonitoring", "
 
 
 def encode_ranks(df) -> np.ndarray:
-    """Encode every column as the rank of its value among the sorted unique values, in [0, 1]."""
+    """Encode every column as the rank of its value among the sorted unique values, scaled to [0, 1].
+
+    Args:
+        df: Hyperparameter table (numeric or categorical columns).
+
+    Returns:
+        Encoded configurations, shape (n, n_columns).
+    """
     cols = []
     for c in df.columns:
         v = df[c].to_numpy()
-        try:
+        try:  # numeric values sort numerically, others as strings
             u = np.unique(v.astype(float)); v = v.astype(float)
         except (TypeError, ValueError):
             u = np.unique(v.astype(str)); v = v.astype(str)
@@ -33,7 +40,14 @@ def encode_ranks(df) -> np.ndarray:
 
 
 def load(cache: Path = DATA / "compact.npz"):
-    """Return ``(X, Y)``: encoded configurations (n, 9) and final validation loss (4, n)."""
+    """Load the encoded configurations and their seed-averaged final validation MSE, cached as ``.npz``.
+
+    Args:
+        cache: Path of the compact cache (built on the first call).
+
+    Returns:
+        ``(X, Y)``: encoded configurations (n, 9) and objective per task (4, n).
+    """
     if cache.exists():
         d = np.load(cache)
         return d["X"], d["Y"]
@@ -46,16 +60,32 @@ def load(cache: Path = DATA / "compact.npz"):
 
 
 def load_seeds(cache: Path = DATA / "compact_seeds.npz") -> np.ndarray:
-    """Final validation objective per training seed, shape (tasks, seeds, n)."""
+    """Final validation objective per training seed, cached as ``.npz`` (for the noisy protocol).
+
+    Args:
+        cache: Path of the compact cache (built on the first call).
+
+    Returns:
+        Array of shape (tasks, seeds, n).
+    """
     if cache.exists():
         return np.load(cache)["Ys"]
     ev = np.load(DATA / "objectives_evaluations.npy", mmap_mode="r")
-    Ys = np.asarray(ev[:, :, :, -1, 0], dtype=float).transpose(0, 2, 1)
+    Ys = np.asarray(ev[:, :, :, -1, 0], dtype=float).transpose(0, 2, 1)  # -> (task, seed, config)
     np.savez(cache, Ys=Ys)
     return Ys
 
 
 def problems(seed: int, n_meta: int = 512, noisy: bool = False) -> List[Problem]:
-    """Leave-one-task-out problems for one seed (``noisy``: observe one random training seed)."""
+    """Leave-one-task-out problems for one seed.
+
+    Args:
+        seed: Seed of the meta-data sampling (and of the noise).
+        n_meta: Random configurations per meta task.
+        noisy: Each evaluation returns one random training seed's value instead of the mean.
+
+    Returns:
+        One ``Problem`` per task.
+    """
     X, Y = load()
     return leave_one_task_out("hpobench", X, Y, TASKS, n_meta, seed, load_seeds() if noisy else None)

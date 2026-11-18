@@ -76,32 +76,69 @@ apply_style()
 
 
 def method_color(name: str) -> str:
-    """Fixed colour of a method (secondary ink for unknown names)."""
+    """Fixed colour of a method.
+
+    Args:
+        name: Method name.
+
+    Returns:
+        Hex colour; the secondary ink colour for unknown names.
+    """
     return METHOD_COLORS.get(name, INK_2)
 
 
 def method_style(name: str) -> dict:
-    """Line kwargs for a method: fixed colour; dashed for upstream code."""
+    """Line style of a method: its fixed colour, dashed for the remake.
+
+    Args:
+        name: Method name.
+
+    Returns:
+        Dict with ``color``, ``ls`` and ``lw`` for ``ax.plot``.
+    """
     remake = name.endswith("(remake)")
     return dict(color=method_color(name), ls="--" if remake else "-", lw=LINE_W)
 
 
 def ordered(names) -> list:
-    """Sort method names by ``METHOD_ORDER`` (unknown names last, alphabetical)."""
+    """Sort method names by ``METHOD_ORDER``.
+
+    Args:
+        names: Method names.
+
+    Returns:
+        The names in display order; unknown names last, alphabetically.
+    """
     names = list(names)
     known = [m for m in METHOD_ORDER if m in names]
     return known + sorted(n for n in names if n not in METHOD_ORDER)
 
 
 def subplots(ncols: int = 1, nrows: int = 1, width: float = 4.2, height: float = 3.2, **kw):
-    """``plt.subplots`` with a per-panel size; always returns a flat axes list."""
+    """``plt.subplots`` with the size given per panel.
+
+    Args:
+        ncols: Number of columns.
+        nrows: Number of rows.
+        width: Width of one panel (inches).
+        height: Height of one panel (inches).
+        **kw: Other arguments of ``plt.subplots`` (e.g. ``sharey``).
+
+    Returns:
+        ``(fig, axes)`` with ``axes`` a flat list.
+    """
     fig, axes = plt.subplots(nrows, ncols, figsize=(width * ncols, height * nrows),
                              squeeze=False, **kw)
     return fig, list(axes.ravel())
 
 
 def save(fig, path: Optional[str]) -> None:
-    """Save ``fig`` to ``path`` (creating folders) and close it; no-op if ``path`` is None."""
+    """Save a figure (creating folders) and close it; nothing happens if ``path`` is None.
+
+    Args:
+        fig: Matplotlib figure.
+        path: Output image path, or None.
+    """
     if path is None:
         return
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -111,6 +148,14 @@ def save(fig, path: Optional[str]) -> None:
 
 
 def label_line_end(ax, x, y, text: str, color: str = INK_2) -> None:
-    """Direct label at the end of a line (text in ink, not series colour)."""
+    """Write a label just right of the end of a line (text in ink, not the series colour).
+
+    Args:
+        ax: Matplotlib axis.
+        x: x of the line end.
+        y: y of the line end.
+        text: Label.
+        color: Text colour.
+    """
     ax.annotate(text, (x, y), xytext=(4, 0), textcoords="offset points",
                 va="center", fontsize=8, color=color)

@@ -112,9 +112,7 @@ class KDPP:
         return cls(q[:, None] * S * q[None, :] + 1e-9 * np.eye(len(q)), k)
 
     def marginals(self) -> np.ndarray:
-        """Exact inclusion probabilities ``P(i in S)``.
-
-        Computed as ``sum_n lam_n e_{k-1}(lam_-n) / e_k(lam) * V[i, n]^2``.
+        """Exact inclusion probabilities, ``P(i in S) = sum_n lam_n e_{k-1}(lam_-n) / e_k(lam) V[i, n]^2``.
 
         Returns:
             Array of shape (n,) with values in [0, 1], summing to ``k``.
@@ -147,10 +145,12 @@ class KDPP:
         # phase 2: projection DPP sampling
         out = []
         while V.shape[1] > 0:
+            # pick an item with probability proportional to its squared row norm
             p = (V ** 2).sum(1)
             p = p / p.sum()
             i = rng.choice(n, p=p)
             out.append(i)
+            # project the basis onto the complement of e_i and re-orthonormalise
             j = np.argmax(np.abs(V[i, :]))
             Vj = V[:, j].copy()
             V = np.delete(V, j, axis=1)
@@ -161,7 +161,15 @@ class KDPP:
 
 
 def _esp_prefix(lams: np.ndarray, k: int) -> np.ndarray:
-    """``E[l, m] = e_l(lams[:m])`` for l <= k, vectorised over l (n numpy steps)."""
+    """Elementary symmetric polynomials of prefixes, vectorised over the order (n numpy steps).
+
+    Args:
+        lams: Weights, shape (n,).
+        k: Highest polynomial order.
+
+    Returns:
+        Array ``E`` of shape (k + 1, n + 1) with ``E[l, m] = e_l(lams[:m])``.
+    """
     n = len(lams)
     E = np.zeros((k + 1, n + 1))
     E[0, :] = 1.0
@@ -176,8 +184,11 @@ class DiagonalKDPP:
     Same distribution as ``KDPP(np.diag(w), k)``, but without the
     eigendecomposition and projection phase: with a diagonal kernel the
     eigenvectors are the items themselves, so the k-DPP reduces to choosing k
-    items with probability proportional to the product of their weights.
-    O(n k) instead of O(n^3).
+    items with probability proportional to the product of their weights; O(n k) instead of O(n^3).
+
+    Args:
+        w: Non-negative item weights, shape (n,).
+        k: Subset size, clipped to ``[1, n]``.
     """
 
     def __init__(self, w: np.ndarray, k: int):
@@ -189,20 +200,32 @@ class DiagonalKDPP:
         self._E = _esp_prefix(self.lams, self.k)
 
     def sample(self, rng: np.random.Generator) -> np.ndarray:
-        """Sorted indices of the k selected items."""
+        """Draw one exact sample by scanning the items backwards (sequential conditional inclusion).
+
+        Args:
+            rng: Random generator.
+
+        Returns:
+            Sorted indices of the ``k`` selected items, shape (k,).
+        """
         lams, E = self.lams, self._E
         chosen, l = [], self.k
         u = rng.random(self.n)
         for m in range(self.n, 0, -1):
             if l == 0:
                 break
+            # P(item m-1 in S | l items still to choose among the first m)
             if m == l or u[m - 1] < lams[m - 1] * E[l - 1, m - 1] / E[l, m]:
                 chosen.append(m - 1)
                 l -= 1
         return np.array(sorted(chosen), dtype=int)
 
     def marginals(self) -> np.ndarray:
-        """``P(i in S) = w_i e_{k-1}(w_{-i}) / e_k(w)`` from prefix x suffix tables."""
+        """Exact inclusion probabilities ``P(i in S) = w_i e_{k-1}(w_{-i}) / e_k(w)``, from prefix and suffix tables.
+
+        Returns:
+            Array of shape (n,) with values in [0, 1], summing to ``k``.
+        """
         k, lams = self.k, self.lams
         P = self._E                                        # P[l, i] = e_l(lams[:i])
         Sfx = _esp_prefix(lams[::-1], k)[:, ::-1]          # Sfx[l, i] = e_l(lams[i:])

@@ -12,24 +12,22 @@ SCHEMES = ("lfbo", "paper")
 
 def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
                      scheme: str = "lfbo", return_index: bool = False):
-    """Label and weight observations (paper Eq. 3).
+    """Label points below the gamma-quantile as positives weighted by their improvement (paper Eq. 3).
 
-    ``tau`` is the gamma-quantile of the unique values. Points with ``y < tau``
-    are positives weighted by the improvement ``tau - y``; weights are
-    class-balanced and normalised to mean 1.
+    Weights are class-balanced and normalised to mean 1.
 
     Args:
         x: Inputs, shape (n, d).
         y: Objective values, shape (n,).
-        gamma: Quantile that defines the threshold ``tau``.
-        scheme: ``"lfbo"`` (LFBO/MALIBO/author code): the reference class 0 is
-            *all* points, so every positive appears twice. ``"paper"`` (Eq. 3 as
-            written): class 0 is only ``y >= tau``.
-        return_index: Also return, for every output row, the index of its source point.
+        gamma: Quantile of the unique values that defines the threshold ``tau``.
+        scheme: ``"lfbo"`` (LFBO/MALIBO/author code): class 0 is *all* points, so
+            every positive appears twice. ``"paper"`` (Eq. 3 as written): class 0
+            is only ``y >= tau``.
+        return_index: Also return the index of the source point of every output row.
 
     Returns:
-        ``(x, lab, w)`` with shapes (m, d), (m,), (m,), plus the source indices
-        (m,) if ``return_index``; m = n + #positives for ``"lfbo"``, n for ``"paper"``.
+        ``(x, lab, w)`` of shapes (m, d), (m,), (m,), plus the source indices (m,)
+        if ``return_index``; m = n + #positives for ``"lfbo"``, n for ``"paper"``.
     """
     if scheme not in SCHEMES:
         raise ValueError(f"unknown weighting scheme {scheme!r}, choose from {SCHEMES}")
@@ -37,14 +35,15 @@ def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
     x = np.atleast_2d(x)
     tau = threshold(y, gamma)
     z = y < tau
-    if len(x) == 1:
+    if len(x) == 1:  # a single point: no quantile, no balancing
         out = (x, z.astype(float), np.ones(1))
         return (*out, np.zeros(1, int)) if return_index else out
-    i1 = np.flatnonzero(z)
-    i0 = np.arange(len(y)) if scheme == "lfbo" else np.flatnonzero(~z)
-    w1 = (tau - y)[i1]
+    i1 = np.flatnonzero(z)  # positives
+    i0 = np.arange(len(y)) if scheme == "lfbo" else np.flatnonzero(~z)  # reference class
+    w1 = (tau - y)[i1]  # improvement over tau
     w1 = w1 / w1.mean() if len(w1) else w1
     s1, s0 = len(i1), len(i0)
+    # class balancing: each class gets the same total weight
     w = np.concatenate([w1 * (s1 + s0) / max(s1, 1), np.ones(s0) * (s1 + s0) / max(s0, 1)])
     w = w / w.mean()
     idx = np.concatenate([i1, i0])
@@ -53,5 +52,13 @@ def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
 
 
 def threshold(y: np.ndarray, gamma: float = 1 / 3) -> float:
-    """``tau``: the gamma-quantile of the unique values of ``y``."""
+    """Threshold ``tau`` of the "good" class.
+
+    Args:
+        y: Objective values, shape (n,).
+        gamma: Quantile level.
+
+    Returns:
+        The gamma-quantile of the unique values of ``y``.
+    """
     return float(np.quantile(np.unique(np.asarray(y, dtype=float)), q=gamma))

@@ -22,6 +22,16 @@ from experiments.common import bench_main
 
 
 def group(space, seed, discrete=False):
+    """Problem group of one job: every test dataset of one search space.
+
+    Args:
+        space: Search-space ID.
+        seed: Index of the HPO-B seed (0 -> ``"test0"``).
+        discrete: Use the tabulated evaluations instead of the surrogates.
+
+    Returns:
+        One ``Problem`` per test dataset.
+    """
     return hpob.problems(space, hpob.SEEDS[seed], discrete=discrete)
 
 

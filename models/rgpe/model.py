@@ -22,12 +22,30 @@ from models.gp.model import expected_improvement
 
 
 def _std(y):
+    """Standardise values to zero mean and unit variance.
+
+    Args:
+        y: Values, shape (n,).
+
+    Returns:
+        Standardised values, shape (n,); only centred if the values are constant.
+    """
     y = np.asarray(y, float)
     s = y.std()
     return (y - y.mean()) / (s if s > 0 else 1.0)
 
 
 def _gp(X, y, seed):
+    """Fit one ensemble member: a Matern-5/2 ARD GP with noise on standardised targets.
+
+    Args:
+        X: Inputs in the unit cube, shape (n, d).
+        y: Standardised targets, shape (n,).
+        seed: Seed of the hyperparameter restart.
+
+    Returns:
+        The fitted ``GaussianProcessRegressor``.
+    """
     d = X.shape[1]
     k = ConstantKernel(1.0) * Matern(length_scale=np.full(d, 0.3), nu=2.5, length_scale_bounds=(1e-3, 1e2)) \
         + WhiteKernel(1e-3, (1e-8, 1e-1))
@@ -39,7 +57,15 @@ def _gp(X, y, seed):
 
 
 def ranking_losses(samples: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """Mis-ordered pairs of each sample row (S, n) w.r.t. the observations ``y`` (n,)."""
+    """Count the pairs each posterior sample orders differently from the observations.
+
+    Args:
+        samples: Posterior samples at the observed points, shape (S, n).
+        y: Observed values, shape (n,).
+
+    Returns:
+        Number of mis-ordered pairs per sample, shape (S,).
+    """
     obs = y[:, None] < y[None, :]
     pred = samples[:, :, None] < samples[:, None, :]
     return (pred ^ obs).sum((1, 2))
@@ -63,9 +89,15 @@ class RGPE(BaseOptimizer):
                  max_per_task: int = 256, max_points: int = 200):
         super().__init__(bounds, seed)
         self.n_samples, self.max_per_task, self.max_points = n_samples, max_per_task, max_points
-        self.base = []
+        self.base = []  # one GP per source task
 
     def meta_train(self, tasks: Sequence[Task], **kwargs) -> None:
+        """Fit one GP per source task.
+
+        Args:
+            tasks: Source tasks with ``X``/``y``.
+            **kwargs: Unused.
+        """
         self.base = []
         for t in tasks:
             X, y = self._normalize(t.X), np.asarray(t.y, float)
@@ -75,6 +107,15 @@ class RGPE(BaseOptimizer):
             self.base.append(_gp(X, _std(y), int(self.rng.integers(1 << 30))))
 
     def _subset(self, X, y):
+        """Keep the best half of ``max_points`` target points and fill the rest at random.
+
+        Args:
+            X: Observed points, shape (n, d).
+            y: Observed values, shape (n,).
+
+        Returns:
+            ``(X, y)`` with at most ``max_points`` rows.
+        """
         if len(y) <= self.max_points:
             return X, y
         order = np.argsort(y)
@@ -83,9 +124,18 @@ class RGPE(BaseOptimizer):
         return X[idx], y[idx]
 
     def _weights(self, U, ys, target):
-        """Ensemble weights of (base models..., target)."""
+        """Ensemble weights: how often each model has the lowest ranking loss, with weight dilution.
+
+        Args:
+            U: Target points in the unit cube, shape (n, d).
+            ys: Standardised target values, shape (n,).
+            target: GP fitted on ``(U, ys)``.
+
+        Returns:
+            Weights of (base models..., target), summing to 1.
+        """
         n, S = len(ys), self.n_samples
-        if n < 3:
+        if n < 3:  # too few points to rank: uniform over the base models
             w = np.zeros(len(self.base) + 1)
             w[:-1] = 1.0 / max(len(self.base), 1)
             return w if len(self.base) else np.array([1.0])
@@ -105,19 +155,28 @@ class RGPE(BaseOptimizer):
         losses.append(ranking_losses(smp, yo))
         L = np.stack(losses)  # (models, S)
         best = L == L.min(0, keepdims=True)
-        tie = best / best.sum(0, keepdims=True)
+        tie = best / best.sum(0, keepdims=True)  # ties share the win
         w = tie.mean(1)
+        # weight dilution: drop base models that are usually worse than the target model
         thr = np.percentile(L[-1], 95)
         drop = np.median(L[:-1], axis=1) > thr
         w[:-1][drop] = 0.0
         return w / w.sum()
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """EI of the weighted ensemble over ``N_CAND`` candidates."""
+        """Pick the EI maximiser of the weighted ensemble among ``N_CAND`` random candidates.
+
+        Args:
+            n: Number of points (random points if there is no data and no base model).
+
+        Returns:
+            Points of shape (1, d), or (n, d) when falling back to random points.
+        """
         X, y = self.history.arrays
         C = self._candidates(N_CAND)
         UC = self._normalize(C)
         if len(y) < 2 or np.ptp(y) == 0:
+            # no usable target data: minimise the mean prediction of the source GPs
             if not self.base:
                 return self._candidates(n)
             mu = np.mean([gp.predict(UC) for gp in self.base], 0)

@@ -62,14 +62,27 @@ class TrainRecorder:
     util_weights: Optional[np.ndarray] = None
 
     def __call__(self, s: TrainSnapshot) -> None:
+        """Store one snapshot; the static training data are copied from the first one.
+
+        Args:
+            s: Snapshot passed by ``meta_train``.
+        """
         if self.X is None:
             self.X, self.labels = s.X.copy(), s.labels.copy()
             self.task_index, self.util_weights = s.task_index.copy(), s.util_weights.copy()
-        emb = s.net.emb[1:].detach().cpu().numpy().copy()
+        emb = s.net.emb[1:].detach().cpu().numpy().copy()  # meta-task embeddings (row 0 = target)
         self.records.append(Record(s.it, s.task_losses, s.hard, s.xi, s.sample_weights, emb))
 
 
 def _as_dict(log: Union[TrainLog, dict]) -> dict:
+    """A training log as a dict, with the iteration axis filled in for old logs.
+
+    Args:
+        log: ``TrainLog`` or its ``__dict__`` (as stored in results JSON).
+
+    Returns:
+        A dict copy of the log.
+    """
     d = dict(log.__dict__) if isinstance(log, TrainLog) else dict(log)
     if not d.get("iteration"):  # logs saved before `iteration` existed (every 50 its)
         d["iteration"] = list(range(0, 50 * len(d["avg_task_loss"]), 50))
@@ -107,7 +120,7 @@ def plot_train_logs(logs: Dict[str, Union[TrainLog, dict]], path: Optional[str] 
 
 
 def plot_task_loss_evolution(rec: TrainRecorder, alpha: float = 0.8, path: Optional[str] = None):
-    """Distribution of per-task losses over training (median, 10-90% band, max) and xi.
+    """Distribution of per-task losses over training (median, 10-90% band, worst task) and the threshold xi.
 
     Args:
         rec: Filled recorder.
@@ -189,7 +202,7 @@ def plot_sample_weight_evolution(rec: TrainRecorder, task: Optional[int] = None,
     if task is None:
         shift = np.abs(np.log(rec.records[-1].sample_weights / rec.util_weights))
         per_task = np.bincount(rec.task_index, weights=shift)[1:]
-        task = int(np.argmax(per_task))
+        task = int(np.argmax(per_task))  # index 0 of bincount is the target task
     sel = rec.task_index == task + 1
     x, lab = rec.X[sel, 0], rec.labels[sel]
     picks = np.unique(np.linspace(0, len(rec.records) - 1, n_snapshots).round().astype(int))

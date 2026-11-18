@@ -33,7 +33,14 @@ SEEDS = ["test0", "test1", "test2", "test3", "test4"]
 
 
 def prepare(n_meta: int = 512, seed: int = 0) -> None:
-    """Build ``hpob_cache/<space>.npz`` from the HPO-B JSON files (once; files loaded one at a time)."""
+    """Build one compact ``hpob_cache/<space>.npz`` per search space from the HPO-B JSON files.
+
+    The large JSON files are loaded one at a time and freed to bound memory.
+
+    Args:
+        n_meta: Subsample every meta-train dataset to at most this many points.
+        seed: Seed of the subsampling.
+    """
     import gc
     CACHE.mkdir(exist_ok=True)
     rng = np.random.default_rng(seed)
@@ -64,13 +71,22 @@ def prepare(n_meta: int = 512, seed: int = 0) -> None:
 
 
 def search_spaces() -> List[str]:
-    """IDs of the 16 test search spaces."""
+    """IDs of the 16 test search spaces (from the cache if it exists, else from the JSON).
+
+    Returns:
+        Sorted list of search-space IDs.
+    """
     return sorted(json.load(open(DATA / "hpob-data" / "meta-test-dataset.json")).keys()) \
         if not CACHE.exists() else sorted(p.stem for p in CACHE.glob("*.npz"))
 
 
 class Surrogate:
-    """XGBoost surrogate of one test dataset; returns ``-accuracy`` (to minimise)."""
+    """XGBoost surrogate of one test dataset; the objective is ``-accuracy`` (to minimise).
+
+    Args:
+        space: Search-space ID.
+        ds: Test-dataset ID.
+    """
 
     def __init__(self, space: str, ds: str):
         import xgboost as xgb
@@ -84,17 +100,41 @@ class Surrogate:
         self.y_min, self.y_max = stats["y_min"], stats["y_max"]
 
     def __call__(self, X: np.ndarray) -> np.ndarray:
+        """Predict ``-accuracy``.
+
+        Args:
+            X: Points in the unit cube, shape (n, d).
+
+        Returns:
+            Values, shape (n,).
+        """
         import xgboost as xgb
         return -self.booster.predict(xgb.DMatrix(np.atleast_2d(X))).astype(float)
 
     def regret(self, y_seen: np.ndarray) -> np.ndarray:
+        """Normalised simple regret with the surrogate's accuracy range, clipped to [0, 1].
+
+        Args:
+            y_seen: Observed values (``-accuracy``) in evaluation order, shape (n,).
+
+        Returns:
+            Regret curve, shape (n,).
+        """
         acc = np.maximum.accumulate(-np.asarray(y_seen, float))
         return np.clip((self.y_max - acc) / (self.y_max - self.y_min), 0.0, 1.0)
 
 
 def problems(space: str, seed_id: str = "test0", discrete: bool = False) -> List[Problem]:
-    """One problem per test dataset of ``space`` for the HPO-B seed ``seed_id``
-    (``discrete``: tabulated evaluations instead of the surrogate)."""
+    """One problem per test dataset of a search space, starting from the HPO-B initial points.
+
+    Args:
+        space: Search-space ID.
+        seed_id: HPO-B seed of the initial points (``"test0"`` .. ``"test4"``).
+        discrete: Choose among the tabulated evaluations instead of querying the surrogate.
+
+    Returns:
+        One ``Problem`` per test dataset.
+    """
     d = np.load(CACHE / f"{space}.npz")
     meta = [Task(objective=None, X=d[f"train_X_{i}"], y=-d[f"train_y_{i}"])
             for i in range(sum(k.startswith("train_X_") for k in d.files))]
@@ -103,7 +143,7 @@ def problems(space: str, seed_id: str = "test0", discrete: bool = False) -> List
         ds = k[len("test_X_"):]
         X = d[k]
         bounds = np.column_stack([np.zeros(X.shape[1]), np.ones(X.shape[1])])
-        init = X[d[f"init_{ds}_{seed_id}"]]
+        init = X[d[f"init_{ds}_{seed_id}"]]  # indices into the tabulated evaluations
         if discrete:
             table = LookupTable(X, -d[f"test_y_{ds}"])
             probs.append(Problem(f"hpob/{space}/{ds}", bounds, table, table.regret, meta, pool=table.X, init=init))

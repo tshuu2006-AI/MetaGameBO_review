@@ -36,6 +36,14 @@ SCHEMES = {"lfbo": "LFBO labels (class 0 = all points)", "paper": "Eq. (3) as wr
 
 
 def run_job(job):
+    """Meta-train one ablation variant on the Forrester meta tasks and write its losses as JSON.
+
+    Args:
+        job: ``(path, name, seed)``; ``name`` is ``<variant>_<scheme>``, e.g. ``"remake_task_lfbo"``.
+
+    Returns:
+        ``(name, seed, seconds)`` for the progress log.
+    """
     path, name, seed = job
     from benchmarks.forrester import BOUNDS, make_meta_tasks
     from models import build
@@ -52,7 +60,7 @@ def run_job(job):
     t0 = time.time()
     opt.meta_train(make_meta_tasks(200, 32, seed))
     d = opt.log.__dict__
-    i = int(np.argmin(d["val_avg_task_loss"]))
+    i = int(np.argmin(d["val_avg_task_loss"]))  # iteration that early stopping would keep
     res = dict(name=name, seed=seed, seconds=time.time() - t0,
                final={k: v for k, v in d["final"].items() if k != "val_task_losses"},
                best_val_iter=int(d["iteration"][i]), best_val_avg=float(d["val_avg_task_loss"][i]),
@@ -62,6 +70,15 @@ def run_job(job):
 
 
 def table(results, seeds) -> str:
+    """Markdown tables of the ablation, one per labelling scheme.
+
+    Args:
+        results: Job results.
+        seeds: Seeds included.
+
+    Returns:
+        The tables as Markdown, with changes relative to MALIBO.
+    """
     rows = ["## Forrester: ablation of the re-implementation (Table-1 losses)", "",
             f"200 tasks x 32 points, 2000 full-batch steps; seeds {sorted(seeds)}; mean ± standard error. "
             "Held-out = random 20% of the pooled rows (same split for all variants of a seed).", ""]
@@ -74,7 +91,7 @@ def table(results, seeds) -> str:
             rs = [r for r in results if r["name"] == f"{base}_{scheme}"]
             if not rs:
                 continue
-            f = lambda k: mean_se(np.array([r["final"][k] for r in rs]))
+            f = lambda k: mean_se(np.array([r["final"][k] for r in rs]))  # mean ± s.e. of a final loss
             (va, vase), (vc, vcse) = f("val_avg"), f("val_cvar")
             if base == "malibo":
                 ref = (va, vc)
@@ -97,6 +114,7 @@ def table(results, seeds) -> str:
 
 
 def main():
+    """Command line: run the missing (variant, scheme, seed) jobs, then write the tables."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--workers", type=int, default=6)

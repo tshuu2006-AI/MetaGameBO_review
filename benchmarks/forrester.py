@@ -56,17 +56,28 @@ class ForresterTask:
     c: float
 
     def __call__(self, X: np.ndarray) -> np.ndarray:
-        """Evaluate the task at ``X`` (shape (n, 1)); returns shape (n,)."""
+        """Evaluate the task.
+
+        Args:
+            X: Inputs, shape (n, 1).
+
+        Returns:
+            Values, shape (n,).
+        """
         return forrester(X, self.a, self.b, self.c)
 
     @property
     def f_range(self) -> tuple[float, float]:
-        """Return ``(f_min, f_max)`` on a 2001-point grid over [0, 1]."""
+        """Range of the task, used to normalise the regret.
+
+        Returns:
+            ``(f_min, f_max)`` on a 2001-point grid over [0, 1].
+        """
         f = self(_GRID)
         return float(f.min()), float(f.max())
 
     def normalized_regret(self, y_seen: np.ndarray) -> np.ndarray:
-        """Normalised regret curve (MALIBO protocol).
+        """Normalised simple-regret curve (MALIBO protocol).
 
         Args:
             y_seen: Observed values in evaluation order, shape (n,).

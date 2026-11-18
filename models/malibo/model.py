@@ -52,11 +52,21 @@ class MALIBO(BaseOptimizer):
         self.gb = None
 
     def _selectors(self):
-        """Task and sample selectors of meta-training (ERM for MALIBO)."""
+        """Task and sample selectors of meta-training; subclasses replace them (MetaGameBO).
+
+        Returns:
+            ``(task_selector, sample_selector)``; ERM (all tasks, all samples) for MALIBO.
+        """
         return AllTasks(), AllSamples()
 
     def meta_train(self, tasks: Sequence[Task], callback=None, callback_every: Optional[int] = None) -> None:
-        """Meta-train on source tasks (``X`` in the box, ``y``) and build the target adapter."""
+        """Meta-train the classifier on the source tasks and build the target adapter.
+
+        Args:
+            tasks: Source tasks with ``X`` (in the box) and ``y``.
+            callback: Optional ``callback(iteration, net)`` during training.
+            callback_every: Call ``callback`` every this many iterations.
+        """
         rng = np.random.default_rng(self.cfg.seed)
         unit = []
         for t in tasks:
@@ -64,7 +74,7 @@ class MALIBO(BaseOptimizer):
             if self.cfg.max_per_task and len(y) > self.cfg.max_per_task:
                 keep = rng.choice(len(y), self.cfg.max_per_task, replace=False)
                 X, y = X[keep], y[keep]
-            unit.append(SimpleNamespace(X=self._normalize(X), y=y))
+            unit.append(SimpleNamespace(X=self._normalize(X), y=y))  # inputs in the unit cube
         ts, ss = self._selectors()
         self.net, self.log = meta_train(unit, self.cfg, ts, ss, callback=callback, callback_every=callback_every)
         self.adapter = BLRAdapter(self.net, hessian=self.hessian)
@@ -77,13 +87,19 @@ class MALIBO(BaseOptimizer):
         self.gb = None
 
     def _update(self, x, y) -> None:
-        """Refit the adapter, draw a Thompson sample, refit the GB residual."""
+        """Refit the adapter on the target data, draw a Thompson sample and refit the GB residual.
+
+        Args:
+            x: All target observations, shape (n, d).
+            y: Their values, shape (n,).
+        """
         self.gb = None
         x, lab, w = reweight_samples(self._normalize(x), y, self.gamma, self.cfg.weighting)
         self.adapter.fit(x, lab, w)
         self._z_ts = self.adapter.sample_z(self.rng)
         if self.use_gb and (lab == 0).sum() >= 2 and (lab == 1).sum() >= 2:
             rs = int(self.rng.integers(1 << 30))
+            # first fit with early stopping only to choose the number of trees, then refit on all data
             probe = GradientBoostingClassifier(init=ThompsonInit(self), validation_fraction=0.3,
                                                n_iter_no_change=5, random_state=rs)
             probe.fit(x, lab, sample_weight=w)
@@ -92,15 +108,21 @@ class MALIBO(BaseOptimizer):
             self.gb.fit(x, lab, sample_weight=w)
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """Acquisition maximiser over ``N_CAND`` candidates.
+        """Pick the acquisition maximiser among ``N_CAND`` candidates; a duplicate is replaced by a random point.
 
-        First step: meta-learned mean (warm start); then the GB residual if fitted,
-        else the Thompson-sampled classifier. A duplicate is replaced by a random point.
+        The acquisition is the meta-learned mean on the first step, then the GB
+        residual if fitted, else the Thompson-sampled classifier.
+
+        Args:
+            n: Unused (one point per step).
+
+        Returns:
+            One point, shape (1, d).
         """
         C = self._candidates(N_CAND)
         U = self._normalize(C)
         if len(self.history.y) == 0:
-            a = self.adapter.prob_max(U)
+            a = self.adapter.prob_max(U)  # warm start from the prior
         elif self.gb is not None:
             a = self.gb.predict_proba(U)[:, 1]
         else:

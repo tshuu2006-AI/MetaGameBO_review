@@ -54,7 +54,7 @@ class MetaNet(torch.nn.Module):
         Returns:
             Tuple ``(phi, m)`` of shapes (n, num_features) and (n,).
         """
-        h =torch.nn.functional.elu(self.inp(x))
+        h = torch.nn.functional.elu(self.inp(x))
         for lin in self.hidden:
             h = torch.nn.functional.elu(h + lin(h))
         phi = torch.nn.functional.elu(self.feat(h))
@@ -90,6 +90,7 @@ def ks_cov_loss(E: torch.Tensor) -> torch.Tensor:
     n = E.shape[0]
     s = torch.sort(E, dim=0).values
     ecdf = torch.linspace(1 / n, 1.0, n, dtype=E.dtype).unsqueeze(-1)
+    # standard normal CDF at the sorted values vs the empirical CDF, per dimension
     ks = ((0.5 * (1 + torch.erf(s / math.sqrt(2))) - ecdf) ** 2).mean()
     Ec = E - E.mean(0)
     cov = Ec.T @ Ec / n

@@ -86,6 +86,9 @@ def prepare_meta_data(tasks: Sequence, gamma: float = 1 / 3, scheme: str = "lfbo
         scheme: Eq. (3) scheme.
         val_frac: Held-out fraction; every task keeps at least one training sample.
         seed: Seed of the split.
+
+    Returns:
+        The pooled samples with their task index and validation mask (``MetaData``).
     """
     xs, labs, ws, tids, srcs = [], [], [], [], []
     for i, t in enumerate(tasks):
@@ -97,6 +100,7 @@ def prepare_meta_data(tasks: Sequence, gamma: float = 1 / 3, scheme: str = "lfbo
     if val_frac > 0:
         perm = np.random.default_rng([seed, 1]).permutation(len(tid))
         is_val[perm[:int(len(tid) * val_frac)]] = True
+        # a task whose samples all landed in validation gets one back for training
         for i in range(len(tasks)):
             own = np.flatnonzero(tid == i + 1)
             if is_val[own].all():
@@ -106,7 +110,16 @@ def prepare_meta_data(tasks: Sequence, gamma: float = 1 / 3, scheme: str = "lfbo
 
 
 def weighted_bce(p: np.ndarray, lab: np.ndarray, w: np.ndarray) -> np.ndarray:
-    """Per-sample ``w * BCE(p, lab)`` (the Table-1 loss terms)."""
+    """Weighted binary cross-entropy of every sample (the Table-1 loss terms).
+
+    Args:
+        p: Predicted P(good), shape (n,) (clipped to [1e-7, 1 - 1e-7]).
+        lab: Binary labels, shape (n,).
+        w: Sample weights, shape (n,).
+
+    Returns:
+        ``w * BCE(p, lab)``, shape (n,).
+    """
     p = np.clip(np.asarray(p, dtype=float), 1e-7, 1 - 1e-7)
     return -w * (lab * np.log(p) + (1 - lab) * np.log(1 - p))
 
@@ -134,7 +147,19 @@ class TrainLog:
 
 @dataclass
 class TrainSnapshot:
-    """Training state at one logged iteration, passed to the optional callback."""
+    """Training state at one logged iteration, passed to the optional callback.
+
+    Attributes:
+        it: Iteration.
+        net: The network being trained (not a copy).
+        task_losses: Training loss per task, shape (M,).
+        hard: Indices of the tasks selected for this step.
+        X, labels, task_index: Training samples, labels and task indices.
+        util_weights: Eq. (3) weights of the training samples.
+        sample_weights: Current gradient weights of the sample selector.
+        val_task_losses: Held-out loss per task, shape (M,), or None.
+        xi: CVaR threshold of the task selector, if any.
+    """
     it: int
     net: MetaNet
     task_losses: np.ndarray
@@ -149,16 +174,28 @@ class TrainSnapshot:
 
 
 def per_task_loss(net: MetaNet, X, lab, w, tid, n_tasks) -> np.ndarray:
-    """Mean weighted BCE of each task (eval mode); NaN for a task without samples. Shape (M,)."""
+    """Mean weighted BCE of each task, computed in eval mode (no embedding noise).
+
+    Args:
+        net: Meta-classifier.
+        X: Inputs, tensor (n, d).
+        lab: Labels, tensor (n,).
+        w: Sample weights, tensor (n,).
+        tid: Task index 1..M per sample, long tensor (n,).
+        n_tasks: Number of tasks M.
+
+    Returns:
+        Loss per task, shape (M,); NaN for a task without samples.
+    """
     was_training = net.training
     net.eval()
     with torch.no_grad():
         logit = net(X, tid)
         l = torch.nn.functional.binary_cross_entropy_with_logits(logit, lab, reduction="none") * w
-        s = torch.zeros(n_tasks + 1, dtype=DT).index_add_(0, tid, l)
+        s = torch.zeros(n_tasks + 1, dtype=DT).index_add_(0, tid, l)  # loss sum per task
         c = torch.zeros(n_tasks + 1, dtype=DT).index_add_(0, tid, torch.ones_like(l))
     net.train(was_training)
-    s, c = s[1:].numpy(), c[1:].numpy()
+    s, c = s[1:].numpy(), c[1:].numpy()  # drop index 0 (target task)
     return np.divide(s, c, out=np.full_like(s, np.nan), where=c > 0)
 
 
@@ -166,6 +203,14 @@ class AllTasks:
     """Task selector of MALIBO (ERM): every task in every step."""
 
     def select(self, task_losses: np.ndarray) -> np.ndarray:
+        """Select all tasks.
+
+        Args:
+            task_losses: Loss per task, shape (M,).
+
+        Returns:
+            Indices 0..M-1.
+        """
         return np.arange(len(task_losses))
 
 
@@ -173,25 +218,51 @@ class AllSamples:
     """Sample selector of MALIBO: all samples of the selected tasks, utility weights."""
 
     def init(self, W_util: torch.Tensor, slices: list, X: torch.Tensor, rng) -> None:
+        """Store the utility weights and the sample range of each task.
+
+        Args:
+            W_util: Eq. (3) weights of the training samples, tensor (n,).
+            slices: Per task, the indices of its samples in the training arrays.
+            X: Training inputs, tensor (n, d) (unused).
+            rng: Numpy random generator (unused).
+        """
         self.W, self.slices = W_util, slices
 
     @property
     def weights(self) -> torch.Tensor:
+        """Current gradient weight of every training sample.
+
+        Returns:
+            Tensor of shape (n,).
+        """
         return self.W
 
     def select(self, hard: np.ndarray):
-        """Return ``(idx, gradient weights)`` for the selected tasks."""
+        """Take every sample of the selected tasks with its utility weight.
+
+        Args:
+            hard: Indices of the selected tasks.
+
+        Returns:
+            ``(idx, weights)``: sample indices and their gradient weights.
+        """
         idx = np.concatenate([self.slices[i] for i in hard])
         return idx, self.W[idx]
 
     def update(self, hard, idx, per_sample_loss) -> None:
-        """No sample-weight update."""
+        """Keep the weights fixed (MetaGameBO's selector updates them here).
+
+        Args:
+            hard: Indices of the selected tasks.
+            idx: Indices of the samples used in the step.
+            per_sample_loss: Unweighted BCE of those samples.
+        """
 
 
 def meta_train(tasks: Sequence, cfg: MetaTrainConfig, task_selector=None, sample_selector=None,
                callback: Optional[Callable[[TrainSnapshot], None]] = None, log_every: int = 50,
                callback_every: Optional[int] = None):
-    """Meta-train the classifier on ``tasks`` (inputs in the unit cube).
+    """Meta-train the classifier with pluggable task and sample selectors (full-batch Adam).
 
     Args:
         tasks: Objects with ``X`` (n_i, d) and ``y`` (n_i,).
@@ -216,6 +287,7 @@ def meta_train(tasks: Sequence, cfg: MetaTrainConfig, task_selector=None, sample
 
     md = prepare_meta_data(tasks, cfg.gamma, cfg.weighting, cfg.val_frac, cfg.seed)
     tr = ~md.is_val
+    # training samples are stored task by task, so each task is a contiguous slice
     slices, off = [], 0
     for i in range(M):
         n_i = int(np.sum(md.tid[tr] == i + 1))
@@ -235,6 +307,7 @@ def meta_train(tasks: Sequence, cfg: MetaTrainConfig, task_selector=None, sample
     opt = torch.optim.Adam(net.parameters(), lr=cfg.lr)
     log = TrainLog()
     for it in range(cfg.iters):
+        # 1) task level: losses of all tasks, the selector picks the tasks of this step
         L = per_task_loss(net, X, LAB, W_util, TID, M)
         hard = task_selector.select(L)
         last = it == cfg.iters - 1
@@ -254,6 +327,7 @@ def meta_train(tasks: Sequence, cfg: MetaTrainConfig, task_selector=None, sample
                                    W_util.numpy().copy(), sample_selector.weights.numpy().copy(), Lv,
                                    getattr(task_selector, "xi", None)))
 
+        # 2) sample level: samples of the selected tasks and their gradient weights
         idx, gw = sample_selector.select(hard)
         idx_t = torch.as_tensor(idx)
         logit = net(X[idx_t], TID[idx_t])
@@ -261,13 +335,14 @@ def meta_train(tasks: Sequence, cfg: MetaTrainConfig, task_selector=None, sample
         task_of = TID[idx_t]
         cnt = torch.zeros(M + 1, dtype=DT).index_add_(0, task_of, torch.ones_like(per))
         pred_loss = ((per * gw) / cnt[task_of]).sum() / len(hard)  # mean over tasks of task means
-        ks, cv = ks_cov_loss(net.emb[1:])
+        ks, cv = ks_cov_loss(net.emb[1:])  # regularise the meta-task embeddings towards N(0, I)
         loss = pred_loss + cfg.emb_weight * (ks_w * ks + cv_w * cv)
         opt.zero_grad()
         loss.backward()
         opt.step()
-        sample_selector.update(hard, idx, per.detach().numpy())
+        sample_selector.update(hard, idx, per.detach().numpy())  # 3) e.g. k-DPP / Eq. (6) update
 
+    # losses of the trained network (Table 1)
     L = per_task_loss(net, X, LAB, W_util, TID, M)
     log.final = dict(train_avg=float(L.mean()), train_cvar=cvar(L, cfg.alpha))
     if val is not None:

@@ -1,7 +1,7 @@
 """Visualise optimisation runs and benchmark results.
 
-Results are the dicts written by ``experiments/run_forrester_*.py``: one per
-(method, seed) with a list of normalised-regret curves per split.
+Results are dicts, one per (method, seed), with a ``method`` key and, per
+split name (e.g. ``"in_dist"``), a list of normalised-regret curves.
 
 Functions:
     group_results: Group result dicts by split and method.
@@ -23,7 +23,15 @@ SPLITS = ("in_dist", "shifted")
 
 
 def group_results(res: Sequence[dict], splits: Sequence[str] = SPLITS) -> Dict[str, Dict[str, List[dict]]]:
-    """Group result dicts as ``{split: {method: [result, ...]}}``."""
+    """Group result dicts by split and method.
+
+    Args:
+        res: Result dicts.
+        splits: Split names to collect.
+
+    Returns:
+        ``{split: {method: [result, ...]}}``; a result appears under every split it contains.
+    """
     out = {}
     for split in splits:
         by = defaultdict(list)
@@ -50,7 +58,7 @@ def plot_regret_curves(by_split: Dict[str, Dict[str, List[dict]]], log: bool = T
     for ax, (split, by) in zip(axes, by_split.items()):
         for m in ordered(by):
             C = np.array([c for r in by[m] for c in r[split]])
-            mean = np.maximum(C.mean(0), 1e-6)
+            mean = np.maximum(C.mean(0), 1e-6)  # keep zeros visible on the log axis
             steps = np.arange(1, C.shape[1] + 1)
             ax.plot(steps, mean, label=m, **method_style(m))
         if log:
@@ -83,7 +91,7 @@ def plot_regret_ecdf(by_split: Dict[str, Dict[str, List[dict]]], step: int = -1,
             v = np.sort([max(c[step], 1e-7) for r in by[m] for c in r[split]])
             ax.step(v, np.arange(1, len(v) + 1) / len(v), where="post", label=m, **method_style(m))
         ax.set_xscale("log")
-        ax.axhline(0.8, color=MUTED, lw=0.8, ls=":")
+        ax.axhline(0.8, color=MUTED, lw=0.8, ls=":")  # above this line: the worst 20% (CVaR0.8)
         ax.set_xlabel("normalised regret"); ax.set_title(f"Per-task regret ECDF ({split})")
     axes[0].set_ylabel("fraction of target tasks")
     axes[-1].legend(loc="upper left", bbox_to_anchor=(1.0, 1.0))

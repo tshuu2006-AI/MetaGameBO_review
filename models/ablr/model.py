@@ -23,7 +23,13 @@ DT = torch.float64
 
 
 class FeatureNet(torch.nn.Module):
-    """Two tanh hidden layers -> ``num_features`` features."""
+    """Feature extractor: two tanh hidden layers followed by a tanh feature layer.
+
+    Args:
+        d: Input dimension.
+        hidden: Width of the hidden layers.
+        num_features: Number of output features (BLR basis functions).
+    """
 
     def __init__(self, d: int, hidden: int = 50, num_features: int = 50):
         super().__init__()
@@ -32,16 +38,34 @@ class FeatureNet(torch.nn.Module):
                                        torch.nn.Linear(hidden, num_features), torch.nn.Tanh())
 
     def forward(self, x):
+        """Compute the features.
+
+        Args:
+            x: Inputs, shape (n, d).
+
+        Returns:
+            Features, shape (n, num_features).
+        """
         return self.net(x)
 
 
 def blr_log_evidence(Phi: torch.Tensor, y: torch.Tensor, log_alpha, log_beta) -> torch.Tensor:
-    """Log marginal likelihood of BLR with weight prior N(0, I/alpha) and noise 1/beta."""
+    """Log marginal likelihood of BLR with weight prior N(0, I/alpha) and noise variance 1/beta.
+
+    Args:
+        Phi: Features, shape (n, D).
+        y: Targets, shape (n,).
+        log_alpha: Log prior precision (scalar tensor).
+        log_beta: Log noise precision (scalar tensor).
+
+    Returns:
+        The log evidence (scalar tensor, differentiable).
+    """
     n, D = Phi.shape
     a, b = log_alpha.exp(), log_beta.exp()
-    A = b * Phi.T @ Phi + a * torch.eye(D, dtype=Phi.dtype)
+    A = b * Phi.T @ Phi + a * torch.eye(D, dtype=Phi.dtype)  # posterior precision of the weights
     L = torch.linalg.cholesky(A)
-    m = b * torch.cholesky_solve((Phi.T @ y).unsqueeze(1), L).squeeze(1)
+    m = b * torch.cholesky_solve((Phi.T @ y).unsqueeze(1), L).squeeze(1)  # posterior mean
     r = y - Phi @ m
     return (0.5 * n * log_beta + 0.5 * D * log_alpha - 0.5 * b * (r @ r) - 0.5 * a * (m @ m)
             - torch.log(torch.diagonal(L)).sum() - 0.5 * n * math.log(2 * math.pi))
@@ -67,9 +91,15 @@ class ABLR(BaseOptimizer):
         self.iters, self.lr, self.max_per_task = iters, lr, max_per_task
         self.net = None
         self.log = None
-        self._ab = np.zeros(2)
+        self._ab = np.zeros(2)  # initial (log alpha, log beta) of the target task
 
     def meta_train(self, tasks: Sequence[Task], **kwargs) -> None:
+        """Learn the shared features and per-task precisions by maximising the summed BLR evidence.
+
+        Args:
+            tasks: Source tasks with ``X``/``y``.
+            **kwargs: Unused.
+        """
         torch.manual_seed(int(self.rng.integers(1 << 30)))
         data = []
         for t in tasks:
@@ -77,13 +107,14 @@ class ABLR(BaseOptimizer):
             if self.max_per_task and len(y) > self.max_per_task:
                 keep = self.rng.choice(len(y), self.max_per_task, replace=False)
                 X, y = X[keep], y[keep]
-            y = (y - y.mean()) / (y.std() if y.std() > 0 else 1.0)
+            y = (y - y.mean()) / (y.std() if y.std() > 0 else 1.0)  # standardise per task
             data.append((torch.tensor(X, dtype=DT), torch.tensor(y, dtype=DT)))
         self.net = FeatureNet(self.dim).to(DT)
         hyp = torch.zeros(len(data), 2, dtype=DT, requires_grad=True)  # log alpha, log beta per task
         opt = torch.optim.Adam(list(self.net.parameters()) + [hyp], lr=self.lr)
         self.log = dict(iteration=[], neg_log_evidence=[])
         for it in range(self.iters):
+            # mean over tasks of the per-point negative log evidence
             loss = -sum(blr_log_evidence(self.net(X), y, hyp[i, 0], hyp[i, 1]) / len(y)
                         for i, (X, y) in enumerate(data)) / len(data)
             opt.zero_grad()
@@ -96,12 +127,36 @@ class ABLR(BaseOptimizer):
         self.net.eval()
 
     def _features(self, X):
+        """Features of the meta-learned network.
+
+        Args:
+            X: Points in the box, shape (n, d).
+
+        Returns:
+            Features as a numpy array, shape (n, num_features).
+        """
         with torch.no_grad():
             return self.net(torch.tensor(self._normalize(X), dtype=DT)).numpy()
 
     def _posterior(self, Phi, y):
-        """Fit the target (log alpha, log beta) and return the predictive function."""
+        """Fit the target (log alpha, log beta) by evidence maximisation and build the BLR predictive.
+
+        Args:
+            Phi: Features of the target observations, shape (n, D).
+            y: Standardised target values, shape (n,).
+
+        Returns:
+            A function mapping features (m, D) to predictive ``(mean, std)``, each of shape (m,).
+        """
         def nle(p):
+            """Negative log evidence at ``p = (log alpha, log beta)``.
+
+            Args:
+                p: Array of shape (2,).
+
+            Returns:
+                The negative log evidence as a float.
+            """
             with torch.no_grad():
                 return -float(blr_log_evidence(torch.tensor(Phi), torch.tensor(y),
                                                torch.tensor(p[0], dtype=DT), torch.tensor(p[1], dtype=DT)))
@@ -112,11 +167,26 @@ class ABLR(BaseOptimizer):
         m = b * Ainv @ Phi.T @ y
 
         def predict(P):
+            """BLR predictive mean and standard deviation.
+
+            Args:
+                P: Features of the query points, shape (m, D).
+
+            Returns:
+                ``(mean, std)``, each of shape (m,).
+            """
             return P @ m, np.sqrt(1 / b + np.einsum("ij,jk,ik->i", P, Ainv, P))
         return predict
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """EI maximiser over ``N_CAND`` candidates (prior mean on the first step)."""
+        """Pick the EI maximiser among ``N_CAND`` random candidates.
+
+        Args:
+            n: Number of points (random points before the first observation).
+
+        Returns:
+            Points of shape (1, d), or (n, d) when falling back to random points.
+        """
         X, y = self.history.arrays
         C = self._candidates(N_CAND)
         if len(y) == 0:

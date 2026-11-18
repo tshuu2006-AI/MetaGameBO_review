@@ -55,6 +55,11 @@ class MetaGameBORemake(MALIBO):
         self.game = game or GameConfig()
 
     def _selectors(self):
+        """Leader and follower of the game, as configured by ``self.game``.
+
+        Returns:
+            ``(task_selector, sample_selector)``; MALIBO's ERM selectors for a switched-off level.
+        """
         g = self.game
         ts = CVaRTasks(g.alpha_task) if g.task_level == "cvar" else AllTasks()
         if g.sample_level is None:

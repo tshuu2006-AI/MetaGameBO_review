@@ -44,7 +44,15 @@ LABEL = {"script_standard": "no flags (MALIBO row)", "script_dro": "`--use_dro` 
 
 
 def job(mode: str, seed: int, out: str) -> None:
-    """Worker (own process, started with this file as the script so that ``benchmarks`` is the authors')."""
+    """Meta-train the author model for one flag combination and re-evaluate it on the author's held-out split.
+
+    Runs in its own process (this file started as a script), so ``benchmarks`` resolves to the authors' package.
+
+    Args:
+        mode: One of ``MODES``.
+        seed: Seed of ``run_forrester.py``.
+        out: Path of the result JSON.
+    """
     import contextlib, io, json, tempfile, time
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     import numpy as np
@@ -71,7 +79,18 @@ def job(mode: str, seed: int, out: str) -> None:
     rec = {"w_lfbo": [], "good0": [], "s1": []}
     orig_rw = M.MetaGameBO._reweight_samples
 
-    def rw(X, y, gamma, weight_type="ei"):  # record the unmodified Eq. (3) weights of every task
+    def rw(X, y, gamma, weight_type="ei"):
+        """Wrapper of the author's ``_reweight_samples`` that records the unmodified Eq. (3) weights of every task.
+
+        Args:
+            X: Inputs of one task.
+            y: Values of one task.
+            gamma: Quantile threshold.
+            weight_type: Weighting type of the author code.
+
+        Returns:
+            The author's ``(x, z, w)`` unchanged.
+        """
         x, z, w = orig_rw(X, y, gamma, weight_type)
         yy = np.asarray(y, float).reshape(-1)
         good = yy < np.quantile(np.unique(yy), q=gamma)
@@ -83,11 +102,31 @@ def job(mode: str, seed: int, out: str) -> None:
     M.MetaGameBO._reweight_samples = staticmethod(rw)
     orig_train = MC.train
 
-    def train(*a, **kw):  # record the pooled training data and the authors' random train/validation split
+    def train(*a, **kw):
+        """Wrapper of the author's ``train`` that records the pooled data and the random train/validation split.
+
+        Args:
+            *a: Positional arguments of the author's ``train``.
+            **kw: Keyword arguments (``data`` holds the pooled rows).
+
+        Returns:
+            What the author's ``train`` returns.
+        """
         rec["data"] = [np.asarray(v) for v in kw["data"]]
         orig_split = torch.utils.data.random_split
 
         def split(ds, lengths, *aa, **kk):
+            """``random_split`` that also records the train and validation indices.
+
+            Args:
+                ds: Dataset.
+                lengths: Split sizes.
+                *aa: Other positional arguments of ``random_split``.
+                **kk: Other keyword arguments of ``random_split``.
+
+            Returns:
+                The two subsets.
+            """
             parts = orig_split(ds, lengths, *aa, **kk)
             rec["train_idx"], rec["val_idx"] = np.array(parts[0].indices), np.array(parts[1].indices)
             return parts
@@ -106,6 +145,7 @@ def job(mode: str, seed: int, out: str) -> None:
         optimizer.meta_fit(benchmark.get_meta_data(), **train_config)
     seconds = time.time() - t0
 
+    # final numbers printed by the authors' trainer into results/<name>.txt
     reported = {}
     for f in os.listdir("results"):
         for line in open(os.path.join("results", f)):
@@ -125,10 +165,28 @@ def job(mode: str, seed: int, out: str) -> None:
     kind = np.concatenate([np.concatenate([np.full(s, 1), np.where(g, 2, 0)]) for s, g in zip(rec["s1"], rec["good0"])])
 
     def cvar(v, alpha=0.8):
+        """Mean of the worst ``1 - alpha`` share of the values (author's definition).
+
+        Args:
+            v: Values.
+            alpha: Confidence level.
+
+        Returns:
+            The CVaR.
+        """
         v = np.sort(np.asarray(v))[::-1]
         return float(v[:max(1, int(len(v) * (1 - alpha)))].mean())
 
     def task_losses(idx, w):
+        """Mean weighted BCE per task over the given rows.
+
+        Args:
+            idx: Row indices (train or validation).
+            w: Weight of every row.
+
+        Returns:
+            Loss per task present in ``idx``.
+        """
         return np.array([np.mean(w[idx][tid[idx] == t] * bce[idx][tid[idx] == t]) for t in np.unique(tid[idx])])
 
     res = dict(mode=mode, seed=seed, seconds=seconds, reported=reported,
@@ -151,6 +209,14 @@ def job(mode: str, seed: int, out: str) -> None:
 
 
 def table(results) -> str:
+    """Markdown table comparing the reported losses, the paper and the re-evaluation with Eq. (3) weights.
+
+    Args:
+        results: Run results.
+
+    Returns:
+        The table as Markdown.
+    """
     import numpy as np
     seeds = sorted({r["seed"] for r in results})
     rows = ["## Forrester: ablation with the authors' code (paper Table 1 and Ablation Study)", "",
@@ -187,6 +253,7 @@ def table(results) -> str:
 
 
 def main():
+    """Command line: run the missing (mode, seed) runs in subprocesses, then write the table."""
     import argparse, json, subprocess, tempfile
     from concurrent.futures import ThreadPoolExecutor
     from experiments.common import RESULTS
@@ -203,6 +270,11 @@ def main():
     print(f"[forrester_author] {len(todo)} runs to do (about 4-7 minutes each)", flush=True)
 
     def run(t):
+        """Run one (mode, seed) in a fresh Python process.
+
+        Args:
+            t: ``(mode, seed, output path)``.
+        """
         m, s, out = t
         p = subprocess.run([sys.executable, str(Path(__file__).resolve()), "--job", m, str(s), str(out)],
                            cwd=tempfile.mkdtemp(), capture_output=True, text=True,

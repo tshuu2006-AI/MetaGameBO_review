@@ -19,11 +19,27 @@ GRID_1D = np.linspace(0.0, 1.0, 501)
 
 
 def _split_colors(names):
+    """Assign the categorical colours to the splits in order.
+
+    Args:
+        names: Split names.
+
+    Returns:
+        Dict split name -> colour.
+    """
     return {n: CATEGORICAL[i % len(CATEGORICAL)] for i, n in enumerate(names)}
 
 
 def _hist(ax, values, edges, color, label):
-    """Overlay-friendly histogram: light fill plus a solid outline (no blended colours)."""
+    """Overlay-friendly histogram: a light fill plus a solid outline, so overlaps stay readable.
+
+    Args:
+        ax: Matplotlib axis.
+        values: Data.
+        edges: Bin edges.
+        color: Colour of this histogram.
+        label: Legend label.
+    """
     ax.hist(values, bins=edges, color=color, alpha=0.25, lw=0)
     ax.hist(values, bins=edges, histtype="step", color=color, lw=1.4, label=label)
 
@@ -47,7 +63,7 @@ def plot_task_family(tasks_by_split: Dict[str, Sequence[Callable]], n_show: int 
         for t in list(tasks)[:n_show]:
             f = t(grid[:, None])
             ax.plot(grid, f, color=colors[name], lw=0.8, alpha=0.45)
-            i = int(np.argmin(f))
+            i = int(np.argmin(f))  # mark the global minimum
             ax.plot(grid[i], f[i], "o", ms=3, color=INK_2)
         ax.set_title(f"{name}: {min(n_show, len(tasks))} tasks")
         ax.set_xlabel("x")
@@ -140,7 +156,7 @@ def plot_reweighting(task, gamma: float = 1 / 3, scheme: str = "lfbo",
     ax.set_title("Observations"); ax.set_xlabel("x"); ax.set_ylabel("y"); ax.legend()
 
     ax = axes[1]
-    s = 30 * w / w.mean()
+    s = 30 * w / w.mean()  # marker area proportional to the weight
     pos = lab == 1
     ax.scatter(x[pos, 0], w[pos], s=s[pos], color=CATEGORICAL[0], label="class 1", zorder=3)
     ax.scatter(x[~pos, 0], w[~pos], s=s[~pos], facecolors="none", edgecolors=CATEGORICAL[1],

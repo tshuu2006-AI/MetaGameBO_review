@@ -19,7 +19,7 @@ import numpy as np
 from models.base import N_CAND, BaseOptimizer
 
 PFN_DIR = Path(__file__).resolve().parent / "PFNs4BO"
-_MODELS: dict = {}
+_MODELS: dict = {}  # per-process cache of loaded models
 
 
 def _torch_compat() -> None:
@@ -39,6 +39,14 @@ def _torch_compat() -> None:
             setattr(tm, k, v)
     if not hasattr(tm, "_get_activation_fn"):
         def _get_activation_fn(activation):
+            """Activation function by name, as in older torch.
+
+            Args:
+                activation: ``"relu"`` or ``"gelu"``.
+
+            Returns:
+                The functional activation.
+            """
             if activation == "relu":
                 return F.relu
             if activation == "gelu":
@@ -48,7 +56,15 @@ def _torch_compat() -> None:
 
 
 def load_pfn(name: str = "hebo_plus_model", device: str = "cpu"):
-    """Load (and cache per process) a pre-trained PFN by its ``pfns4bo`` name."""
+    """Load a pre-trained PFN once per process and move it to ``device``.
+
+    Args:
+        name: Attribute of ``pfns4bo`` holding the model path (e.g. ``"hebo_plus_model"``).
+        device: Torch device.
+
+    Returns:
+        The model in eval mode.
+    """
     if name not in _MODELS:
         import torch
         _torch_compat()
@@ -83,12 +99,22 @@ class PFN(BaseOptimizer):
         self.model_name = model
         self._bo = None
 
-    def __getstate__(self):  # checkpoints: the pre-trained model is reloaded, not pickled
+    def __getstate__(self):
+        """Pickle state for checkpoints; the pre-trained model is reloaded instead of pickled.
+
+        Returns:
+            The instance dict without the BO method.
+        """
         d = self.__dict__.copy()
         d["_bo"] = None
         return d
 
     def _method(self):
+        """The authors' BO method around the model, created on first use.
+
+        Returns:
+            A ``TransformerBOMethod``.
+        """
         if self._bo is None:
             m = load_pfn(self.model_name, self.device)  # also puts PFNs4BO on sys.path
             from pfns4bo.scripts.acquisition_functions import TransformerBOMethod
@@ -96,7 +122,14 @@ class PFN(BaseOptimizer):
         return self._bo
 
     def suggest(self, n: int = 1) -> np.ndarray:
-        """EI maximiser over ``N_CAND`` candidates (random until 1 observation)."""
+        """Pick the EI maximiser of the PFN among ``N_CAND`` random candidates.
+
+        Args:
+            n: Number of points (random points before the first observation).
+
+        Returns:
+            Points of shape (1, d), or (n, d) when falling back to random points.
+        """
         X, y = self.history.arrays
         if len(y) < 1:
             return self._candidates(n)
@@ -112,7 +145,17 @@ class PFN(BaseOptimizer):
         return C[[int(i)]]
 
     def prob_good(self, X, y, Xq, tau):
-        """P(f(Xq) < tau) from the PFN posterior predictive (bar distribution)."""
+        """P(f(x) < tau) from the PFN posterior predictive (bar distribution).
+
+        Args:
+            X: Context points, shape (n, d).
+            y: Context values, shape (n,).
+            Xq: Query points, shape (m, d).
+            tau: Threshold of the "good" class.
+
+        Returns:
+            Probabilities of shape (m,); 0.5 everywhere without context data.
+        """
         import torch
         y = np.asarray(y, float)
         if len(y) < 1:
@@ -123,9 +166,10 @@ class PFN(BaseOptimizer):
         xg = torch.tensor(self._normalize(X), dtype=torch.float32, device=self.device)
         out = []
         with torch.no_grad():
-            for xq in np.array_split(self._normalize(Xq), max(1, len(Xq) // 2048)):
+            for xq in np.array_split(self._normalize(Xq), max(1, len(Xq) // 2048)):  # batches of ~2048
                 xe = torch.tensor(xq, dtype=torch.float32, device=self.device)
-                xf = torch.cat([xg, xe], 0).unsqueeze(1)
+                xf = torch.cat([xg, xe], 0).unsqueeze(1)  # context then queries, batch size 1
                 logits = m((None, xf, yt.unsqueeze(1)), single_eval_pos=len(xg))[:, 0]
+                # P(-(f - mu)/sd > -(tau - mu)/sd) = P(f < tau)
                 out.append(m.criterion.pi(logits, float(-(tau - mu) / sd)).cpu().numpy())
         return np.concatenate(out)
