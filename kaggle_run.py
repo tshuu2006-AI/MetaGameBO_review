@@ -7,9 +7,9 @@ Steps (each skipped when already done):
      PFNs4BO with its pre-trained weights (github.com/automl/PFNs4BO -> models/pfn/PFNs4BO).
   3. Download the data of the selected benchmarks into ``--data-dir`` (outside
      the Kaggle output) and link it as ``benchmarks/data``; build the caches.
-     With ``--hf-repo`` (or ``HF_DATA_REPO``), the compact caches and HPO-B
-     surrogates come from that Hugging Face dataset repo (``benchmarks/hf_data.py``;
-     private repo: add the Kaggle secret ``HF_TOKEN``); anything missing then falls
+     The compact caches and HPO-B surrogates come first from the Hugging Face
+     dataset repo ``--hf-repo`` (default Huu-ai/metagamebo-benchmarks) (``benchmarks/hf_data.py``;
+     public, no token needed); anything missing then falls
      back to the original sources.
   4. Run ``experiments.analyze_<benchmark>`` for each selected benchmark, within
      an optional time budget (the run is stopped, then the table/figure are
@@ -311,8 +311,8 @@ def main():
     ap.add_argument("--noisy", action="store_true",
                     help="hpobench/nasbench201: noisy protocol (results under <benchmark>_noisy)")
     ap.add_argument("--setup-only", action="store_true", help="install and download, do not run")
-    ap.add_argument("--hf-repo", default=os.environ.get("HF_DATA_REPO"),
-                    help="HF dataset repo with the benchmark data (benchmarks/hf_data.py); default: $HF_DATA_REPO")
+    ap.add_argument("--hf-repo", default=os.environ.get("HF_DATA_REPO", "Huu-ai/metagamebo-benchmarks"),
+                    help="HF dataset repo with the benchmark data (benchmarks/hf_data.py); '' = original sources only")
     a = ap.parse_args(argv)
     t_end = time.time() + a.hours * 3600 if a.hours else None
 
