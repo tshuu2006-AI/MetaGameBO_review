@@ -35,7 +35,8 @@ def kde_quantile(values: np.ndarray, alpha: float) -> float:
     h = 1.06 * v.std() * len(v) ** (-1 / 5)  # Silverman's bandwidth
     # invert the KDE CDF on a grid over the observed range
     grid = np.linspace(v.min(), v.max(), 1000)
-    cdf = norm.cdf((grid[:, None] - v[None, :]) / h).mean(1)
+    mat = (grid[:, None] - v[None, :]) / h
+    cdf = norm.cdf(mat).mean(1)
     return float(grid[np.argmin(np.abs(cdf - alpha))])
 
 

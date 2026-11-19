@@ -7,6 +7,10 @@ Steps (each skipped when already done):
      PFNs4BO with its pre-trained weights (github.com/automl/PFNs4BO -> models/pfn/PFNs4BO).
   3. Download the data of the selected benchmarks into ``--data-dir`` (outside
      the Kaggle output) and link it as ``benchmarks/data``; build the caches.
+     With ``--hf-repo`` (or ``HF_DATA_REPO``), the compact caches and HPO-B
+     surrogates come from that Hugging Face dataset repo (``benchmarks/hf_data.py``;
+     private repo: add the Kaggle secret ``HF_TOKEN``); anything missing then falls
+     back to the original sources.
   4. Run ``experiments.analyze_<benchmark>`` for each selected benchmark, within
      an optional time budget (the run is stopped, then the table/figure are
      rebuilt from the finished jobs).
@@ -57,7 +61,7 @@ PFN_REPO = "https://github.com/automl/PFNs4BO.git"
 PFN_WEIGHTS = ["model_hebo_morebudget_9_unused_features_3.pt"]  # the model used by models/pfn
 # the author pinned blackboxopt==5.0.4, which needs Python < 3.12 (Kaggle has 3.13);
 # the author code also runs with blackboxopt 5.3.8 / parameterspace 0.10.2
-PIP = ["parameterspace>=0.10.0", "blackboxopt>=5.0.4", "pyarrow"]
+PIP = ["parameterspace>=0.10.0", "blackboxopt>=5.0.4", "pyarrow", "huggingface_hub>=0.25"]
 
 
 def log(msg: str) -> None:
@@ -167,21 +171,44 @@ def link_data(data_dir: Path) -> None:
         log(f"benchmarks/data already exists as a folder; using it instead of {data_dir}")
 
 
-def fetch_data(benchmarks, discrete: bool = False) -> None:
+def fetch_hf(benchmarks, repo: str, discrete: bool = False) -> None:
+    """Download the compact caches (and HPO-B surrogates) from the project's HF dataset repo.
+
+    Args:
+        benchmarks: Benchmark names (subset of ``BENCHMARKS``).
+        repo: Dataset repo id ``<user>/<name>``.
+        discrete: HPO-B runs the discrete protocol, so its surrogates are not downloaded.
+    """
+    sys.path.insert(0, str(ROOT))
+    from benchmarks import hf_data
+    log(f"downloading data from huggingface.co/datasets/{repo}")
+    try:
+        hf_data.download(benchmarks, repo, surrogates=not discrete)
+    except Exception as e:  # no token, no repo, network: the original sources are used instead
+        log(f"Hugging Face download failed ({type(e).__name__}: {e}); using the original sources")
+
+
+def fetch_data(benchmarks, discrete: bool = False, hf_repo: str | None = None) -> None:
     """Download the data of the selected benchmarks and build their compact caches.
 
     Args:
         benchmarks: Benchmark names (subset of ``BENCHMARKS``).
         discrete: HPO-B runs the discrete protocol, so its surrogates are not downloaded.
+        hf_repo: The project's HF dataset repo; tried first, the original sources fill any gap.
     """
     data = ROOT / "benchmarks" / "data"
+    if hf_repo:
+        fetch_hf(benchmarks, hf_repo, discrete)
     for bench, folder in (("hpobench", "fcnet"), ("nasbench201", "nasbench201")):
-        if bench in benchmarks:
+        if bench in benchmarks and not (data / folder / "compact.npz").exists():
             for f in SYNETUNE_FILES:
                 download(f"{HF}/{folder}/{f}", data / folder / f)
+    hpob_cached = (data / "hpob_cache").is_dir() and any((data / "hpob_cache").glob("*.npz"))
     if "hpob" in benchmarks:
         # the discrete protocol uses the tabulated evaluations only, not the XGBoost surrogates
         for name in ("hpob-data",) if discrete else ("hpob-data", "saved-surrogates"):
+            if name == "hpob-data" and hpob_cached:  # the loaders only read the cache
+                continue
             if not (data / name).is_dir():
                 zp = data / f"{name}.zip"
                 for attempt in (1, 2):
@@ -284,6 +311,8 @@ def main():
     ap.add_argument("--noisy", action="store_true",
                     help="hpobench/nasbench201: noisy protocol (results under <benchmark>_noisy)")
     ap.add_argument("--setup-only", action="store_true", help="install and download, do not run")
+    ap.add_argument("--hf-repo", default=os.environ.get("HF_DATA_REPO"),
+                    help="HF dataset repo with the benchmark data (benchmarks/hf_data.py); default: $HF_DATA_REPO")
     a = ap.parse_args(argv)
     t_end = time.time() + a.hours * 3600 if a.hours else None
 
@@ -293,7 +322,7 @@ def main():
     install_packages()
     fetch_code()
     link_data(a.data_dir)
-    fetch_data(a.benchmarks, discrete=a.discrete)
+    fetch_data(a.benchmarks, discrete=a.discrete, hf_repo=a.hf_repo)
     if a.resume:
         src = a.resume / "raw" if (a.resume / "raw").exists() else a.resume
         if src.resolve() != (a.output / "raw").resolve():

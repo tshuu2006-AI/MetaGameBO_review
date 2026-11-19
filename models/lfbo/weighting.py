@@ -14,7 +14,7 @@ def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
                      scheme: str = "lfbo", return_index: bool = False):
     """Label points below the gamma-quantile as positives weighted by their improvement (paper Eq. 3).
 
-    Weights are class-balanced and normalised to mean 1.
+    Weights are class-balanced and normalized to mean 1.
 
     Args:
         x: Inputs, shape (n, d).
@@ -26,21 +26,28 @@ def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
         return_index: Also return the index of the source point of every output row.
 
     Returns:
-        ``(x, lab, w)`` of shapes (m, d), (m,), (m,), plus the source indices (m,)
+        ``(x, lab, w)`` of shapes (m, d), (m,), (m,), plus the source indices (m),
         if ``return_index``; m = n + #positives for ``"lfbo"``, n for ``"paper"``.
     """
     if scheme not in SCHEMES:
         raise ValueError(f"unknown weighting scheme {scheme!r}, choose from {SCHEMES}")
     y = np.asarray(y, dtype=float).reshape(-1)
     x = np.atleast_2d(x)
+
+    #improvement threshold
     tau = threshold(y, gamma)
     z = y < tau
     if len(x) == 1:  # a single point: no quantile, no balancing
         out = (x, z.astype(float), np.ones(1))
         return (*out, np.zeros(1, int)) if return_index else out
     i1 = np.flatnonzero(z)  # positives
-    i0 = np.arange(len(y)) if scheme == "lfbo" else np.flatnonzero(~z)  # reference class
-    w1 = (tau - y)[i1]  # improvement over tau
+
+    if scheme == "lfbo":
+        i0 = np.arange(len(y))
+    else:
+        i0 = np.flatnonzero(~z)
+    # improvement over tau (Acquisition in Likelihood-free Bayessian Optimization)
+    w1 = (tau - y)[i1]
     w1 = w1 / w1.mean() if len(w1) else w1
     s1, s0 = len(i1), len(i0)
     # class balancing: each class gets the same total weight
@@ -48,7 +55,10 @@ def reweight_samples(x: np.ndarray, y: np.ndarray, gamma: float = 1 / 3,
     w = w / w.mean()
     idx = np.concatenate([i1, i0])
     lab = np.concatenate([np.ones(s1), np.zeros(s0)])
-    return (x[idx], lab, w, idx) if return_index else (x[idx], lab, w)
+    if return_index:
+        return x[idx], lab, w, idx
+    else:
+        return x[idx], lab, w
 
 
 def threshold(y: np.ndarray, gamma: float = 1 / 3) -> float:

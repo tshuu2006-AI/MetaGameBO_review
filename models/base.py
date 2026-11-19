@@ -1,4 +1,4 @@
-"""Interface shared by every optimizer in ``models`` (all optimizers minimise).
+"""Interface shared by every optimizer in ``models`` (all optimizers minimize).
 
 Attributes:
     N_CAND: Number of candidates used to maximise an acquisition function
@@ -70,7 +70,7 @@ class BaseOptimizer(ABC):
     evaluated rows of a finite pool (tabular benchmarks).
 
     Args:
-        bounds: Search box of shape (d, 2), one ``[low, high]`` row per dimension.
+        bounds: Search box of hyperparams of shape (d, 2), one ``[low, high]`` row per dimension.
         seed: Seed of the optimizer's random generator.
 
     Attributes:
@@ -91,7 +91,6 @@ class BaseOptimizer(ABC):
         self._pool_index: dict = {}
         self._pool_free: Optional[np.ndarray] = None
 
-    # ---------- must be implemented ----------
     @abstractmethod
     def suggest(self, n: int = 1) -> np.ndarray:
         """Propose the next query points.
@@ -103,7 +102,6 @@ class BaseOptimizer(ABC):
             Points of shape (n, d).
         """
 
-    # ---------- optional hooks ----------
     def meta_train(self, tasks: Sequence[Task], **kwargs) -> None:
         """Learn from source tasks with pre-collected data (no-op for non-meta methods).
 
@@ -120,11 +118,11 @@ class BaseOptimizer(ABC):
             y: Their values, shape (n,).
         """
 
-    def prob_good(self, X: np.ndarray, y: np.ndarray, Xq: np.ndarray, tau: float) -> np.ndarray:
+    def prob_good(self, x: np.ndarray, y: np.ndarray, Xq: np.ndarray, tau: float) -> np.ndarray:
         """Classifier view of the model, used by the Table-1 metric.
 
         Args:
-            X: Context points of one task, shape (n, d).
+            x: Context points of one task, shape (n, d).
             y: Context values, shape (n,).
             Xq: Query points, shape (m, d).
             tau: Threshold of the "good" class (``f(x) < tau``).
@@ -181,7 +179,7 @@ class BaseOptimizer(ABC):
     def optimize(self, objective: Callable[[np.ndarray], np.ndarray], budget: int,
                  n_init: int = 0, init: Optional[np.ndarray] = None,
                  callback: Optional[Callable[[int], None]] = None, resume: bool = False) -> History:
-        """Run sequential optimisation on one task.
+        """Run sequential optimization on one task.
 
         Args:
             objective: Maps points (n, d) to values (n,).
@@ -265,6 +263,9 @@ def cvar(values: np.ndarray, alpha: float = 0.8) -> float:
         The CVaR as a float.
     """
     v = np.asarray(values, dtype=float)
-    v = np.sort(v[~np.isnan(v)])[::-1]  # descending
+    v = v[~np.isnan(v)] # drop NaNs
+    v = np.sort(v)[::-1]  # descending
+
+    # Choose hard tasks
     k = max(1, int(len(v) * (1 - alpha)))
     return float(v[:k].mean())
